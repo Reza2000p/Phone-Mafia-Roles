@@ -1,10 +1,6 @@
 # 🎩 Mafia Assistant – دستیار کامل بازی مافیا
 
 <p align="center">
-  <img src="assets/icon.png" width="120" alt="Mafia Assistant Logo">
-</p>
-
-<p align="center">
   <strong>یک اپلیکیشن جامع، آفلاین و سریع برای مدیریت بازی مافیا</strong><br>
   <span>تقسیم نقش، قرعه‌کشی، پنل گرداننده، لیدربورد و گالری نقش‌ها</span>
 </p>
@@ -164,7 +160,7 @@ npx serve .
 ## 👨‍💻 توسعه‌دهنده
 
 **رضا پاکدل**  
-[GitHub](https://github.com/your-username) • [Email](mailto:your-email@example.com)
+[GitHub](https://github.com/reza2000_p) • [Email](reza20pakdel82@gmail.com)
 
 ---
 
