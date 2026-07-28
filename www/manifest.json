@@ -1,0 +1,107 @@
+{
+  "name": "Mafia Roles",
+  "short_name": "Mafia Roles",
+  "description": "دستیار کامل بازی مافیا با تقسیم نقش، لیدربورد و گالری نقش‌ها",
+  "start_url": "./",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "theme_color": "#0b0f19",
+  "background_color": "#0b0f19",
+  "lang": "fa",
+  "dir": "rtl",
+  "categories": [
+    "games",
+    "entertainment"
+  ],
+  "icons": [
+    {
+      "src": "assets/icons/icon-48.webp",
+      "type": "image/png",
+      "sizes": "48x48",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-72.webp",
+      "type": "image/png",
+      "sizes": "72x72",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-96.webp",
+      "type": "image/png",
+      "sizes": "96x96",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-128.webp",
+      "type": "image/png",
+      "sizes": "128x128",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-192.webp",
+      "type": "image/png",
+      "sizes": "192x192",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-256.webp",
+      "type": "image/png",
+      "sizes": "256x256",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "assets/icons/icon-512.webp",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "شروع بازی",
+      "short_name": "بازی",
+      "description": "به صفحه‌ی انتخاب نقش‌ها بروید",
+      "url": "./",
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "لیدربورد",
+      "short_name": "لیدربورد",
+      "description": "مشاهده رتبه‌بندی بازیکنان",
+      "url": "./?page=leaderboard",
+      "icons": [
+        {
+          "src": "assets/icons/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "assets/screenshots/screenshot1.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "label": "صفحه اصلی انتخاب نقش‌ها"
+    },
+    {
+      "src": "assets/screenshots/screenshot2.png",
+      "sizes": "1080x1920",
+      "type": "image/png",
+      "label": "صفحه گاد"
+    }
+  ],
+  "prefer_related_applications": false,
+  "display_override": [
+    "window-controls-overlay",
+    "standalone"
+  ]
+}

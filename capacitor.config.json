@@ -1,0 +1,33 @@
+{
+  "appId": "com.mafia.assistant",
+  "appName": "Mafia Roles",
+  "webDir": "www",
+  "bundledWebRuntime": false,
+  "server": {
+    "androidScheme": "https"
+  },
+  "android": {
+    "buildOptions": {
+      "keystorePath": "",
+      "keystoreAlias": "",
+      "keystorePassword": "",
+      "keyPassword": ""
+    },
+    "webViewSettings": {
+      "setSupportZoom": false,
+      "builtInZoomControls": false,
+      "displayZoomControls": false
+    },
+    "orientation": "portrait",
+    "allowMixedContent": true,
+    "captureInput": true
+  },
+  "plugins": {
+    "Preferences": {
+      "storageType": "default"
+    },
+    "Device": {
+      "keepAwake": false
+    }
+  }
+}
