@@ -1982,19 +1982,26 @@
 
         function switchPage(pageId) {
             const drawPage = document.getElementById('page-draw');
-            const isDrawActive = drawPage.classList.contains('active');
+            const isDrawActive = drawPage ? drawPage.classList.contains('active') : false;
             
             if (isDrawActive && pageId !== 'page-draw') {
                 if (pageId === 'page-roles' || pageId === 'page-player-select') {
                     (async () => {
                         const confirmed = await confirmBackToRoles();
                         if (confirmed) {
+                            assignedCards = [];
+                            pickedHistory = [];
+                            openedCount = 0;
+                            inquiryCount = 0;
+                            document.getElementById('god-btn').style.display = 'none';
                             performSwitchPage(pageId);
+                            updateNavState();
                         }
                     })();
                     return;
                 } else {
                     performSwitchPage(pageId);
+                    updateNavState();
                     return;
                 }
             }
@@ -2004,12 +2011,30 @@
                 return;
             }
             
-            if (pageId === 'page-roles' && assignedCards.length > 0) {
-                showCustomModal('توجه', 'در حین بازی نمی‌توانید به صفحه نقش‌ها بروید. لطفاً ابتدا بازی را تمام کنید.', 'alert');
+            if (pageId === 'page-roles' && (assignedCards.length > 0 || isGameActive())) {
+                (async () => {
+                    const confirmed = await showCustomModal(
+                        'پایان بازی فعلی',
+                        'یک بازی در جریان است. آیا از پایان دادن به بازی فعلی و بازگشت به صفحه انتخاب نقش‌ها مطمئن هستید؟',
+                        'confirm'
+                    );
+                    if (confirmed) {
+                        assignedCards = [];
+                        pickedHistory = [];
+                        openedCount = 0;
+                        inquiryCount = 0;
+                        document.getElementById('god-btn').style.display = 'none';
+                        document.getElementById('god-bottom-bar').style.display = 'none';
+                        releaseWakeLock();
+                        performSwitchPage('page-roles');
+                        updateNavState();
+                    }
+                })();
                 return;
             }
             
             performSwitchPage(pageId);
+            updateNavState();
         }
 
         function performSwitchPage(pageId) {
@@ -2047,6 +2072,8 @@
                 }
             }
 
+            updateGodBottomBar();
+
             if (pageId === 'page-leaderboard') renderLeaderboardContent();
             if (pageId === 'page-players') renderPlayersContent();
             if (pageId === 'page-gallery') renderGalleryContent();
@@ -2055,26 +2082,32 @@
         }
 
         function isGameActive() {
-            return assignedCards.length > 0 && pickedHistory.length > 0;
+            return assignedCards.length > 0;
         }
 
         function updateNavState() {
             const rolesItem = document.getElementById('nav-roles');
             const godItem = document.querySelector('.nav-item[data-page="page-god"]');
-            const isActive = isGameActive();
+            const isActive = isGameActive() && pickedHistory.length > 0;
 
-            if (isActive) {
-                rolesItem.classList.add('roles-disabled');
-            } else {
-                rolesItem.classList.remove('roles-disabled');
+            if (rolesItem) {
+                if (isActive) {
+                    rolesItem.classList.add('roles-disabled');
+                } else {
+                    rolesItem.classList.remove('roles-disabled');
+                }
             }
 
-            if (isActive) {
-                godItem.classList.remove('disabled');
-                document.getElementById('god-badge').style.display = 'block';
-            } else {
-                godItem.classList.add('disabled');
-                document.getElementById('god-badge').style.display = 'none';
+            if (godItem) {
+                if (isActive) {
+                    godItem.classList.remove('disabled');
+                    const badge = document.getElementById('god-badge');
+                    if (badge) badge.style.display = 'block';
+                } else {
+                    godItem.classList.add('disabled');
+                    const badge = document.getElementById('god-badge');
+                    if (badge) badge.style.display = 'none';
+                }
             }
         }
 
@@ -3723,7 +3756,7 @@
                 const cancelBtn = document.getElementById('custom-modal-cancel');
 
                 titleEl.textContent = title || 'اطلاعیه';
-                messageEl.textContent = message || '';
+                messageEl.innerHTML = message || '';
                 inputEl.style.display = 'none';
                 cancelBtn.style.display = 'none';
                 confirmBtn.textContent = 'تأیید';
