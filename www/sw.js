@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mafia-pwa-v13'; // ← تغییر نسخه
+const CACHE_NAME = 'mafia-pwa-v14'; // ← تغییر نسخه (bugfix release)
 
 // لیست تمام نقش‌ها
 const ROLE_IDS = [
@@ -34,12 +34,27 @@ const ASSETS = [
 
 self.addEventListener('install', event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Caching assets...');
-        return cache.addAll(ASSETS);
-      })
-      .then(() => self.skipWaiting())
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('[SW] Caching assets individually (tolerating missing files)...');
+      // از Promise.allSettled استفاده می‌کنیم تا یک فایل مفقود باعث شکست کل نصب نشود
+      return Promise.allSettled(
+        ASSETS.map(url =>
+          fetch(url)
+            .then(response => {
+              if (response.ok) {
+                return cache.put(url, response);
+              }
+              console.warn('[SW] Skipped (non-ok):', url, response.status);
+            })
+            .catch(err => {
+              console.warn('[SW] Skipped (fetch error):', url, err.message);
+            })
+        )
+      );
+    }).then(() => {
+      console.log('[SW] Install complete.');
+      return self.skipWaiting();
+    })
   );
 });
 

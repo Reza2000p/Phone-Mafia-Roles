@@ -1277,7 +1277,7 @@
     <!-- ============================================================ -->
     <div id="god-bottom-bar" class="god-bottom-bar" style="display:none;">
         <div class="god-bottom-row">
-            <span class="timer-icon">⏱️</span>
+            <span class="timer-icon" id="timer-mute-btn" onclick="toggleTimerMute()" style="cursor:pointer;" title="بی‌صدا / صدا دار کردن زنگ هشدار"><span id="timer-mute-icon">🔔</span>⏱️</span>
             <span class="timer-display" id="timer-display">00:00</span>
             <button class="btn-sm blue" id="timer-plus-btn" onclick="timerAdjust(5)">+5s</button>
             <button class="btn-sm blue" id="timer-minus-btn" onclick="timerAdjust(-5)">−5s</button>
@@ -1397,23 +1397,19 @@
         let isCapacitor = false;
         let Device = null;
         let Preferences = null;
-        let DocumentPicker = null;
+        // DocumentPicker حذف شد — از web file input استفاده می‌شود
 
-        // تلاش برای بارگذاری پلاگین‌ها (در اندروید از طریق import map یا script)
+        // بارگذاری پلاگین‌های Capacitor از طریق Capacitor.Plugins (بدون dynamic import)
         (async function initCapacitor() {
             try {
-                // در محیط Capacitor، ماژول‌ها به صورت global در دسترس هستند
-                if (typeof Capacitor !== 'undefined' && Capacitor.isNative) {
+                if (typeof Capacitor !== 'undefined' &&
+                        (typeof Capacitor.isNativePlatform === 'function'
+                            ? Capacitor.isNativePlatform()
+                            : !!Capacitor.isNative)) {
                     isCapacitor = true;
-                    // با فرض اینکه پلاگین‌ها از طریق CDN یا import map بارگذاری شده‌اند
-                    const modules = await import('@capacitor/core');
-                    const deviceModule = await import('@capacitor/device');
-                    const prefsModule = await import('@capacitor/preferences');
-                    const docPickerModule = await import('@capacitor/document-picker');
-                    
-                    Device = deviceModule.Device;
-                    Preferences = prefsModule.Preferences;
-                    DocumentPicker = docPickerModule.DocumentPicker;
+                    const plugins = Capacitor.Plugins || {};
+                    Preferences = plugins.Preferences || null;
+                    Device = plugins.Device || null;
                     console.log('✅ Capacitor plugins loaded');
                 } else {
                     console.log('ℹ️ Running in browser (non-Capacitor)');
@@ -1457,35 +1453,8 @@
         let audioPickerFallback = null; // برای وب
 
         async function pickMusicFile() {
-            if (isCapacitor && DocumentPicker) {
-                try {
-                    const result = await DocumentPicker.getFiles({
-                        types: ['audio/*'],
-                        multiple: false
-                    });
-                    if (result && result.files && result.files.length > 0) {
-                        const file = result.files[0];
-                        // خواندن فایل به صورت Data URL یا Blob
-                        // در Capacitor، فایل به صورت path برمی‌گردد، برای پخش باید از Filesystem استفاده کنیم
-                        const fsModule = await import('@capacitor/filesystem');
-                        const Filesystem = fsModule.Filesystem;
-                        const readResult = await Filesystem.readFile({
-                            path: file.path,
-                            directory: 0 // Directory.Documents یا Data
-                        });
-                        // readResult.data یک base64 یا blob است
-                        const blob = new Blob([new Uint8Array(readResult.data)], { type: file.type });
-                        const url = URL.createObjectURL(blob);
-                        loadAudioFromUrl(url, file.name);
-                    }
-                } catch (error) {
-                    console.error('Error picking music:', error);
-                    // Fallback به input file در وب
-                    triggerWebAudioPicker();
-                }
-            } else {
-                triggerWebAudioPicker();
-            }
+            // web file input در Android WebView هم به خوبی کار می‌کند
+            triggerWebAudioPicker();
         }
 
         function triggerWebAudioPicker() {
@@ -1526,40 +1495,24 @@
         // 0.3 لایه انتزاعی Wake Lock (خاموش نشدن صفحه)
         // ================================================================
         async function requestWakeLockNative() {
-            if (isCapacitor && Device) {
-                try {
-                    await Device.keepAwake({ keepAwake: true });
-                    console.log('✅ KeepAwake enabled');
-                } catch (e) {
-                    console.warn('KeepAwake not supported');
+            // Web Screen Wake Lock API — پشتیبانی در مرورگر و Android WebView
+            try {
+                if ('wakeLock' in navigator && !wakeLock) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake Lock enabled');
+                    wakeLock.addEventListener('release', () => {
+                        wakeLock = null;
+                    });
                 }
-            } else {
-                // وب: استفاده از wakeLock API
-                try {
-                    if ('wakeLock' in navigator && !wakeLock) {
-                        wakeLock = await navigator.wakeLock.request('screen');
-                        console.log('Wake Lock enabled (web)');
-                        wakeLock.addEventListener('release', () => {
-                            wakeLock = null;
-                        });
-                    }
-                } catch (e) {
-                    console.warn('WakeLock not supported');
-                }
+            } catch (e) {
+                console.warn('WakeLock not supported:', e.message);
             }
         }
 
         function releaseWakeLockNative() {
-            if (isCapacitor && Device) {
-                try {
-                    Device.keepAwake({ keepAwake: false });
-                    console.log('KeepAwake disabled');
-                } catch (e) {}
-            } else {
-                if (wakeLock) {
-                    wakeLock.release();
-                    wakeLock = null;
-                }
+            if (wakeLock) {
+                wakeLock.release();
+                wakeLock = null;
             }
         }
 
@@ -1750,8 +1703,8 @@
                 const players = await this.getAll();
                 const p = players.find(p => p.name === playerName);
                 if (!p) return { success: false, message: 'بازیکن یافت نشد.' };
-                // هر بازیکن به ازای هر بازی ۱ امتیاز پایه + امتیاز گاد
-                const finalScore = 1 + (score > 0 ? score : 0);
+                // اگر امتیاز صفر یا مثبت باشد ۱ امتیاز پایه پایداری اضافه می‌شود؛ اگر منفی باشد فقط همان امتیاز منفی ثبت می‌شود
+                const finalScore = score < 0 ? score : (1 + score);
                 p.totalScore += finalScore;
                 p.totalWarnings += warnings;
                 p.gamesPlayed += 1;
@@ -1801,9 +1754,9 @@
                     if (cols.length <= nameIdx) continue;
                     const name = cols[nameIdx] || '';
                     if (!name) continue;
-                    const score = (scoreIdx !== -1 && cols[scoreIdx]) ? parseFloat(cols[scoreIdx]) || 0 : 0;
-                    const warnings = (warnIdx !== -1 && cols[warnIdx]) ? parseFloat(cols[warnIdx]) || 0 : 0;
-                    const games = (gameIdx !== -1 && cols[gameIdx]) ? parseFloat(cols[gameIdx]) || 0 : 0;
+                    const score = (scoreIdx !== -1 && cols[scoreIdx]) ? parseInt(cols[scoreIdx], 10) || 0 : 0;
+                    const warnings = (warnIdx !== -1 && cols[warnIdx]) ? parseInt(cols[warnIdx], 10) || 0 : 0;
+                    const games = (gameIdx !== -1 && cols[gameIdx]) ? parseInt(cols[gameIdx], 10) || 0 : 0;
 
                     const existing = await this.getByName(name);
                     if (existing) {
@@ -1858,6 +1811,11 @@
         let timerRunning = false;
         let timerMode = 'normal';
 
+        let playerSearchQuery = '';
+        let savedCustomTimerDuration = 30;
+        let timerMuted = false;
+        let wakeLockInterval = null;
+
         let audioPlayer = null;
         let audioFileLoaded = false;
         let currentAudioName = '';
@@ -1867,7 +1825,93 @@
         let currentPage = 'page-roles';
 
         // ================================================================
-        // 4. WAKE LOCK (با لایه انتزاعی)
+        // 3.1 صدای زنگ تایمر و کنترل بی‌صدا
+        // ================================================================
+        function playTimerAlarm() {
+            if (timerMuted) return;
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                const playTone = (freq, start, duration) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, ctx.currentTime + start);
+                    gain.gain.setValueAtTime(0.3, ctx.currentTime + start);
+                    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + duration);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(ctx.currentTime + start);
+                    osc.stop(ctx.currentTime + start + duration);
+                };
+                playTone(880, 0, 0.2);
+                playTone(660, 0.25, 0.2);
+                playTone(880, 0.5, 0.4);
+            } catch (e) {
+                console.warn('Audio alarm error:', e);
+            }
+        }
+
+        function toggleTimerMute() {
+            timerMuted = !timerMuted;
+            const icon = document.getElementById('timer-mute-icon');
+            if (icon) {
+                icon.innerText = timerMuted ? '🔕' : '🔔';
+            }
+            saveState();
+        }
+
+        // ================================================================
+        // 3.2 لایه یکپارچه ذخیره‌سازی نیتیو فایل در اندروید و دانلود وب
+        // ================================================================
+        async function exportFileUtility(content, fileName, mimeType = 'text/plain') {
+            if (isCapacitor && window.Capacitor && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem) {
+                try {
+                    const Filesystem = window.Capacitor.Plugins.Filesystem;
+                    await Filesystem.writeFile({
+                        path: fileName,
+                        data: content,
+                        directory: 'DOCUMENTS',
+                        encoding: 'utf8'
+                    });
+                    showCustomModal('موفقیت', `فایل با موفقیت در پوشه اسناد (Documents) دستگاه ذخیره شد:\n${fileName}`, 'alert');
+                    return;
+                } catch (err) {
+                    console.warn('Filesystem native write error:', err);
+                }
+            }
+
+            try {
+                const blob = new Blob(['\uFEFF' + content], { type: `${mimeType};charset=utf-8` });
+                const url = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                    if (document.body.contains(link)) document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                }, 200);
+            } catch (e) {
+                showExportFallbackModal(content, fileName);
+            }
+        }
+
+        function showExportFallbackModal(content, fileName) {
+            const html = `
+                <div style="direction:rtl;text-align:right;">
+                    <p style="margin-bottom:8px;font-size:13px;color:#94a3b8;">متن خروجی زیر را کپی کنید:</p>
+                    <textarea readonly style="width:100%;height:150px;background:#0f172a;color:#e8edf5;border:1px solid #334155;border-radius:6px;padding:8px;font-size:12px;" id="export-fallback-text">${content}</textarea>
+                    <button onclick="navigator.clipboard.writeText(document.getElementById('export-fallback-text').value); showCustomModal('کپی شد','متن در حافظه کپی شد.','alert');" style="margin-top:8px;width:100%;padding:8px;background:#3b82f6;color:#fff;border:none;border-radius:6px;cursor:pointer;">📋 کپی متن خروجی</button>
+                </div>
+            `;
+            showCustomModal(`خروجی ${fileName}`, html, 'alert');
+        }
+
+        // ================================================================
+        // 4. WAKE LOCK (با لایه انتزاعی دائم)
         // ================================================================
         async function requestWakeLock() {
             await requestWakeLockNative();
@@ -1876,6 +1920,12 @@
         function releaseWakeLock() {
             releaseWakeLockNative();
         }
+
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && currentPage === 'page-god') {
+                requestWakeLock();
+            }
+        });
 
         // ================================================================
         // 5. LOAD DESCRIPTIONS (همان)
@@ -1982,8 +2032,19 @@
 
             if (pageId === 'page-god') {
                 requestWakeLock();
+                if (!wakeLockInterval) {
+                    wakeLockInterval = setInterval(() => {
+                        if (currentPage === 'page-god' && !wakeLock) {
+                            requestWakeLock();
+                        }
+                    }, 15000);
+                }
             } else {
                 releaseWakeLock();
+                if (wakeLockInterval) {
+                    clearInterval(wakeLockInterval);
+                    wakeLockInterval = null;
+                }
             }
 
             if (pageId === 'page-leaderboard') renderLeaderboardContent();
@@ -2121,7 +2182,11 @@
 
                 updateTimerDisplay();
                 updateTimerModeUI();
-                if (timerRunning) startTimer();
+                if (timerRunning) {
+                    // پس از بارگذاری مجدد تایمر را متوقف نگه می‌داریم — زمان سپری‌شده در بین بستن و باز کردن اپ نامشخص است
+                    timerRunning = false;
+                    document.getElementById('timer-toggle-btn').innerText = '▶';
+                }
 
                 document.getElementById('god-inquiry-display').innerText = inquiryCount;
                 document.getElementById('toggle-role-text').innerText = showRolesInGodView ? 'مخفی‌سازی نقش‌ها' : 'نمایش نقش‌ها';
@@ -2240,7 +2305,7 @@
                             </div>
                         `;
                     } else {
-                        card.onclick = () => toggleRole(role.id, team);
+                        card.onclick = () => toggleRole(role.id);
                         card.innerHTML = `
                             <span class="role-name">${role.name}</span>
                             <span class="group-badge">${role.teamLabel}</span>
@@ -2306,6 +2371,7 @@
             const val = document.getElementById('scenario-select').value;
             selectedRoles = {};
             document.querySelectorAll('[id^="count-"]').forEach(el => el.innerText = '0');
+            updateUI(); // پاک کردن فوری هایلایت کارت‌ها
             if(val.startsWith('user_')) {
                 const scenarioId = parseInt(val.replace('user_',''));
                 getSavedScenarios().then(saved => {
@@ -2362,20 +2428,85 @@
             const total = parseInt(document.getElementById('player-count').value) || 0;
             if(total === 0) { showCustomModal('توجه', 'لطفاً حداقل یک نقش انتخاب کنید.', 'alert'); return; }
 
-            selectedPlayerIds = [];
-            selectedPlayerNames = [];
+            showRoleConfirmationModal(() => {
+                selectedPlayerIds = [];
+                selectedPlayerNames = [];
 
-            if(usePlayerSelectForGame) {
-                switchPage('page-player-select');
-                renderPlayerSelect();
-            } else {
-                doDistributeRoles([]);
+                if(usePlayerSelectForGame) {
+                    switchPage('page-player-select');
+                    renderPlayerSelect();
+                } else {
+                    doDistributeRoles([]);
+                }
+                saveState();
+            });
+        }
+
+        async function showRoleConfirmationModal(onConfirm) {
+            const citizenList = [];
+            const mafiaList = [];
+            const freeList = [];
+
+            let citTotal = 0;
+            let mafTotal = 0;
+            let freeTotal = 0;
+
+            ALL_ROLES.citizen.forEach(r => {
+                const count = selectedRoles[r.id] || 0;
+                if (count > 0) {
+                    citizenList.push(`${r.name} (${count})`);
+                    citTotal += count;
+                }
+            });
+            ALL_ROLES.mafia.forEach(r => {
+                const count = selectedRoles[r.id] || 0;
+                if (count > 0) {
+                    mafiaList.push(`${r.name} (${count})`);
+                    mafTotal += count;
+                }
+            });
+            ALL_ROLES.free.forEach(r => {
+                const count = selectedRoles[r.id] || 0;
+                if (count > 0) {
+                    freeList.push(`${r.name} (${count})`);
+                    freeTotal += count;
+                }
+            });
+
+            const total = citTotal + mafTotal + freeTotal;
+
+            let html = `
+                <div style="text-align:right;direction:rtl;line-height:1.7;font-size:14px;">
+                    <div style="margin-bottom:10px;background:#0f172a;padding:10px 12px;border-radius:10px;border:1px solid #1e293b;">
+                        <strong style="color:#4ade80;">🟩 گروه شهروندی (${citTotal} نفر):</strong><br>
+                        <span style="font-size:13px;color:#cbd5e1;">${citizenList.join(' ، ') || 'هیچ'}</span>
+                    </div>
+                    <div style="margin-bottom:10px;background:#0f172a;padding:10px 12px;border-radius:10px;border:1px solid #1e293b;">
+                        <strong style="color:#f87171;">🟥 گروه مافیا (${mafTotal} نفر):</strong><br>
+                        <span style="font-size:13px;color:#cbd5e1;">${mafiaList.join(' ، ') || 'هیچ'}</span>
+                    </div>
+                    ${freeList.length > 0 ? `
+                    <div style="margin-bottom:10px;background:#0f172a;padding:10px 12px;border-radius:10px;border:1px solid #1e293b;">
+                        <strong style="color:#fbbf24;">🟧 گروه مستقل (${freeTotal} نفر):</strong><br>
+                        <span style="font-size:13px;color:#cbd5e1;">${freeList.join(' ، ')}</span>
+                    </div>` : ''}
+                    <div style="margin-top:12px;padding:8px;text-align:center;background:#1e293b;border-radius:8px;font-weight:bold;color:#38bdf8;">
+                        👥 تعداد کل نقش‌ها: ${total} نفر
+                    </div>
+                    <div style="margin-top:16px;text-align:center;font-size:14px;color:#f8fafc;font-weight:600;padding:6px;background:#1e293b;border-radius:8px;border:1px dashed #38bdf8;">
+                        ترکیب نقش‌ها و تعداد بازیکنان مورد تأیید است؛ آیا مایل به ورود به فاز توزیع نقش‌ها هستید؟
+                    </div>
+                </div>
+            `;
+
+            const result = await showCustomModal('🎭 تأیید ترکیب نقش‌ها', html, 'confirm');
+            if (result) {
+                onConfirm();
             }
-            saveState();
         }
 
         // ================================================================
-        // 11. PLAYER SELECTION (با PlayerManager async)
+        // 11. PLAYER SELECTION (با مرتب‌سازی بالای لیست و سرچ اصلاح شده)
         // ================================================================
         async function renderPlayerSelect() {
             const total = parseInt(document.getElementById('player-count').value) || 0;
@@ -2384,13 +2515,21 @@
             const selectedCount = selectedPlayerIds.length;
             const needCount = total - selectedCount;
 
+            // مرتب‌سازی بازیکنان: ابتدا بازیکنان انتخاب‌شده، سپس بر اساس نام
+            allPlayers.sort((a,b) => {
+                const aSel = selectedPlayerIds.includes(a.id) ? 1 : 0;
+                const bSel = selectedPlayerIds.includes(b.id) ? 1 : 0;
+                if (bSel !== aSel) return bSel - aSel;
+                return a.name.localeCompare(b.name, 'fa');
+            });
+
             let html = `
                 <div class="player-select-stats">
                     <span class="count">✅ <span class="selected">${selectedCount}</span> از <span class="total">${total}</span> بازیکن انتخاب شدند</span>
                     <span style="color:#94a3b8;font-size:14px;">${needCount > 0 ? `نیاز به ${needCount} نفر دیگر` : 'همه انتخاب شدند ✅'}</span>
                 </div>
                 <div class="player-select-toolbar">
-                    <input type="text" id="player-search-input" placeholder="جستجوی نام..." oninput="filterPlayerList()">
+                    <input type="text" id="player-search-input" value="${playerSearchQuery}" placeholder="جستجوی نام..." oninput="filterPlayerList()">
                     <input type="text" id="new-player-name" placeholder="نام جدید..." onkeydown="if(event.key==='Enter') addNewPlayerFromSelect()">
                     <button class="add-btn" onclick="addNewPlayerFromSelect()">➕ افزودن</button>
                 </div>
@@ -2420,17 +2559,30 @@
             container.innerHTML = html;
 
             const confirmBtn = document.getElementById('confirm-players-btn');
-            confirmBtn.disabled = (selectedCount !== total);
+            if (confirmBtn) confirmBtn.disabled = (selectedCount !== total);
+            filterPlayerList();
             saveState();
         }
 
         function filterPlayerList() {
-            const query = document.getElementById('player-search-input')?.value || '';
+            const input = document.getElementById('player-search-input');
+            playerSearchQuery = input ? input.value : '';
+            const queryNorm = normalizePersianText(playerSearchQuery);
             const items = document.querySelectorAll('.player-select-item');
             items.forEach(item => {
                 const name = item.querySelector('.pname')?.textContent || '';
-                item.style.display = name.includes(query) ? 'flex' : 'none';
+                const nameNorm = normalizePersianText(name);
+                item.style.display = nameNorm.includes(queryNorm) ? 'flex' : 'none';
             });
+        }
+
+        function normalizePersianText(str) {
+            return (str || '')
+                .trim()
+                .toLowerCase()
+                .replace(/ي/g, 'ی')
+                .replace(/ك/g, 'ک')
+                .replace(/آ/g, 'ا');
         }
 
         function togglePlayerSelect(id, checked) {
@@ -2630,11 +2782,13 @@
             roleImage.style.display = 'block';
             roleImage.onerror = function() { 
                 this.style.display = 'none';
-                // نمایش یک placeholder متنی
-                const placeholder = document.createElement('div');
-                placeholder.style.cssText = 'display:flex;align-items:center;justify-content:center;height:150px;color:#64748b;font-size:18px;';
-                placeholder.innerText = '🖼️ تصویر موجود نیست';
-                this.parentNode.appendChild(placeholder);
+                if (!this.parentNode.querySelector('.img-placeholder')) {
+                    const placeholder = document.createElement('div');
+                    placeholder.className = 'img-placeholder';
+                    placeholder.style.cssText = 'display:flex;align-items:center;justify-content:center;height:150px;color:#64748b;font-size:18px;';
+                    placeholder.innerText = '🖼️ تصویر موجود نیست';
+                    this.parentNode.appendChild(placeholder);
+                }
             };
 
             const desc = roleDescriptions[roleId]?.description;
@@ -2694,7 +2848,7 @@
         }
 
         // ================================================================
-        // 16. GOD SCREEN (همان، با استفاده از PlayerManager async)
+        // 16. GOD SCREEN
         // ================================================================
         async function showGodScreen() {
             if (!isGameActive()) {
@@ -2704,14 +2858,31 @@
             }
             await renderGodList();
             performSwitchPage('page-god');
-            document.getElementById('god-bottom-bar').style.display = 'flex';
             updateGodBottomBar();
             requestWakeLock();
             saveState();
             updateNavState();
         }
 
+        function syncLiveGodInputNames() {
+            const container = document.getElementById('god-players-container');
+            if (!container) return;
+            const rows = container.querySelectorAll('.god-player-row');
+            rows.forEach((row, idx) => {
+                if (pickedHistory[idx] && pickedHistory[idx].role) {
+                    const input = row.querySelector('.player-name-input');
+                    const select = row.querySelector('.player-name-select');
+                    if (input) {
+                        pickedHistory[idx].role.playerName = input.value;
+                    } else if (select) {
+                        pickedHistory[idx].role.playerName = select.value;
+                    }
+                }
+            });
+        }
+
         async function renderGodList() {
+            syncLiveGodInputNames();
             const container = document.getElementById('god-players-container');
             container.innerHTML = '';
 
@@ -2806,6 +2977,7 @@
         }
 
         function togglePlayerAlive(idx) {
+            syncLiveGodInputNames();
             pickedHistory[idx].role.isAlive = !pickedHistory[idx].role.isAlive;
             renderGodList();
             saveState();
@@ -2823,7 +2995,6 @@
         function changeScore(idx, delta) {
             let current = pickedHistory[idx].role.score || 0;
             current += delta;
-            if(current < 0) current = 0;
             pickedHistory[idx].role.score = current;
             document.getElementById(`score-count-${idx}`).innerText = current;
             saveState();
@@ -2837,6 +3008,7 @@
         }
 
         function toggleRolesVisibility() {
+            syncLiveGodInputNames();
             showRolesInGodView = !showRolesInGodView;
             document.getElementById('toggle-role-text').innerText = showRolesInGodView ? 'مخفی‌سازی نقش‌ها' : 'نمایش نقش‌ها';
             renderGodList();
@@ -2867,7 +3039,7 @@
         }
 
         // ================================================================
-        // 17. TIMER (همان)
+        // 17. TIMER
         // ================================================================
         function updateTimerDisplay() {
             const mins = Math.floor(timerSeconds / 60);
@@ -2905,14 +3077,16 @@
 
         function timerAdjust(seconds) {
             if(timerMode === 'reverse') return;
-            timerSeconds = Math.max(0, timerSeconds + seconds);
-            timerInitialSeconds = timerSeconds;
+            savedCustomTimerDuration = Math.max(5, savedCustomTimerDuration + seconds);
+            timerSeconds = savedCustomTimerDuration;
+            timerInitialSeconds = savedCustomTimerDuration;
             updateTimerDisplay();
             saveState();
         }
 
         function timerReset() {
-            timerSeconds = timerInitialSeconds;
+            timerSeconds = savedCustomTimerDuration > 0 ? savedCustomTimerDuration : 30;
+            timerInitialSeconds = timerSeconds;
             updateTimerDisplay();
             if(timerRunning) {
                 clearInterval(timerInterval);
@@ -2929,8 +3103,8 @@
                 document.getElementById('timer-toggle-btn').innerText = '▶';
             } else {
                 if(timerMode === 'normal' && timerSeconds === 0) {
-                    timerSeconds = 30;
-                    timerInitialSeconds = 30;
+                    timerSeconds = savedCustomTimerDuration > 0 ? savedCustomTimerDuration : 30;
+                    timerInitialSeconds = timerSeconds;
                     updateTimerDisplay();
                 }
                 startTimer();
@@ -2951,6 +3125,7 @@
                         clearInterval(timerInterval);
                         timerRunning = false;
                         document.getElementById('timer-toggle-btn').innerText = '▶';
+                        playTimerAlarm();
                         saveState();
                         return;
                     }
@@ -3043,11 +3218,13 @@
 
         function openReportModal() {
             document.getElementById('report-text-area').value = generateRawReport();
-            document.getElementById('report-modal').style.display = 'flex';
+            document.getElementById('report-modal').classList.add('show');
+            document.body.classList.add('modal-open');
         }
 
         function closeReportModal() {
-            document.getElementById('report-modal').style.display = 'none';
+            document.getElementById('report-modal').classList.remove('show');
+            document.body.classList.remove('modal-open');
             const activeScreen = document.querySelector('.page.active');
             if (!activeScreen || activeScreen.id !== 'page-god') {
                 releaseWakeLock();
@@ -3061,19 +3238,11 @@
         }
 
         function downloadReportTxt() {
-            const blob = new Blob([generateRawReport()], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Mafia_Report_${Date.now()}.txt`;
-            link.click();
+            exportFileUtility(generateRawReport(), `Mafia_Report_${Date.now()}.txt`, 'text/plain');
         }
 
         function downloadReportHtml() {
-            const blob = new Blob([generateHtmlReport()], { type: 'text/html;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Mafia_Report_${Date.now()}.html`;
-            link.click();
+            exportFileUtility(generateHtmlReport(), `Mafia_Report_${Date.now()}.html`, 'text/html');
         }
 
         // ================================================================
@@ -3363,11 +3532,7 @@
 
         async function exportCSV() {
             const csv = await PlayerManager.exportCSV();
-            const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `Mafia_Players_${Date.now()}.csv`;
-            link.click();
+            await exportFileUtility(csv, `Mafia_Players_${Date.now()}.csv`, 'text/csv');
         }
 
         // ================================================================
@@ -3488,10 +3653,11 @@
         async function resetApp() {
             const result = await showCustomModal('تأیید ریست', 'آیا از شروع مجدد بازی مطمئن هستید؟ تمام اطلاعات فعلی پاک خواهد شد.', 'confirm');
             if (!result) return;
-            
+
             const currentScenario = document.getElementById('scenario-select').value;
             const savedRoles = { ...selectedRoles };
-            
+
+            // ریست تمام متغیرهای وضعیت
             selectedRoles = {};
             assignedCards = [];
             pickedHistory = [];
@@ -3521,25 +3687,25 @@
             document.getElementById('god-bottom-bar').style.display = 'none';
             document.querySelectorAll('[id^="count-"]').forEach(el => el.innerText = '0');
             document.getElementById('god-inquiry-display').innerText = '0';
-            
             releaseWakeLock();
-            
-            document.getElementById('scenario-select').value = currentScenario;
-            applyScenario();
-            if (currentScenario === 'custom') {
+
+            // بازیابی سناریوی انتخاب‌شده
+            if (currentScenario !== 'custom') {
+                document.getElementById('scenario-select').value = currentScenario;
+                applyScenario();
+            } else {
+                // در حالت دستی، نقش‌های قبل را بازگردان
                 selectedRoles = { ...savedRoles };
                 Object.keys(selectedRoles).forEach(id => {
                     const countEl = document.getElementById(`count-${id}`);
                     if (countEl) countEl.innerText = selectedRoles[id];
                 });
                 updateUI();
-                saveState();
             }
-            
-            updateUI();
-            performSwitchPage('page-roles');
-            // پاک کردن state از Storage
+
+            // ابتدا state قدیمی را حذف کن، سپس وضعیت جدید ذخیره
             await Storage.remove(stateKey);
+            performSwitchPage('page-roles');
             saveState();
             updateNavState();
         }
@@ -3626,7 +3792,17 @@
         // 27. AUTO SAVE
         // ================================================================
         window.addEventListener('beforeunload', () => {
-            saveState();
+            // ذخیره‌سازی همگام به عنوان پشتیبان (localStorage مستقیماً — بدون async)
+            try {
+                const state = {
+                    selectedRoles, assignedCards, pickedHistory, openedCount,
+                    showRolesInGodView, inquiryCount, timerSeconds, timerInitialSeconds,
+                    timerRunning: false, // تایمر را در حالت توقف ذخیره کن
+                    timerMode, currentAudioName, selectedPlayerNames, selectedPlayerIds,
+                    enablePlayerSelect, usePlayerSelectForGame, currentPage
+                };
+                localStorage.setItem(stateKey, JSON.stringify(state));
+            } catch(e) {}
             releaseWakeLock();
         });
     </script>
