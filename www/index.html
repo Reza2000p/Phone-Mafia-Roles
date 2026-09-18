@@ -5,7 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>تقسیم نقش و دستیار مافیا - رضا پاکدل</title>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎩</text></svg>">
-    <link rel="manifest" href="manifest.json">
+    <script>
+        if (window.location.protocol !== 'file:') {
+            var manifestLink = document.createElement('link');
+            manifestLink.rel = 'manifest';
+            manifestLink.href = 'manifest.json';
+            document.head.appendChild(manifestLink);
+        }
+    </script>
+    <script src="roles-descriptions.js"></script>
     <meta name="theme-color" content="#0b0f19">
     <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet">
     <style>
@@ -348,6 +356,538 @@
             background:linear-gradient(135deg,#0284c7,#0369a1);
         }
         .god-fixed-buttons .btn-action.secondary { background:#334155; box-shadow:none; }
+
+        /* ===== DAY COLLAPSIBLE DRAWER ===== */
+        .day-drawer-container {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid #38bdf850;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 24px rgba(0,0,0,0.4);
+            transition: all 0.25s ease;
+        }
+        .day-drawer-header {
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(15, 23, 42, 0.85);
+            cursor: pointer;
+            user-select: none;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .day-drawer-header:hover { background: rgba(30, 41, 59, 0.95); }
+        .day-drawer-title {
+            font-size: clamp(13px, 2.5vw, 15px);
+            font-weight: 700;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .day-drawer-badges {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .day-badge {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .day-badge.dead { background: #7f1d1d; color: #fca5a5; border: 1px solid #ef444460; }
+        .day-badge.guns { background: #1e3a8a; color: #93c5fd; border: 1px solid #3b82f660; }
+        .day-badge.armor { background: #78350f; color: #fde68a; border: 1px solid #f59e0b60; }
+        .day-badge.court { background: #581c87; color: #e9d5ff; border: 1px solid #a855f760; }
+        .day-drawer-toggle-icon {
+            font-size: 14px;
+            color: #94a3b8;
+            transition: transform 0.25s ease;
+        }
+        .day-drawer-container.open .day-drawer-toggle-icon {
+            transform: rotate(180deg);
+        }
+        .day-drawer-content {
+            display: none;
+            padding: 12px;
+            border-top: 1px solid #334155;
+            background: #0b0f1995;
+            flex-direction: column;
+            gap: 10px;
+            animation: fadeIn 0.2s ease;
+        }
+        .day-drawer-container.open .day-drawer-content {
+            display: flex;
+        }
+        .drawer-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 10px 12px;
+        }
+        .drawer-card-title {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .drawer-card-body {
+            font-size: 12px;
+            color: #cbd5e1;
+            line-height: 1.6;
+        }
+
+        /* ===== NIGHT WIZARD STYLES ===== */
+        .night-step-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            border: 1px solid #6366f1;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-bottom: 6px;
+        }
+        .night-instruction-box {
+            background: #0b0f19;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 10px 12px;
+            margin: 10px 0;
+            color: #94a3b8;
+            font-size: 13px;
+            line-height: 1.6;
+            text-align: right;
+        }
+        .night-instruction-box strong { color: #f8fafc; }
+        .night-player-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin: 12px 0;
+            max-height: 220px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+        .night-chip {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 8px 12px;
+            color: #f1f5f9;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            flex: 1 1 calc(50% - 8px);
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .night-chip:hover { background: #334155; }
+        .night-chip.selected {
+            background: #0284c7;
+            border-color: #38bdf8;
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.25);
+        }
+        .night-chip.disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            background: #0f172a;
+            border-color: #1e293b;
+        }
+        .house-rule-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 10px;
+            background: #0b0f19;
+            border-radius: 10px;
+            border: 1px solid #2d3a4f;
+            margin-bottom: 8px;
+            gap: 8px;
+            flex-wrap: wrap;
+            text-align: right;
+        }
+        .house-rule-label { font-size: 13px; font-weight: 600; color: #e2e8f0; flex: 1 1 160px; }
+        .house-rule-desc { font-size: 11px; color: #94a3b8; width: 100%; margin-top: 2px; }
+        .house-rule-select {
+            background: #1e293b; color: #f8fafc; border: 1px solid #334155;
+            border-radius: 8px; padding: 6px 10px; font-size: 13px; outline: none; cursor: pointer;
+        }
+
+        /* ===== NIGHT MODE TABS & BULLET TABS ===== */
+        .night-mode-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+            background: #0b0f19;
+            padding: 6px;
+            border-radius: 14px;
+            border: 1px solid #334155;
+        }
+        .night-tab-btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .night-tab-btn.active-normal {
+            background: linear-gradient(135deg, #1e40af, #2563eb);
+            color: #ffffff;
+            border-color: #60a5fa;
+            box-shadow: 0 4px 14px rgba(37, 99, 235, 0.4);
+            font-weight: 700;
+        }
+        .night-tab-btn.active-nato {
+            background: linear-gradient(135deg, #9f1239, #e11d48);
+            color: #ffffff;
+            border-color: #fb7185;
+            box-shadow: 0 4px 14px rgba(225, 29, 72, 0.4);
+            font-weight: 700;
+        }
+        .bullet-type-tabs {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .bullet-tab-btn {
+            flex: 1 1 calc(50% - 4px);
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: #94a3b8;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+        .bullet-tab-btn.active-real {
+            background: linear-gradient(135deg, #881337, #dc2626);
+            border-color: #f87171;
+            color: #fff;
+            box-shadow: 0 2px 10px rgba(220, 38, 38, 0.4);
+            font-weight: 700;
+        }
+        .bullet-tab-btn.active-blank {
+            background: linear-gradient(135deg, #334155, #475569);
+            border-color: #94a3b8;
+            color: #f8fafc;
+            box-shadow: 0 2px 10px rgba(148, 163, 184, 0.3);
+            font-weight: 700;
+        }
+
+        /* ===== DUMMY WAKE-UP & HOSTAGE ALERT BOXES ===== */
+        .dummy-wakeup-box {
+            background: rgba(245, 158, 11, 0.08);
+            border: 1px dashed #f59e0b90;
+            border-radius: 12px;
+            padding: 14px;
+            margin: 12px 0;
+            text-align: right;
+            line-height: 1.7;
+        }
+        .dummy-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fbbf24;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .dummy-desc {
+            font-size: 12px;
+            color: #e2e8f0;
+        }
+        .hostaged-alert-box {
+            background: rgba(220, 38, 38, 0.15);
+            border: 1px solid #ef4444;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin: 10px 0;
+            text-align: right;
+            line-height: 1.6;
+            animation: pulseRedAlert 2s infinite ease-in-out;
+        }
+        .hostaged-title {
+            color: #fca5a5;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .hostaged-desc {
+            color: #fecaca;
+            font-size: 12px;
+        }
+        @keyframes pulseRedAlert {
+            0%, 100% { box-shadow: 0 0 0 rgba(239, 68, 68, 0); }
+            50% { box-shadow: 0 0 16px rgba(239, 68, 68, 0.35); }
+        }
+        /* ===== RICH PLAYER SELECTION CHIPS ===== */
+        .player-chips-scroll-box {
+            max-height: 310px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 6px;
+            border-radius: 12px;
+            background: rgba(15, 23, 42, 0.65);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            -webkit-overflow-scrolling: touch;
+            margin-top: 6px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(56, 189, 248, 0.5) rgba(0, 0, 0, 0.2);
+        }
+        .player-chips-scroll-box::-webkit-scrollbar {
+            width: 5px;
+        }
+        .player-chips-scroll-box::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.25);
+            border-radius: 6px;
+        }
+        .player-chips-scroll-box::-webkit-scrollbar-thumb {
+            background: #38bdf890;
+            border-radius: 6px;
+        }
+        .tofangdar-gun-box .player-chips-scroll-box {
+            max-height: 155px;
+        }
+        .player-chips-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(112px, 1fr));
+            gap: 6px;
+        }
+        .rich-player-chip {
+            background: linear-gradient(135deg, #1e293b, #0f172a);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 9px;
+            padding: 6px 8px;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            text-align: right;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
+            min-height: 44px;
+        }
+        .rich-player-chip:hover {
+            border-color: rgba(56, 189, 248, 0.6);
+            transform: translateY(-1px);
+        }
+        .rich-player-chip.selected {
+            background: linear-gradient(135deg, #1e3a8a, #1d4ed8);
+            border-color: #60a5fa;
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
+        }
+        .rich-player-chip.selected-target-1 {
+            background: linear-gradient(135deg, #065f46, #059669);
+            border-color: #34d399;
+            box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4);
+        }
+        .rich-player-chip.selected-target-2 {
+            background: linear-gradient(135deg, #1e3a8a, #2563eb);
+            border-color: #60a5fa;
+            box-shadow: 0 2px 10px rgba(37, 99, 235, 0.4);
+        }
+        .target-quota-badge {
+            position: absolute;
+            top: 2px;
+            left: 3px;
+            font-size: 8.5px;
+            font-weight: 800;
+            padding: 1px 5px;
+            border-radius: 4px;
+            letter-spacing: 0.2px;
+        }
+        .target-quota-badge.badge-1 {
+            background: #10b981;
+            color: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        }
+        .target-quota-badge.badge-2 {
+            background: #3b82f6;
+            color: #fff;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+        }
+        .rich-player-chip.none-chip {
+            background: rgba(255, 255, 255, 0.04);
+            border-style: dashed;
+            grid-column: 1 / -1;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 10px;
+            min-height: 32px;
+        }
+        .rich-player-chip.none-chip.selected {
+            background: #334155;
+            border-color: #94a3b8;
+            color: #fff;
+        }
+        .chip-num {
+            background: rgba(255, 255, 255, 0.09);
+            color: #cbd5e1;
+            font-size: 11px;
+            font-weight: 700;
+            width: 24px;
+            height: 24px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .rich-player-chip.selected .chip-num {
+            background: rgba(255, 255, 255, 0.22);
+            color: #fff;
+        }
+        .chip-content {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            flex: 1;
+            min-width: 0;
+        }
+        .chip-name {
+            font-size: 12px;
+            font-weight: 700;
+            color: #f8fafc;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.25;
+        }
+        .chip-role {
+            font-size: 10px;
+            font-weight: 600;
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: 1.2;
+        }
+        .chip-role.team-citizen { color: #4ade80; }
+        .chip-role.team-mafia { color: #f87171; }
+        .chip-role.team-free { color: #fbbf24; }
+
+        /* Night Wizard Modal Scrollability */
+        #night-wizard-modal .modal-card {
+            max-height: 90vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding: clamp(14px, 2.5vw, 22px);
+        }
+        #night-step-body {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding-right: 2px;
+            flex: 1;
+            min-height: 140px;
+        }
+        #night-step-body::-webkit-scrollbar {
+            width: 4px;
+        }
+        #night-step-body::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+        }
+
+        /* ===== DEATH APPLY BUTTON & NIGHT HISTORY SELECT ===== */
+        .btn-apply-casualties {
+            background: linear-gradient(135deg, #b91c1c, #7f1d1d);
+            color: #ffffff;
+            border: 1px solid #ef4444;
+            border-radius: 12px;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 4px 15px rgba(185, 28, 28, 0.4);
+            transition: all 0.2s ease;
+        }
+        .btn-apply-casualties:hover {
+            background: linear-gradient(135deg, #dc2626, #991b1b);
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(220, 38, 38, 0.5);
+        }
+        .night-history-select {
+            background: #0f172a;
+            color: #38bdf8;
+            border: 1px solid #38bdf850;
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            outline: none;
+        }
+
+        /* ===== TOAST NOTIFICATION ===== */
+        .app-toast {
+            position: fixed;
+            bottom: 85px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: rgba(15, 23, 42, 0.95);
+            border: 1px solid #38bdf8;
+            color: #f8fafc;
+            padding: 10px 20px;
+            border-radius: 30px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(56, 189, 248, 0.3);
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: none;
+            text-align: center;
+            direction: rtl;
+            white-space: nowrap;
+        }
+        .app-toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
 
         .god-bottom-bar {
             position:fixed; bottom:70px; left:0; right:0;
@@ -1124,6 +1664,8 @@
                         <option value="capo12">کاپو (۱۲ نفره)</option>
                         <option value="nato">ناتو (۱۰ نفره)</option>
                         <option value="bazpors">بازپرس (۱۰ نفره)</option>
+                        <option value="bazpors12">بازپرس (۱۲ نفره)</option>
+                        <option value="bazpors13">بازپرس (۱۳ نفره)</option>
                         <option value="mozakere">مذاکره (۱۰ نفره)</option>
                         <option value="namayande">نماینده (۱۰ نفره)</option>
                     </optgroup>
@@ -1135,10 +1677,14 @@
             </div>
         </div>
 
-        <div class="setup-box" style="justify-content:flex-start;gap:12px;">
+        <div class="setup-box" style="justify-content:flex-start;gap:14px;flex-wrap:wrap;">
             <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;">
                 <input type="checkbox" id="enable-player-select" checked>
                 <span>ورود اسامی قبل از بازی</span>
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;font-size:14px;cursor:pointer;color:#38bdf8;">
+                <input type="checkbox" id="enable-night-engine" checked>
+                <span>🌙 دستیار هوشمند شب و سناریو</span>
             </label>
         </div>
 
@@ -1206,12 +1752,20 @@
     <!-- ===== PAGE 4: GOD ===== -->
     <!-- ============================================================ -->
     <div id="page-god" class="page god-screen-padding">
+        <!-- کشوی شناور گزارش شب در فاز روز -->
+        <div id="day-drawer-container" class="day-drawer-container" style="display:none;"></div>
+
         <div class="god-header-bar">
             <span class="title">👥 ترتیب نوبت و ثبت اسم</span>
-            <button class="toggle-btn" onclick="toggleRolesVisibility()">
-                <span>🔄</span>
-                <span id="toggle-role-text">مخفی‌سازی نقش‌ها</span>
-            </button>
+            <div style="display:flex;gap:6px;align-items:center;">
+                <button id="god-night-btn" class="btn-action primary" onclick="openNightWizardModal()" style="padding:4px 10px;font-size:12px;margin:0;background:linear-gradient(135deg,#6366f1,#4f46e5);border:none;box-shadow:0 2px 8px rgba(99,102,241,0.3);display:none;">
+                    🌙 ثبت وقایع شب
+                </button>
+                <button class="toggle-btn" onclick="toggleRolesVisibility()">
+                    <span>🔄</span>
+                    <span id="toggle-role-text">مخفی‌سازی نقش‌ها</span>
+                </button>
+            </div>
         </div>
         <div id="god-players-container"></div>
         <div class="god-stats-panel">
@@ -1346,8 +1900,16 @@
 
     <!-- ===== REPORT MODAL ===== -->
     <div class="modal-overlay" id="report-modal">
-        <div class="modal-card" style="max-width:460px;">
-            <h3 style="font-size:clamp(16px,3vw,20px);color:#f87171;margin-bottom:10px;">📊 گزارش نهایی نقش‌ها</h3>
+        <div class="modal-card" style="max-width:460px;text-align:right;">
+            <h3 style="font-size:clamp(16px,3vw,20px);color:#f87171;margin-bottom:10px;">📊 گزارش نهایی بازی</h3>
+            
+            <div style="display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:10px;padding:8px 12px;margin-bottom:10px;">
+                <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:#e2e8f0;font-weight:600;user-select:none;margin:0;">
+                    <input type="checkbox" id="toggle-report-city-events" checked onchange="onToggleReportCityEvents(this.checked)" style="width:16px;height:16px;cursor:pointer;accent-color:#38bdf8;">
+                    <span>📜 وقایع شهر (درج وقایع و اقدامات شب‌های بازی)</span>
+                </label>
+            </div>
+
             <textarea readonly id="report-text-area" class="report-textarea"></textarea>
             <div class="report-actions">
                 <button class="btn-action btn-copy" onclick="copyReportTxt()">📋 کپی گزارش (TXT)</button>
@@ -1369,6 +1931,102 @@
             <div class="modal-team" id="gallery-modal-team">گروه شهروندی</div>
             <div class="modal-desc" id="gallery-modal-desc" style="display:none;"></div>
             <button class="modal-close" onclick="closeGalleryModal()">✕ بستن</button>
+        </div>
+    </div>
+
+    <!-- ===== PRE-GAME SETTINGS MODAL ===== -->
+    <div class="modal-overlay" id="pregame-settings-modal">
+        <div class="modal-card" style="max-width:480px;text-align:right;">
+            <div class="modal-title" style="color:#38bdf8;display:flex;align-items:center;gap:6px;">
+                <span>⚙️</span> تنظیمات سناریو و قوانین بازی
+            </div>
+            <div style="font-size:12px;color:#94a3b8;margin-bottom:12px;line-height:1.6;">
+                قوانین پایه بر اساس نقش‌های حاضر در بازی برای دستیار هوشمند شب و فاز روز:
+            </div>
+
+            <!-- سناریوی انتخابی -->
+            <div class="house-rule-row">
+                <div class="house-rule-label">🎭 سناریوی بازی:</div>
+                <select id="setting-scenario" class="house-rule-select" onchange="onScenarioSettingChange()">
+                    <option value="nato" selected>سناریوی ناتو</option>
+                    <option value="bazpors">سناریوی بازپرس</option>
+                    <option value="capo">سناریوی کاپو</option>
+                </select>
+                <div class="house-rule-desc">قوانین و رفتارهای پایه بر اساس سناریو تنظیم می‌شوند.</div>
+            </div>
+
+            <!-- محدودیت نجات خود پزشک -->
+            <div class="house-rule-row" id="row-setting-doctor-save">
+                <div class="house-rule-label">🩺 تعداد نجات خود توسط پزشک:</div>
+                <select id="setting-doctor-save" class="house-rule-select">
+                    <option value="0">۰ بار (بدون نجات خود)</option>
+                    <option value="1">۱ بار</option>
+                    <option value="2" selected>۲ بار</option>
+                    <option value="99">نامحدود</option>
+                </select>
+                <div class="house-rule-desc">پزشک در طول بازی حداکثر چند بار می‌تواند خود را نجات دهد؟</div>
+            </div>
+
+            <!-- تیرهای جنگی اسنایپر -->
+            <div class="house-rule-row" id="row-setting-sniper-bullets">
+                <div class="house-rule-label">🎯 تعداد تیر جنگی اسنایپر:</div>
+                <select id="setting-sniper-bullets" class="house-rule-select">
+                    <option value="1">۱ تیر جنگی</option>
+                    <option value="2" selected>۲ تیر جنگی</option>
+                    <option value="3">۳ تیر جنگی</option>
+                    <option value="4">۴ تیر جنگی</option>
+                </select>
+                <div class="house-rule-desc">تعداد کل تیرهای جنگی اسنایپر در طول بازی.</div>
+            </div>
+
+            <!-- فایربک اسنایپر -->
+            <div class="house-rule-row" id="row-setting-sniper-fireback">
+                <div class="house-rule-label">💥 فایربک اسنایپر (مرگ با شلیک به شهروند):</div>
+                <select id="setting-sniper-fireback" class="house-rule-select">
+                    <option value="yes" selected>بله (اگر به شهروند شلیک کند خودش می‌میرد)</option>
+                    <option value="no">خیر (تنها تیرش می‌سوزد)</option>
+                </select>
+                <div class="house-rule-desc">در صورت شلیک اشتباه به شهروند، آیا اسنایپر از بازی خارج شود؟</div>
+            </div>
+
+            <!-- تیرهای جنگی تفنگدار -->
+            <div class="house-rule-row" id="row-setting-gunsmith-bullets">
+                <div class="house-rule-label">🔫 تعداد تیر جنگی تفنگدار:</div>
+                <select id="setting-gunsmith-bullets" class="house-rule-select">
+                    <option value="1" selected>۱ تیر جنگی</option>
+                    <option value="2">۲ تیر جنگی</option>
+                    <option value="3">۳ تیر جنگی</option>
+                    <option value="4">۴ تیر جنگی</option>
+                </select>
+                <div class="house-rule-desc">تیرهای مشقی نامحدود هستند. اهدا به خود تفنگدار فقط مشقی است. وقتی تیر جنگی تمام شود تفنگدار شب بیدار نمی‌شود.</div>
+            </div>
+
+            <div class="modal-actions" style="margin-top:14px;gap:8px;">
+                <button class="btn-action confirm" onclick="confirmPreGameSettings()">✨ ثبت و شروع بازی</button>
+                <button class="btn-action cancel" onclick="closePreGameSettingsModal()">انصراف</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== NIGHT WIZARD MODAL ===== -->
+    <div class="modal-overlay" id="night-wizard-modal">
+        <div class="modal-card" style="max-width:480px;text-align:right;">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+                <div class="night-step-badge" id="night-step-counter">گام ۱ از ۴</div>
+                <div style="font-size:14px;font-weight:700;color:#38bdf8;" id="night-night-title">🌙 شب ۱</div>
+            </div>
+            <div class="modal-title" id="night-step-role-title" style="color:#f8fafc;font-size:16px;margin-bottom:4px;">نقش جاری</div>
+            <div class="night-instruction-box" id="night-step-instruction">راهنما و اقدام گرداننده</div>
+
+            <div id="night-step-body" style="min-height:140px;">
+                <!-- دینامیک توسط JS پر می‌شود -->
+            </div>
+
+            <div class="modal-actions" style="margin-top:16px;display:flex;gap:8px;">
+                <button class="btn-action confirm" id="night-btn-next" onclick="nextNightStep()">مرحله بعد ⬅️</button>
+                <button class="btn-action cancel" id="night-btn-prev" onclick="prevNightStep()">➡️ مرحله قبل</button>
+                <button class="btn-action gray" onclick="closeNightWizardModal()" style="font-size:12px;padding:6px 10px;">بستن</button>
+            </div>
         </div>
     </div>
 
@@ -1599,7 +2257,8 @@
                 { id: 'm_terorist', name: 'تروریست', teamLabel: 'گروه مافیا' },
                 { id: 'm_tohamatzan', name: 'تهمت زن', teamLabel: 'گروه مافیا' },
                 { id: 'm_vakeel', name: 'وکیل', teamLabel: 'گروه مافیا' },
-                { id: 'm_yaghi', name: 'یاغی', teamLabel: 'گروه مافیا' }
+                { id: 'm_yaghi', name: 'یاغی', teamLabel: 'گروه مافیا' },
+                { id: 'm_yakuza', name: 'یاکوزا', teamLabel: 'گروه مافیا' }
             ].sort((a,b) => a.name.localeCompare(b.name,'fa')),
 
             free: [
@@ -1804,6 +2463,51 @@
         let selectedPlayerNames = [];
         let enablePlayerSelect = true;
         let usePlayerSelectForGame = true;
+        let enableNightEngine = true;
+        let scenarioConfig = {
+            scenario: 'custom',
+            doctorSaveQuota: 2,
+            sniperBullets: 2,
+            sniperFireback: true,
+            gunsmithRealBullets: 1
+        };
+        let nightState = {
+            nightNumber: 0,
+            history: [],
+            doctorSelfSavesUsed: 0,
+            sniperBulletsUsed: 0,
+            gunsmithRealBulletsUsed: 0,
+            natoUsed: false,
+            usedAttar: false,
+            usedBazpors: false,
+            capoPoisonedPlayers: [],
+            gunHolders: [],
+            armorHolders: [],
+            lastInquiryResult: null,
+            lastNightReport: null,
+            heirTransferred: false
+        };
+        let currentNightNumber = 0;
+        let wizardNightNumber = 1;
+        let nightActions = {};
+        let nightSteps = [];
+        let currentNightStepIndex = 0;
+        let activeNightResult = null;
+        let nightHistory = [];
+        let dayGuns = [];
+        let gameSettings = {
+            scenario: 'custom',
+            doctorSelfSaves: 2,
+            doctorSelfSavesTotal: 2,
+            sniperBullets: 2,
+            sniperWrongFireback: true,
+            tofangdarWarBullets: 1,
+            tofangdarWarBulletsTotal: 1,
+            natoUsed: false,
+            attarUsed: false,
+            bazporsUsed: false
+        };
+        let pendingPlayerNamesForStart = [];
 
         let timerSeconds = 0;
         let timerInitialSeconds = 0;
@@ -1931,16 +2635,21 @@
         // 5. LOAD DESCRIPTIONS (همان)
         // ================================================================
         async function loadDescriptions() {
-            try {
-                const response = await fetch('./roles-descriptions.json');
-                if (response.ok) {
-                    roleDescriptions = await response.json();
-                    console.log('توضیحات نقش‌ها بارگذاری شد.');
-                } else {
-                    console.warn('فایل توضیحات یافت نشد.');
+            if (window.DEFAULT_ROLE_DESCRIPTIONS) {
+                roleDescriptions = window.DEFAULT_ROLE_DESCRIPTIONS;
+            }
+            if (window.location.protocol !== 'file:') {
+                try {
+                    const response = await fetch('./roles-descriptions.json');
+                    if (response.ok) {
+                        roleDescriptions = await response.json();
+                        console.log('توضیحات نقش‌ها بارگذاری شد.');
+                    }
+                } catch (e) {
+                    console.warn('استفاده از توضیحات پیش‌فرض نقش‌ها.');
                 }
-            } catch (e) {
-                console.warn('خطا در بارگذاری توضیحات:', e);
+            } else {
+                console.log('محیط محلی (file://): توضیحات نقش‌ها از اسکریپت داخلی با موفقیت لود شد.');
             }
         }
 
@@ -1957,7 +2666,7 @@
             renderLeaderboardContent();
             renderPlayersContent();
             renderGalleryContent();
-            if ('serviceWorker' in navigator) {
+            if ('serviceWorker' in navigator && (window.location.protocol === 'http:' || window.location.protocol === 'https:')) {
                 navigator.serviceWorker.register('./sw.js').catch(err => console.log('SW register skipped:', err));
             }
             const cb = document.getElementById('enable-player-select');
@@ -2142,6 +2851,14 @@
                 selectedPlayerIds,
                 enablePlayerSelect,
                 usePlayerSelectForGame,
+                enableNightEngine,
+                scenarioConfig,
+                nightState,
+                gameSettings,
+                currentNightNumber,
+                activeNightResult,
+                nightHistory,
+                dayGuns,
                 currentPage
             };
             try {
@@ -2169,10 +2886,41 @@
                 selectedPlayerIds = state.selectedPlayerIds || [];
                 enablePlayerSelect = state.enablePlayerSelect !== undefined ? state.enablePlayerSelect : true;
                 usePlayerSelectForGame = state.usePlayerSelectForGame !== undefined ? state.usePlayerSelectForGame : true;
+                enableNightEngine = state.enableNightEngine !== undefined ? state.enableNightEngine : true;
+                scenarioConfig = state.scenarioConfig || {
+                    scenario: 'custom',
+                    doctorSaveQuota: 2,
+                    sniperBullets: 2,
+                    sniperFireback: true,
+                    gunsmithRealBullets: 1
+                };
+                nightState = state.nightState || {
+                    nightNumber: 0,
+                    history: [],
+                    doctorSelfSavesUsed: 0,
+                    sniperBulletsUsed: 0,
+                    gunsmithRealBulletsUsed: 0,
+                    natoUsed: false,
+                    usedAttar: false,
+                    usedBazpors: false,
+                    capoPoisonedPlayers: [],
+                    gunHolders: [],
+                    armorHolders: [],
+                    lastInquiryResult: null,
+                    lastNightReport: null,
+                    heirTransferred: false
+                };
+                if (state.gameSettings) gameSettings = { ...gameSettings, ...state.gameSettings };
+                currentNightNumber = state.currentNightNumber || 0;
+                activeNightResult = state.activeNightResult || null;
+                nightHistory = state.nightHistory || [];
+                dayGuns = state.dayGuns || [];
                 currentPage = state.currentPage || 'page-roles';
 
                 const cb = document.getElementById('enable-player-select');
                 if (cb) cb.checked = enablePlayerSelect;
+                const engineCb = document.getElementById('enable-night-engine');
+                if (engineCb) engineCb.checked = enableNightEngine;
 
                 const pageToShow = currentPage;
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -2233,6 +2981,14 @@
                     renderGodList();
                     document.getElementById('god-bottom-bar').style.display = 'flex';
                     updateGodBottomBar();
+
+                    const godNightBtn = document.getElementById('god-night-btn');
+                    if (godNightBtn) {
+                        godNightBtn.style.display = enableNightEngine ? 'inline-block' : 'none';
+                    }
+                    if (enableNightEngine && nightState && nightState.lastNightReport) {
+                        renderDayDrawer();
+                    }
                 }
 
                 updateNavState();
@@ -2372,13 +3128,13 @@
         function updateUI() {
             ['citizen','mafia','free'].forEach(team => {
                 ALL_ROLES[team].forEach(role => {
-                    if(!role.isMultiple) {
-                        const card = document.getElementById(`card-${role.id}`);
-                        if(selectedRoles[role.id]) {
-                            card.classList.add(team === 'citizen' ? 'selected-citizen' : (team === 'mafia' ? 'selected-mafia' : 'selected-free'));
-                        } else {
-                            card.className = `role-card ${team}-card`;
-                        }
+                    const card = document.getElementById(`card-${role.id}`);
+                    if (!card) return;
+                    const count = selectedRoles[role.id] || 0;
+                    if(count > 0) {
+                        card.className = `role-card ${team}-card ${team === 'citizen' ? 'selected-citizen' : (team === 'mafia' ? 'selected-mafia' : 'selected-free')}`;
+                    } else {
+                        card.className = `role-card ${team}-card`;
                     }
                 });
             });
@@ -2430,6 +3186,10 @@
                     selectedRoles = { 'm_godfather':1, 'm_nato':1, 'm_gorogangir':1, 'c_doctor':1, 'c_negahban':1, 'c_tofangdar':1, 'c_karagah':1, 'c_takavar':1, 'c_simple':2 };
                 } else if(val === 'bazpors') {
                     selectedRoles = { 'm_godfather':1, 'm_nato':1, 'm_shaiad':1, 'c_mohaghegh':1, 'c_roointan':1, 'c_bazpors':1, 'c_doctor':1, 'c_karagah':1, 'c_simple':2 };
+                } else if(val === 'bazpors12') {
+                    selectedRoles = { 'm_godfather':1, 'm_nato':1, 'm_shaiad':1, 'm_simple':1, 'c_mohaghegh':1, 'c_roointan':1, 'c_bazpors':1, 'c_doctor':1, 'c_karagah':1, 'c_simple':3 };
+                } else if(val === 'bazpors13') {
+                    selectedRoles = { 'm_godfather':1, 'm_nato':1, 'm_shaiad':1, 'm_simple':1, 'c_mohaghegh':1, 'c_roointan':1, 'c_bazpors':1, 'c_doctor':1, 'c_karagah':1, 'c_simple':4 };
                 } else if(val === 'mozakere') {
                     selectedRoles = {
                         'm_godfather':1, 'm_mozakere':1, 'm_simple':1,
@@ -2458,6 +3218,7 @@
         function startGame() {
             enablePlayerSelect = document.getElementById('enable-player-select').checked;
             usePlayerSelectForGame = enablePlayerSelect;
+            enableNightEngine = document.getElementById('enable-night-engine') ? document.getElementById('enable-night-engine').checked : true;
             const total = parseInt(document.getElementById('player-count').value) || 0;
             if(total === 0) { showCustomModal('توجه', 'لطفاً حداقل یک نقش انتخاب کنید.', 'alert'); return; }
 
@@ -2469,7 +3230,11 @@
                     switchPage('page-player-select');
                     renderPlayerSelect();
                 } else {
-                    doDistributeRoles([]);
+                    if (enableNightEngine) {
+                        openPreGameSettingsModal([]);
+                    } else {
+                        doDistributeRoles([]);
+                    }
                 }
                 saveState();
             });
@@ -2671,7 +3436,12 @@
             }
             selectedPlayerNames = names;
             saveState();
-            doDistributeRoles(names);
+            enableNightEngine = document.getElementById('enable-night-engine') ? document.getElementById('enable-night-engine').checked : true;
+            if (enableNightEngine) {
+                openPreGameSettingsModal(names);
+            } else {
+                doDistributeRoles(names);
+            }
         }
 
         // ================================================================
@@ -2717,6 +3487,10 @@
             pickedHistory = [];
             openedCount = 0;
             inquiryCount = 0;
+            currentNightNumber = 0;
+            activeNightResult = null;
+            nightHistory = [];
+            dayGuns = [];
 
             renderDrawCards();
 
@@ -2893,6 +3667,18 @@
             performSwitchPage('page-god');
             updateGodBottomBar();
             requestWakeLock();
+
+            const godNightBtn = document.getElementById('god-night-btn');
+            if (godNightBtn) {
+                godNightBtn.style.display = enableNightEngine ? 'inline-block' : 'none';
+            }
+            if (enableNightEngine && nightState && nightState.lastNightReport) {
+                renderDayDrawer();
+            } else {
+                const drawer = document.getElementById('day-drawer-container');
+                if (drawer) drawer.style.display = 'none';
+            }
+
             saveState();
             updateNavState();
         }
@@ -3072,6 +3858,2379 @@
         }
 
         // ================================================================
+        // 16.5 NIGHT ENGINE & PRE-GAME SETTINGS & COLLAPSIBLE DAY DRAWER
+        // ================================================================
+
+        // ------------------ PRE-GAME SETTINGS MODAL ------------------
+        function openPreGameSettingsModal(playerNames = []) {
+            pendingPlayerNamesForStart = playerNames || [];
+            const currentScenario = document.getElementById('scenario-select').value;
+            const scenarioEl = document.getElementById('setting-scenario');
+            if (scenarioEl) {
+                if (currentScenario === 'nato') {
+                    scenarioEl.value = 'nato';
+                } else if (currentScenario === 'bazpors') {
+                    scenarioEl.value = 'bazpors';
+                } else if (currentScenario && currentScenario.startsWith('capo')) {
+                    scenarioEl.value = 'capo';
+                } else {
+                    scenarioEl.value = 'nato';
+                }
+                updateScenarioSettingFields(scenarioEl.value);
+            }
+
+            // Show/hide based on roles in game
+            const hasDoctor = (selectedRoles['c_doctor'] || 0) > 0;
+            const hasSniper = (selectedRoles['c_sniper'] || 0) > 0 || (selectedRoles['c_herfehei'] || 0) > 0;
+            const hasGunsmith = (selectedRoles['c_tofangdar'] || 0) > 0;
+
+            const docRow = document.getElementById('row-setting-doctor-save');
+            if (docRow) docRow.style.display = hasDoctor ? 'block' : 'none';
+
+            const snipRow = document.getElementById('row-setting-sniper-bullets');
+            if (snipRow) snipRow.style.display = hasSniper ? 'block' : 'none';
+
+            const snipFbRow = document.getElementById('row-setting-sniper-fireback');
+            if (snipFbRow) snipFbRow.style.display = hasSniper ? 'block' : 'none';
+
+            const gunRow = document.getElementById('row-setting-gunsmith-bullets');
+            if (gunRow) gunRow.style.display = hasGunsmith ? 'block' : 'none';
+
+            const modal = document.getElementById('pregame-settings-modal');
+            if (modal) {
+                modal.classList.add('show');
+                document.body.classList.add('modal-open');
+            }
+        }
+
+        function closePreGameSettingsModal() {
+            const modal = document.getElementById('pregame-settings-modal');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.classList.remove('modal-open');
+            }
+        }
+
+        function onScenarioSettingChange() {
+            const scenarioEl = document.getElementById('setting-scenario');
+            if (scenarioEl) {
+                updateScenarioSettingFields(scenarioEl.value);
+            }
+        }
+
+        function updateScenarioSettingFields(scenario) {
+            const docSaveEl = document.getElementById('setting-doctor-save');
+            const snipBulletsEl = document.getElementById('setting-sniper-bullets');
+            const gunBulletsEl = document.getElementById('setting-gunsmith-bullets');
+            const total = parseInt(document.getElementById('player-count').value) || 0;
+
+            if (scenario === 'nato') {
+                if (docSaveEl) docSaveEl.value = (total >= 10) ? '2' : '1';
+                if (gunBulletsEl) gunBulletsEl.value = '1';
+            } else if (scenario === 'bazpors') {
+                if (docSaveEl) docSaveEl.value = (total >= 10) ? '2' : '1';
+                if (snipBulletsEl) snipBulletsEl.value = '2';
+                if (gunBulletsEl) gunBulletsEl.value = '1';
+            } else if (scenario === 'capo') {
+                if (docSaveEl) docSaveEl.value = (total >= 10) ? '2' : '1';
+                if (snipBulletsEl) snipBulletsEl.value = '2';
+                if (gunBulletsEl) gunBulletsEl.value = '1';
+            }
+        }
+
+        function confirmPreGameSettings() {
+            savePreGameSettingsAndStart();
+        }
+
+        function savePreGameSettingsAndStart(customSettings = null) {
+            if (customSettings) {
+                gameSettings = { ...gameSettings, ...customSettings };
+            } else {
+                const scenarioEl = document.getElementById('setting-scenario');
+                const docSaveEl = document.getElementById('setting-doctor-save');
+                const snipBulletsEl = document.getElementById('setting-sniper-bullets');
+                const snipFbEl = document.getElementById('setting-sniper-fireback');
+                const gunBulletsEl = document.getElementById('setting-gunsmith-bullets');
+
+                const scenario = scenarioEl ? scenarioEl.value : 'nato';
+                const docSaves = docSaveEl ? (parseInt(docSaveEl.value) || 1) : 1;
+                const sniperBullets = snipBulletsEl ? (parseInt(snipBulletsEl.value) || 2) : 2;
+                const sniperFireback = snipFbEl ? (snipFbEl.value === 'yes') : true;
+                const tofangdarWarBullets = gunBulletsEl ? (parseInt(gunBulletsEl.value) || 1) : 1;
+
+                gameSettings = {
+                    scenario: scenario,
+                    doctorSelfSaves: docSaves,
+                    doctorSelfSavesTotal: docSaves,
+                    sniperBullets: sniperBullets,
+                    sniperWrongFireback: sniperFireback,
+                    tofangdarWarBullets: tofangdarWarBullets,
+                    tofangdarWarBulletsTotal: tofangdarWarBullets,
+                    natoUsed: false,
+                    attarUsed: false,
+                    bazporsUsed: false
+                };
+            }
+
+            closePreGameSettingsModal();
+            doDistributeRoles(pendingPlayerNamesForStart);
+        }
+
+        // ------------------ NIGHT ENGINE CORE & UTILS ------------------
+        function showToast(message, duration = 3000) {
+            let toast = document.getElementById('app-toast');
+            if (!toast) {
+                toast = document.createElement('div');
+                toast.id = 'app-toast';
+                toast.className = 'app-toast';
+                document.body.appendChild(toast);
+            }
+            toast.innerHTML = message;
+            toast.classList.add('show');
+            clearTimeout(toast._timeout);
+            toast._timeout = setTimeout(() => {
+                toast.classList.remove('show');
+            }, duration);
+        }
+
+        function openNightWizardModal() {
+            startNightEngine();
+        }
+
+        function closeNightWizardModal() {
+            const modal = document.getElementById('night-wizard-modal');
+            if (modal) {
+                modal.classList.remove('show');
+                document.body.classList.remove('modal-open');
+            }
+        }
+
+        function nextNightStep() {
+            advanceNightStep();
+        }
+
+        function prevNightStep() {
+            previousNightStep();
+        }
+
+        function startNightEngine() {
+            if (!isGameActive()) {
+                showCustomModal('توجه', 'ابتدا باید یک بازی را شروع و کارت‌ها را تقسیم کنید.', 'alert');
+                return;
+            }
+
+            wizardNightNumber = (currentNightNumber || 0) + 1;
+            
+            // Initialize night actions
+            nightActions = {
+                negahban: { target1: -1, target2: -1 },
+                blocker: -1,
+                mafiaMode: 'normal', // 'normal', 'nato', or 'yakuza'
+                mafiaShot: -1,
+                natoTarget: -1,
+                natoRole: '',
+                yakuzaSacrifice: -1,
+                yakuzaTarget: -1,
+                shayad: -1,
+                karagah: -1,
+                takavar: -1,
+                sniper: -1,
+                doctor: { target1: -1, target2: -1 },
+                mohaghegh: -1,
+                attarTarget: -1,
+                attarPotion: '',
+                bazpors: { usedTonight: false, target1: -1, target2: -1 },
+                tofangdar: {
+                    gun1: { targetIdx: -1, type: 'blank' },
+                    gun2: { targetIdx: -1, type: 'blank' }
+                }
+            };
+
+            nightSteps = generateNightSteps(wizardNightNumber);
+            currentNightStepIndex = 0;
+
+            const modal = document.getElementById('night-wizard-modal');
+            if (modal) {
+                modal.classList.add('show');
+                document.body.classList.add('modal-open');
+            }
+
+            renderCurrentNightStep();
+        }
+
+        // Generate ordered steps strictly for roles present in the active game
+        function generateNightSteps(nightNum) {
+            const steps = [];
+            const scenario = gameSettings.scenario || 'custom';
+
+            const addStep = (roleId, stepKey, title, icon, isExhausted = false, exhaustedReason = '') => {
+                const playerHoldingRole = pickedHistory.find(p => p.role && p.role.id === roleId);
+                const roleExists = !!playerHoldingRole;
+                // CRITICAL RULE: If the role is NOT present in the game, NEVER show it (no dummy steps!)
+                if (!roleExists) return;
+
+                const isAlive = playerHoldingRole.role.isAlive;
+                const livingPlayerIdx = isAlive ? pickedHistory.indexOf(playerHoldingRole) : -1;
+                const isDead = !isAlive;
+
+                steps.push({
+                    stepKey: stepKey,
+                    roleId: roleId,
+                    title: title,
+                    icon: icon,
+                    playerIndex: livingPlayerIdx,
+                    playerHoldingRole: playerHoldingRole,
+                    isDead: isDead,
+                    isExhausted: isExhausted,
+                    exhaustedReason: exhaustedReason
+                });
+            };
+
+            const hasRoleInGame = (roleId) => pickedHistory.some(p => p.role && p.role.id === roleId);
+
+            // SPECIAL PROTOCOL: Bazpors Scenario Official Wake-Up Order:
+            // 1. محقق | 2. کل تیم مافیا | 3. شیاد | 4. کارآگاه | 5. پزشک | 6. بازپرس
+            if (scenario === 'bazpors' || scenario === 'bazpors12' || scenario === 'bazpors13') {
+                // 1. محقق (Mohaghegh)
+                if (hasRoleInGame('c_mohaghegh')) {
+                    addStep('c_mohaghegh', 'mohaghegh', 'محقق', '🔗');
+                }
+
+                // 2. کل تیم مافیا (Mafia Team)
+                const totalMafia = pickedHistory.filter(p => p.role && p.role.team === 'mafia');
+                if (totalMafia.length > 0) {
+                    const aliveMafia = pickedHistory.filter(p => p.role && p.role.team === 'mafia' && p.role.isAlive);
+                    steps.push({
+                        stepKey: 'mafia_shot',
+                        title: 'تیم مافیا (شلیک شب / ناتو / سوداگری)',
+                        icon: '🔫',
+                        playerIndex: -1,
+                        isDead: aliveMafia.length === 0,
+                        isExhausted: false
+                    });
+                }
+
+                // 3. شیاد (Shayad)
+                if (hasRoleInGame('m_shaiad')) {
+                    addStep('m_shaiad', 'shayad', 'شیاد', '🎭');
+                }
+
+                // 4. کارآگاه (Detective)
+                if (hasRoleInGame('c_karagah')) {
+                    addStep('c_karagah', 'karagah', 'کارآگاه', '🔍');
+                }
+
+                // 5. پزشک (Doctor)
+                if (hasRoleInGame('c_doctor')) {
+                    addStep('c_doctor', 'doctor', 'پزشک', '💉');
+                }
+
+                // 6. بازپرس (Bazpors)
+                if (hasRoleInGame('c_bazpors')) {
+                    addStep('c_bazpors', 'bazpors', 'بازپرس', '⚖️', !!gameSettings.bazporsUsed, 'قابلیت دادگاه بازپرسی یک‌بار در طول بازی است و قبلاً استفاده شده است.');
+                }
+            } else {
+                // Default scenarios order (Nato, Capo, Custom, etc.)
+                // 1. نگهبان (Guard)
+                if (hasRoleInGame('c_negahban')) {
+                    addStep('c_negahban', 'negahban', 'نگهبان', '🛡️');
+                }
+
+                // 2. مسدودکننده / گروگان‌گیر (Blocker)
+                const blockerRole = pickedHistory.find(p => p.role && ['m_gorogangir', 'm_saaregh', 'm_afsoon', 'm_afsangar'].includes(p.role.id));
+                if (blockerRole) {
+                    addStep(blockerRole.role.id, 'blocker', 'گروگان‌گیر / مسدودکننده', '🔒');
+                }
+
+                // 3. تیم مافیا (Mafia Team)
+                const totalMafia = pickedHistory.filter(p => p.role && p.role.team === 'mafia');
+                if (totalMafia.length > 0) {
+                    const aliveMafia = pickedHistory.filter(p => p.role && p.role.team === 'mafia' && p.role.isAlive);
+                    steps.push({
+                        stepKey: 'mafia_shot',
+                        title: 'تیم مافیا (شلیک شب / ناتو / یاکوزا)',
+                        icon: '🔫',
+                        playerIndex: -1,
+                        isDead: aliveMafia.length === 0,
+                        isExhausted: false
+                    });
+                }
+
+                // 4. شیاد (Shayad) if present
+                if (hasRoleInGame('m_shaiad')) {
+                    addStep('m_shaiad', 'shayad', 'شیاد', '🎭');
+                }
+
+                // 5. کارآگاه (Detective)
+                if (hasRoleInGame('c_karagah')) {
+                    addStep('c_karagah', 'karagah', 'کارآگاه', '🔍');
+                }
+
+                // 6. تکاور (Commando)
+                if (hasRoleInGame('c_takavar')) {
+                    addStep('c_takavar', 'takavar', 'تکاور', '🎖️');
+                }
+
+                // 7. اسنایپر (Sniper)
+                const sniperRole = pickedHistory.find(p => p.role && ['c_sniper', 'c_herfehei'].includes(p.role.id));
+                if (sniperRole) {
+                    const bulletsLeft = gameSettings.sniperBullets || 0;
+                    addStep(sniperRole.role.id, 'sniper', 'اسنایپر', '🎯', bulletsLeft <= 0, 'سهمیه تیرهای جنگی اسنایپر به اتمام رسیده است.');
+                }
+
+                // 8. پزشک (Doctor)
+                if (hasRoleInGame('c_doctor')) {
+                    addStep('c_doctor', 'doctor', 'پزشک', '💉');
+                }
+
+                // 9. محقق (Mohaghegh)
+                if (hasRoleInGame('c_mohaghegh')) {
+                    addStep('c_mohaghegh', 'mohaghegh', 'محقق', '🔗');
+                }
+
+                // 10. عطار (Attar)
+                if (hasRoleInGame('c_attar')) {
+                    addStep('c_attar', 'attar', 'عطار', '🧪', !!gameSettings.attarUsed, 'معجون عطار یک‌بار در طول بازی است و قبلاً مصرف شده است.');
+                }
+
+                // 11. بازپرس (Bazpors)
+                if (hasRoleInGame('c_bazpors')) {
+                    addStep('c_bazpors', 'bazpors', 'بازپرس', '⚖️', !!gameSettings.bazporsUsed, 'قابلیت دادگاه بازپرسی یک‌بار در طول بازی است و قبلاً استفاده شده است.');
+                }
+
+                // 12. تفنگ‌دار (Gunsmith)
+                if (hasRoleInGame('c_tofangdar')) {
+                    const tofangdarWarLeft = gameSettings.tofangdarWarBullets || 0;
+                    addStep('c_tofangdar', 'tofangdar', 'تفنگ‌دار', '🏹', tofangdarWarLeft <= 0, 'تیرهای جنگی تفنگ‌دار به اتمام رسیده است.');
+                }
+            }
+
+            return steps;
+        }
+
+        // Render current step into #night-wizard-modal elements
+        function renderCurrentNightStep() {
+            const counterEl = document.getElementById('night-step-counter');
+            const nightTitleEl = document.getElementById('night-night-title');
+            const roleTitleEl = document.getElementById('night-step-role-title');
+            const instructionEl = document.getElementById('night-step-instruction');
+            const bodyEl = document.getElementById('night-step-body');
+            const nextBtn = document.getElementById('night-btn-next');
+            const prevBtn = document.getElementById('night-btn-prev');
+
+            if (!bodyEl) return;
+
+            if (currentNightStepIndex >= nightSteps.length) {
+                // Night completed view
+                if (counterEl) counterEl.innerText = 'پایان شب';
+                if (nightTitleEl) nightTitleEl.innerText = `🌙 شب ${wizardNightNumber}`;
+                if (roleTitleEl) roleTitleEl.innerHTML = `<span>🌅</span> پایان فاز شب ${wizardNightNumber}`;
+                if (instructionEl) instructionEl.innerText = 'تمامی اقدامات و استعلام‌های این شب با موفقیت دریافت و ثبت شدند.';
+
+                bodyEl.innerHTML = `
+                    <div style="text-align:center;padding:15px 5px;">
+                        <div style="font-size:36px;margin-bottom:10px;">✨</div>
+                        <p style="color:#94a3b8;font-size:13px;line-height:1.7;margin-bottom:18px;">
+                            تمامی اقدامات این شب با موفقیت ثبت شدند.<br>
+                            جهت محاسبه هوشمند تداخل نقش‌ها و استخراج گزارش محرمانه روز، دکمه زیر را لمس کنید:
+                        </p>
+                        <button class="btn-action confirm" onclick="finishNightEngine()" style="width:100%;padding:12px;font-size:15px;background:linear-gradient(135deg,#10b981,#059669);box-shadow:0 4px 14px rgba(16,185,129,0.4);">
+                            ✨ محاسبه و ثبت نتایج شب
+                        </button>
+                    </div>
+                `;
+
+                if (nextBtn) nextBtn.style.display = 'none';
+                if (prevBtn) prevBtn.style.display = 'inline-block';
+                return;
+            }
+
+            const step = nightSteps[currentNightStepIndex];
+            const totalSteps = nightSteps.length;
+            const stepNum = currentNightStepIndex + 1;
+
+            // Formatted role and player info for header
+            let roleHeaderDetail = '';
+            if (step.playerIndex !== -1 && pickedHistory[step.playerIndex]) {
+                const p = pickedHistory[step.playerIndex];
+                const pName = p.role.playerName || `بازیکن ${p.pickOrder}`;
+                roleHeaderDetail = `<span style="font-size:12px;color:var(--accent-gold);margin-right:8px;font-weight:600;">(بازیکن #${p.pickOrder}: ${pName})</span>`;
+            } else if (step.playerHoldingRole) {
+                const p = step.playerHoldingRole;
+                const pName = p.role.playerName || `بازیکن ${p.pickOrder}`;
+                roleHeaderDetail = `<span style="font-size:12px;color:#f87171;margin-right:8px;font-weight:600;">(بازیکن #${p.pickOrder}: ${pName} [خارج‌شده 💀])</span>`;
+            }
+
+            if (counterEl) counterEl.innerText = `گام ${stepNum} از ${totalSteps}`;
+            if (nightTitleEl) nightTitleEl.innerText = `🌙 شب ${wizardNightNumber}`;
+            if (roleTitleEl) roleTitleEl.innerHTML = `<span>${step.icon}</span> ${step.title} ${roleHeaderDetail}`;
+            if (prevBtn) prevBtn.style.display = currentNightStepIndex > 0 ? 'inline-block' : 'none';
+            if (nextBtn) {
+                nextBtn.style.display = 'inline-block';
+                nextBtn.innerText = (currentNightStepIndex === totalSteps - 1) ? 'مشاهده خلاصه و پایان شب ⏭️' : 'مرحله بعد ⬅️';
+            }
+
+            // Protocol 1: Dead Role (Player was assigned this role, but is now dead)
+            if (step.isDead) {
+                if (instructionEl) instructionEl.innerText = 'پروتکل رسمی بیدارباش بازیکن خارج‌شده از بازی';
+                const p = step.playerHoldingRole;
+                const pName = p ? (p.role.playerName || `بازیکن ${p.pickOrder}`) : 'نامشخص';
+                const pNum = p ? p.pickOrder : '?';
+                bodyEl.innerHTML = `
+                    <div style="background:rgba(239, 68, 68, 0.12);border:1px solid rgba(239, 68, 68, 0.35);border-radius:12px;padding:14px;line-height:1.8;text-align:right;">
+                        <div style="color:#f87171;font-weight:bold;font-size:13px;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+                            <span>💀</span>
+                            <span>پروتکل رسمی بیدارباش بازیکن خارج‌شده از بازی</span>
+                        </div>
+                        <div style="color:#cbd5e1;font-size:12.5px;">
+                            نقش <strong>${step.title}</strong> متعلق به <strong>بازیکن شماره ${pNum} (${pName})</strong> است که پیش‌تر در جریان بازی کشته و از بازی خارج شده است.<br><br>
+                            <strong style="color:#fca5a5;">دستور رسمی به گرداننده (گاد):</strong><br>
+                            نام این نقش را با صدای رسا و با آرامش صدا بزنید: <span style="color:#fbbf24;font-weight:bold;">«${step.title} بیدار شود»</span>.<br>
+                            دقیقاً <strong>۳ الی ۵ ثانیه در سکوت تأمل و مکث نمایید</strong> تا روند شب طبیعی جلوه کند، سپس دستور دهید: <span style="color:#fbbf24;font-weight:bold;">«${step.title} بخوابد»</span>.<br>
+                            <em>* توجه: جهت جلوگیری از افشای سناریو، به هیچ‌عنوان نباید مشخص شود که این نقش در بازی نیست یا کشته شده است.</em>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Protocol 2: Exhausted Ability (Single-use ability used in previous nights)
+            if (step.isExhausted) {
+                if (instructionEl) instructionEl.innerText = 'بیدارباش تشریفاتی رسمی (قابلیت مصرف‌شده)';
+                const reason = step.exhaustedReason || 'قابلیت شبانه این نقش در شب‌های گذشته مصرف شده است.';
+                const p = step.playerHoldingRole;
+                const pName = p ? (p.role.playerName || `بازیکن ${p.pickOrder}`) : '';
+                const pNum = p ? p.pickOrder : '';
+                bodyEl.innerHTML = `
+                    <div class="dummy-wakeup-box" style="border-color:rgba(245,158,11,0.4);background:rgba(245,158,11,0.08);">
+                        <div class="dummy-title" style="color:#fbbf24;">⏳ قابلیت نقش در شب‌های قبل مصرف شده است</div>
+                        <div class="dummy-desc">
+                            <strong>${step.title}</strong> ${p ? `(بازیکن #${pNum}: ${pName})` : ''}:<br>
+                            <span style="color:#fde047;font-weight:600;">${reason}</span><br><br>
+                            <strong>دستور رسمی به گرداننده (گاد):</strong> نام نقش را صدا زده («<em>${step.title} بیدار شود</em>»)، به مدت ۳ تا ۵ ثانیه در سکوت تأمل نمایید و سپس دستور خواب دهید («<em>${step.title} بخوابد</em>»).
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Check if player is Hostaged tonight
+            let isHostaged = false;
+            if (typeof nightActions.blocker === 'number' && nightActions.blocker >= 0 && typeof step.playerIndex === 'number' && step.playerIndex >= 0 && nightActions.blocker === step.playerIndex) {
+                const guardIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_negahban' && p.role.isAlive);
+                const livingCount = pickedHistory.filter(p => p.role && p.role.isAlive).length;
+                const isSavedByGuard = (nightActions.negahban.target1 === nightActions.blocker) ||
+                    (livingCount > 8 && nightActions.negahban.target2 === nightActions.blocker);
+                const isGuardHimself = (guardIdx !== -1 && nightActions.blocker === guardIdx);
+
+                if (!isSavedByGuard && !isGuardHimself) {
+                    isHostaged = true;
+                }
+            }
+
+            if (isHostaged) {
+                if (instructionEl) instructionEl.innerText = 'بازیکن در وضعیت گروگان است (عملکرد قفل شده)';
+                bodyEl.innerHTML = `
+                    <div class="hostaged-alert-box">
+                        <div class="hostaged-title">🔒 این بازیکن در وضعیت گروگان است!</div>
+                        <div class="hostaged-desc">
+                            این نقش در این شب توسط گروگان‌گیر قفل شده و توانایی شبانه او به طور کامل سلب گردیده است.<br><br>
+                            <strong>دستور رسمی به گرداننده (گاد):</strong> به بازیکن علامت دستبند یا قفل (🔒) را نشان داده و فوراً او را بخوابانید.<br>
+                            <em>* جهت رعایت قوانین، دکمه‌ها و فرم‌های عملکرد این نقش به طور خودکار غیرفعال و مسدود شده‌اند.</em>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            // Strictly filter living players (Dead players are NEVER shown in target chips)
+            const livingPlayers = pickedHistory
+                .map((p, idx) => ({ ...p, originalIndex: idx }))
+                .filter(p => p.role && p.role.isAlive);
+
+            let bodyHtml = '';
+
+            if (step.stepKey === 'negahban') {
+                const rawPName = pickedHistory[step.playerIndex].role.playerName || '';
+                const pName = rawPName.trim() ? rawPName.trim() : `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                const livingCount = livingPlayers.length;
+                const guardQuota = livingCount > 8 ? 2 : 1;
+                const gTarget1 = nightActions.negahban.target1;
+                const gTarget2 = (guardQuota === 2) ? nightActions.negahban.target2 : -1;
+                if (guardQuota === 1) nightActions.negahban.target2 = -1;
+
+                if (instructionEl) instructionEl.innerText = `نگهبان (${pName}) بیدار می‌شود: تعیین اهداف نگهبانی:`;
+
+                let target1Label = 'انتخاب نشده';
+                if (gTarget1 !== -1 && pickedHistory[gTarget1] && pickedHistory[gTarget1].role) {
+                    const p1 = pickedHistory[gTarget1];
+                    const name1 = (p1.role.playerName && p1.role.playerName.trim()) ? p1.role.playerName.trim() : `بازیکن ${p1.pickOrder}`;
+                    target1Label = `#${p1.pickOrder} ${name1}`;
+                }
+                let target2Label = 'انتخاب نشده';
+                if (gTarget2 !== -1 && pickedHistory[gTarget2] && pickedHistory[gTarget2].role) {
+                    const p2 = pickedHistory[gTarget2];
+                    const name2 = (p2.role.playerName && p2.role.playerName.trim()) ? p2.role.playerName.trim() : `بازیکن ${p2.pickOrder}`;
+                    target2Label = `#${p2.pickOrder} ${name2}`;
+                }
+
+                bodyHtml = `
+                    <div style="font-size:12px;color:#38bdf8;margin-bottom:8px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);border-radius:10px;padding:8px 12px;line-height:1.6;">
+                        🛡️ <strong>سهمیه نگهبانی: ${guardQuota} نفر</strong> (تعداد افراد زنده بازی: <strong>${livingCount} نفر</strong> ${livingCount > 8 ? '> ۸ نفر' : '≤ ۸ نفر'}).<br>
+                        <span style="color:#cbd5e1;font-size:11px;">* نگهبان از اهداف خود در برابر گروگان‌گیری محافظت می‌کند. شلیک گروگان‌گیر به خود نگهبان بی‌اثر است.</span>
+                    </div>
+
+                    <!-- وضعیت اهداف انتخاب شده -->
+                    <div style="display:flex;gap:8px;margin-bottom:8px;">
+                        <div style="flex:1;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:6px 10px;font-size:11.5px;">
+                            <span style="color:#34d399;font-weight:700;">🎯 هدف ۱:</span>
+                            <span style="color:#f8fafc;font-weight:600;margin-right:4px;">${target1Label}</span>
+                        </div>
+                        ${guardQuota === 2 ? `
+                            <div style="flex:1;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);border-radius:8px;padding:6px 10px;font-size:11.5px;">
+                                <span style="color:#60a5fa;font-weight:700;">🎯 هدف ۲:</span>
+                                <span style="color:#f8fafc;font-weight:600;margin-right:4px;">${target2Label}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div style="font-size:12px;font-weight:700;color:var(--accent-gold);margin-bottom:4px;">
+                        ${guardQuota === 2 ? '👥 انتخاب دقیقاً ۲ بازیکن به عنوان هدف نگهبانی:' : '👤 انتخاب بازیکن به عنوان هدف نگهبان:'}
+                    </div>
+                    ${renderGuardMultiChips(livingPlayers, gTarget1, gTarget2, guardQuota, step.playerIndex)}
+                `;
+
+            } else if (step.stepKey === 'blocker') {
+                const pName = pickedHistory[step.playerIndex].role.playerName || `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                if (instructionEl) instructionEl.innerText = `گروگان‌گیر / مسدودکننده (${pName}) بیدار می‌شود: بازیکنی که باید قفل شود:`;
+                bodyHtml = `
+                    <div style="font-size:12px;color:#cbd5e1;margin-bottom:8px;">
+                        یک بازیکن را برای قفل کردن توانایی در این شب انتخاب کنید:
+                    </div>
+                    ${renderPlayerChips(livingPlayers, nightActions.blocker, 'setNightBlockerTarget', step.playerIndex, false)}
+                `;
+
+            } else if (step.stepKey === 'mafia_shot') {
+                const hasNato = pickedHistory.some(p => p.role && p.role.id === 'm_nato' && p.role.isAlive) && !gameSettings.natoUsed;
+                const hasYakuza = (gameSettings.scenario === 'bazpors' || pickedHistory.some(p => p.role && p.role.id === 'm_yakuza' && p.role.isAlive)) && !gameSettings.yakuzaUsed;
+                const currentMode = nightActions.mafiaMode || 'normal';
+                if (instructionEl) instructionEl.innerText = 'تیم مافیا بیدار می‌شوند: شلیک شبانه، اقدام ناتو یا یاکوزایی:';
+
+                bodyHtml = `
+                    <div class="night-mode-tabs">
+                        <button class="night-tab-btn ${currentMode === 'normal' ? 'active-normal' : ''}" onclick="setNightMafiaMode('normal')">
+                            🎯 شلیک عادی مافیا
+                        </button>
+                        ${hasNato ? `
+                            <button class="night-tab-btn ${currentMode === 'nato' ? 'active-nato' : ''}" onclick="setNightMafiaMode('nato')">
+                                🎭 حدس و اقدام ناتو
+                            </button>
+                        ` : ''}
+                        ${hasYakuza ? `
+                            <button class="night-tab-btn ${currentMode === 'yakuza' ? 'active-nato' : ''}" onclick="setNightMafiaMode('yakuza')">
+                                🗡️ اقدام یاکوزایی (سوداگری)
+                            </button>
+                        ` : ''}
+                    </div>
+
+                    ${currentMode === 'normal' ? `
+                        <div style="font-size:12px;color:#cbd5e1;margin-bottom:8px;">
+                            هدف شلیک مستقیم شبانه تیم مافیا را انتخاب کنید (مافیا حق عدم شلیک ندارد):
+                        </div>
+                        ${renderPlayerChips(livingPlayers, nightActions.mafiaShot, 'setNightMafiaTarget', -1, false)}
+                    ` : currentMode === 'nato' ? `
+                        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.25);border-radius:10px;padding:12px;margin-bottom:12px;">
+                            <div style="font-size:13px;font-weight:bold;color:#f87171;margin-bottom:6px;">⚠️ اقدام سرنوشت‌ساز ناتو</div>
+                            <div style="font-size:12px;color:#cbd5e1;line-height:1.6;margin-bottom:10px;">
+                                ناتو فقط یک‌بار در بازی می‌تواند نقش دقیق یک شهروند را حدس بزند. در صورت درستی، شهروند بدون امکان نجات پزشک می‌میرد!
+                            </div>
+                            <div style="margin-bottom:10px;">
+                                <label style="display:block;font-size:12px;color:#94a3b8;margin-bottom:4px;">هدف ناتو:</label>
+                                ${renderPlayerChips(livingPlayers, nightActions.natoTarget, 'setNightNatoTarget', -1, false)}
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12px;color:#94a3b8;margin-bottom:4px;">حدس دقیق نقش هدف:</label>
+                                <select id="nato-role-select" class="house-rule-select" onchange="setNightNatoRole(this.value)" style="width:100%;">
+                                    <option value="">-- انتخاب نقش مورد حدس --</option>
+                                    <option value="c_karagah" ${nightActions.natoRole === 'c_karagah' ? 'selected' : ''}>کارآگاه</option>
+                                    <option value="c_doctor" ${nightActions.natoRole === 'c_doctor' ? 'selected' : ''}>پزشک</option>
+                                    <option value="c_takavar" ${nightActions.natoRole === 'c_takavar' ? 'selected' : ''}>تکاور</option>
+                                    <option value="c_tofangdar" ${nightActions.natoRole === 'c_tofangdar' ? 'selected' : ''}>تفنگ‌دار</option>
+                                    <option value="c_negahban" ${nightActions.natoRole === 'c_negahban' ? 'selected' : ''}>نگهبان</option>
+                                    <option value="c_sniper" ${nightActions.natoRole === 'c_sniper' ? 'selected' : ''}>اسنایپر</option>
+                                    <option value="c_bazpors" ${nightActions.natoRole === 'c_bazpors' ? 'selected' : ''}>بازپرس</option>
+                                    <option value="c_attar" ${nightActions.natoRole === 'c_attar' ? 'selected' : ''}>عطار</option>
+                                    <option value="c_mohaghegh" ${nightActions.natoRole === 'c_mohaghegh' ? 'selected' : ''}>محقق</option>
+                                </select>
+                            </div>
+                        </div>
+                    ` : `
+                        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:12px;margin-bottom:12px;">
+                            <div style="font-size:13px;font-weight:bold;color:#fbbf24;margin-bottom:6px;">🗡️ توانایی سوداگری (یاکوزایی) تیم مافیا</div>
+                            <div style="font-size:12px;color:#cbd5e1;line-height:1.6;margin-bottom:10px;">
+                                تیم مافیا در صورت زنده بودن رئیس مافیا می‌توانند یک شب یک نفر از اعضای خود را فدا کنند و با یک شهروند ساده یا رویین‌تن مذاکره نمایند. در صورت موفقیت، آن شخص همان شب بیدار شده و با تیم آشنا می‌شود.<br>
+                                <span style="color:#fde047;font-weight:600;">• رئیس مافیا فقط زمانی می‌تواند خود را فدا کند که تنها مانده باشد.</span><br>
+                                <span style="color:#94a3b8;">• در بازی ۱۳ نفره امکان مذاکره با رویین‌تن وجود ندارد (فقط شهروند ساده).</span>
+                            </div>
+
+                            <!-- 1. Sacrificed Mafia -->
+                            <div style="margin-bottom:12px;">
+                                <label style="display:block;font-size:12px;color:#f87171;font-weight:bold;margin-bottom:4px;">
+                                    ۱. انتخاب مافیای فداشونده (فداکاری):
+                                </label>
+                                ${(() => {
+                                    const livingMafia = livingPlayers.filter(p => p.role && p.role.team === 'mafia');
+                                    return renderPlayerChips(livingMafia, nightActions.yakuzaSacrifice, 'setNightYakuzaSacrifice', -1, false);
+                                })()}
+                            </div>
+
+                            <!-- 2. Target Citizen -->
+                            <div>
+                                <label style="display:block;font-size:12px;color:#38bdf8;font-weight:bold;margin-bottom:4px;">
+                                    ۲. انتخاب شهروند جهت مذاکره و تغییر ساید:
+                                </label>
+                                ${(() => {
+                                    const livingCitizens = livingPlayers.filter(p => p.role && p.role.team !== 'mafia');
+                                    return renderPlayerChips(livingCitizens, nightActions.yakuzaTarget, 'setNightYakuzaTarget', -1, false);
+                                })()}
+                            </div>
+                        </div>
+                    `}
+                `;
+
+            } else if (step.stepKey === 'shayad') {
+                const rawPName = (pickedHistory[step.playerIndex] && pickedHistory[step.playerIndex].role) ? pickedHistory[step.playerIndex].role.playerName : '';
+                const pName = rawPName ? rawPName.trim() : `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                if (instructionEl) instructionEl.innerText = `شیاد (${pName}) بیدار می‌شود: انتخاب بازیکن جهت فریب کارآگاه:`;
+
+                let targetLabel = 'انتخاب نشده';
+                if (nightActions.shayad !== -1 && pickedHistory[nightActions.shayad] && pickedHistory[nightActions.shayad].role) {
+                    const p = pickedHistory[nightActions.shayad];
+                    const pn = (p.role.playerName && p.role.playerName.trim()) ? p.role.playerName.trim() : `بازیکن ${p.pickOrder}`;
+                    targetLabel = `#${p.pickOrder} ${pn}`;
+                }
+
+                bodyHtml = `
+                    <div style="background:rgba(168,85,247,0.1);border:1px solid rgba(168,85,247,0.3);border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;line-height:1.7;color:#e9d5ff;">
+                        🎭 <strong>توانایی شیاد:</strong> شیاد به تنهایی بیدار شده و به دنبال کارآگاه می‌گردد. در صورتی که به کارآگاه اشاره کند، استعلام امشب کارآگاه برای هر کسی منفی (👎) خواهد شد.<br>
+                        <span style="color:#fbcfe8;font-weight:600;">• قابلیت شیاد می‌تواند هر شب روی یک شخص تکرار شود.</span>
+                    </div>
+
+                    <div style="font-size:12px;color:#cbd5e1;margin-bottom:8px;">
+                        هدف انتخابی شیاد: <strong style="color:#c084fc;">${targetLabel}</strong>
+                    </div>
+                    ${renderPlayerChips(livingPlayers, nightActions.shayad, 'setNightShayadTarget', -1, false)}
+                `;
+
+            } else if (step.stepKey === 'karagah') {
+                const pName = pickedHistory[step.playerIndex].role.playerName || `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                if (instructionEl) instructionEl.innerText = `کارآگاه (${pName}) بیدار می‌شود: استعلام یک بازیکن:`;
+                let resultBox = '';
+                if (nightActions.karagah !== -1) {
+                    const targetPlayer = pickedHistory[nightActions.karagah];
+                    const isGodfather = targetPlayer.role && targetPlayer.role.id === 'm_godfather';
+                    const isDisruptedByShayad = (nightActions.shayad !== -1 && nightActions.shayad === step.playerIndex);
+                    const isMafia = !isDisruptedByShayad && targetPlayer.role && targetPlayer.role.team === 'mafia' && !isGodfather;
+                    
+                    if (isMafia) {
+                        resultBox = `
+                            <div style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;border-radius:12px;padding:12px;margin-top:12px;text-align:center;">
+                                <div style="font-size:15px;font-weight:bold;color:#f87171;display:flex;align-items:center;justify-content:center;gap:6px;">
+                                    <span>👍</span>
+                                    <span>استعلام مثبت (مافیا) - Thumbs Up</span>
+                                </div>
+                                <div style="font-size:12.5px;color:#cbd5e1;margin-top:6px;">
+                                    <strong>دستور به گاد:</strong> به کارآگاه علامت <strong>شست بالا (Thumbs Up 👍)</strong> به معنای مثبت بودن استعلام نشان دهید.
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        resultBox = `
+                            <div style="background:rgba(34,197,94,0.15);border:1px solid #22c55e;border-radius:12px;padding:12px;margin-top:12px;text-align:center;">
+                                <div style="font-size:15px;font-weight:bold;color:#4ade80;display:flex;align-items:center;justify-content:center;gap:6px;">
+                                    <span>👎</span>
+                                    <span>استعلام منفی (شهروند / گادفادر) - Thumbs Down</span>
+                                </div>
+                                <div style="font-size:12.5px;color:#cbd5e1;margin-top:6px;">
+                                    <strong>دستور به گاد:</strong> به کارآگاه علامت <strong>شست پایین (Thumbs Down 👎)</strong> به معنای منفی بودن استعلام نشان دهید.
+                                </div>
+                                ${isGodfather ? '<div style="font-size:11px;color:#fbbf24;margin-top:4px;">(نکته محرمانه: این بازیکن گادفادر است و استعلامش منفی نشان داده می‌شود)</div>' : ''}
+                            </div>
+                        `;
+                    }
+                }
+
+                bodyHtml = `
+                    <div style="font-size:12px;color:#cbd5e1;margin-bottom:8px;">یک نفر را برای استعلام انتخاب کنید:</div>
+                    ${renderPlayerChips(livingPlayers, nightActions.karagah, 'setNightDetectiveTarget', step.playerIndex, false)}
+                    ${resultBox}
+                `;
+
+            } else if (step.stepKey === 'takavar') {
+                const pName = pickedHistory[step.playerIndex].role.playerName || `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                const wasShotByMafia = (nightActions.mafiaShot === step.playerIndex && nightActions.mafiaMode === 'normal');
+                if (instructionEl) instructionEl.innerText = `تکاور (${pName}) بیدار می‌شود: وضعیت شلیک انتقام:`;
+
+                if (wasShotByMafia) {
+                    bodyHtml = `
+                        <div style="background:rgba(239,68,68,0.15);border:1px solid #ef4444;border-radius:12px;padding:12px;margin-bottom:12px;">
+                            <div style="font-size:14px;font-weight:bold;color:#f87171;display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                                <span>👍</span>
+                                <span>تکاور مورد شات مستقیم مافیا قرار گرفته است!</span>
+                            </div>
+                            <div style="font-size:12.5px;color:#e2e8f0;line-height:1.7;">
+                                <strong>دستور به گاد:</strong> به تکاور علامت <strong>لایک / شست بالا (Thumbs Up 👍)</strong> نشان دهید تا مطلع شود تیر خورده است.<br>
+                                سپس از او بپرسید آیا قصد استفاده از <strong>تیر انتقام (دستور شلیک)</strong> را دارد یا خیر.<br>
+                                <span style="font-size:11px;color:#fde047;line-height:1.6;display:block;margin-top:4px;">
+                                    * قوانین رسمی تکاور:<br>
+                                    • اگر شلیک نکند و توسط دکتر نجات یافته باشد، در بازی باقی می‌ماند.<br>
+                                    • اگر شلیک نکند و نجات نیافته باشد، کشته و خارج می‌شود.<br>
+                                    • اگر به مافیا شلیک کند، مافیا کشته شده و خود تکاور زنده می‌ماند.<br>
+                                    • اگر به گادفادر شلیک کند، جلیقه ضربه را دفع کرده و هیچ‌کس خارج نمی‌شود.<br>
+                                    • اما اگر به شهروند شلیک کند، حتی در صورت نجات پزشک، خود تکاور از بازی خارج می‌شود!
+                                </span>
+                            </div>
+                        </div>
+                        <div style="font-size:12px;color:var(--accent-gold);margin-bottom:6px;font-weight:bold;">🎯 هدف شلیک انتقام تکاور (تکاور مجاز به انصراف و عدم شلیک است):</div>
+                        ${renderPlayerChips(livingPlayers, nightActions.takavar, 'setNightTakavarTarget', step.playerIndex, true, '🚫 عدم شلیک تکاور (انصراف)')}
+                    `;
+                } else {
+                    nightActions.takavar = -1; // Reset if not shot
+                    bodyHtml = `
+                        <div style="background:rgba(34,197,94,0.12);border:1px solid #22c55e;border-radius:12px;padding:12px;">
+                            <div style="font-size:14px;font-weight:bold;color:#4ade80;display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+                                <span>👎</span>
+                                <span>تکاور مورد شات مافیا نبوده است.</span>
+                            </div>
+                            <div style="font-size:12.5px;color:#cbd5e1;line-height:1.7;">
+                                <strong>دستور به گاد:</strong> به تکاور علامت <strong>دیس‌لایک / شست پایین (Thumbs Down 👎)</strong> نشان دهید (تیر نخورده است) و <strong>فوراً او را بخوابانید</strong>.<br>
+                                تکاور حق هیچ‌گونه شلیکی ندارد.
+                            </div>
+                        </div>
+                    `;
+                }
+
+            } else if (step.stepKey === 'doctor') {
+                const rawPName = pickedHistory[step.playerIndex].role.playerName || '';
+                const pName = rawPName.trim() ? rawPName.trim() : `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                const livingCount = livingPlayers.length;
+                const docQuota = livingCount > 8 ? 2 : 1;
+                const selfSaves = gameSettings.doctorSelfSaves || 0;
+                const docIdx = step.playerIndex;
+
+                if (!nightActions.doctor || typeof nightActions.doctor !== 'object') {
+                    nightActions.doctor = { target1: -1, target2: -1 };
+                }
+                const dTarget1 = nightActions.doctor.target1;
+                const dTarget2 = (docQuota === 2) ? nightActions.doctor.target2 : -1;
+                if (docQuota === 1) nightActions.doctor.target2 = -1;
+
+                if (instructionEl) instructionEl.innerText = `پزشک (${pName}) بیدار می‌شود: تعیین نجات‌های شبانه:`;
+
+                let target1Label = 'انتخاب نشده';
+                if (dTarget1 !== -1 && pickedHistory[dTarget1] && pickedHistory[dTarget1].role) {
+                    const p1 = pickedHistory[dTarget1];
+                    const name1 = (p1.role.playerName && p1.role.playerName.trim()) ? p1.role.playerName.trim() : `بازیکن ${p1.pickOrder}`;
+                    target1Label = `#${p1.pickOrder} ${name1}${dTarget1 === docIdx ? ' (خودش)' : ''}`;
+                }
+                let target2Label = 'انتخاب نشده';
+                if (dTarget2 !== -1 && pickedHistory[dTarget2] && pickedHistory[dTarget2].role) {
+                    const p2 = pickedHistory[dTarget2];
+                    const name2 = (p2.role.playerName && p2.role.playerName.trim()) ? p2.role.playerName.trim() : `بازیکن ${p2.pickOrder}`;
+                    target2Label = `#${p2.pickOrder} ${name2}${dTarget2 === docIdx ? ' (خودش)' : ''}`;
+                }
+
+                bodyHtml = `
+                    <div style="font-size:12px;color:#38bdf8;margin-bottom:8px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);border-radius:10px;padding:8px 12px;line-height:1.6;">
+                        🩺 <strong>سهمیه نجات پزشک: ${docQuota} نفر</strong> (تعداد افراد زنده: <strong>${livingCount} نفر</strong> ${livingCount > 8 ? '> ۸ نفر' : '≤ ۸ نفر'}).<br>
+                        <span style="color:#cbd5e1;font-size:11px;">* سهمیه نجات جان خود توسط پزشک: <strong style="color:${selfSaves > 0 ? '#4ade80' : '#f87171'}">${selfSaves} بار</strong> در کل بازی باقی مانده است.</span>
+                    </div>
+
+                    <!-- وضعیت اهداف انتخاب شده -->
+                    <div style="display:flex;gap:8px;margin-bottom:8px;">
+                        <div style="flex:1;background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:6px 10px;font-size:11.5px;">
+                            <span style="color:#34d399;font-weight:700;">🎯 نجات ۱:</span>
+                            <span style="color:#f8fafc;font-weight:600;margin-right:4px;">${target1Label}</span>
+                        </div>
+                        ${docQuota === 2 ? `
+                            <div style="flex:1;background:rgba(59,130,246,0.12);border:1px solid rgba(59,130,246,0.3);border-radius:8px;padding:6px 10px;font-size:11.5px;">
+                                <span style="color:#60a5fa;font-weight:700;">🎯 نجات ۲:</span>
+                                <span style="color:#f8fafc;font-weight:600;margin-right:4px;">${target2Label}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+
+                    <div style="font-size:12px;font-weight:700;color:var(--accent-gold);margin-bottom:4px;">
+                        ${docQuota === 2 ? '👥 انتخاب دقیقاً ۲ بازیکن برای نجات توسط پزشک:' : '👤 انتخاب بازیکن برای نجات توسط پزشک:'}
+                    </div>
+                    ${renderDoctorMultiChips(livingPlayers, dTarget1, dTarget2, docQuota, docIdx, selfSaves)}
+                `;
+
+            } else if (step.stepKey === 'mohaghegh') {
+                const rawPName = pickedHistory[step.playerIndex].role.playerName || '';
+                const pName = rawPName.trim() ? rawPName.trim() : `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                if (instructionEl) instructionEl.innerText = `محقق (${pName}) بیدار می‌شود: انتخاب بازیکن جهت گره زدن سرنوشت:`;
+
+                let targetLabel = 'انتخاب نشده';
+                if (nightActions.mohaghegh !== -1 && pickedHistory[nightActions.mohaghegh] && pickedHistory[nightActions.mohaghegh].role) {
+                    const p = pickedHistory[nightActions.mohaghegh];
+                    const pn = (p.role.playerName && p.role.playerName.trim()) ? p.role.playerName.trim() : `بازیکن ${p.pickOrder}`;
+                    targetLabel = `#${p.pickOrder} ${pn}`;
+                }
+
+                bodyHtml = `
+                    <div style="font-size:12px;color:#38bdf8;margin-bottom:8px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);border-radius:10px;padding:8px 12px;line-height:1.6;">
+                        🔗 <strong>محقق امشب سرنوشت خود را به یک بازیکن گره می‌زند.</strong><br>
+                        اگر محقق امشب با شلیک شب کشته شود:<br>
+                        <span style="color:#cbd5e1;font-size:11px;">
+                        • اگر به مافیا (غیر از گادفادر) گره خورده باشد: خودش و آن مافیا هر دو کشته و خارج می‌شوند.<br>
+                        • اگر به گادفادر یا شهروند گره خورده باشد: فقط خود محقق از بازی خارج می‌شود.
+                        </span>
+                    </div>
+                    <div style="background:rgba(16,185,129,0.12);border:1px solid rgba(16,185,129,0.3);border-radius:8px;padding:6px 10px;font-size:11.5px;margin-bottom:8px;">
+                        <span style="color:#34d399;font-weight:700;">🎯 بازیکن گره‌خورده امشب:</span>
+                        <span style="color:#f8fafc;font-weight:600;margin-right:4px;">${targetLabel}</span>
+                    </div>
+                    <div style="font-size:12px;font-weight:700;color:var(--accent-gold);margin-bottom:4px;">
+                        یک بازیکن را برای گره زدن انتخاب کنید:
+                    </div>
+                    ${renderPlayerChips(livingPlayers, nightActions.mohaghegh, 'setNightMohagheghTarget', step.playerIndex, false)}
+                `;
+
+            } else if (step.stepKey === 'sniper') {
+                const pName = pickedHistory[step.playerIndex].role.playerName || `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                const bulletsLeft = gameSettings.sniperBullets || 0;
+                if (instructionEl) instructionEl.innerText = `اسنایپر (${pName}) بیدار می‌شود (تیرهای جنگی باقی‌مانده: ${bulletsLeft}):`;
+                bodyHtml = `
+                    <div style="font-size:12px;color:#cbd5e1;margin-bottom:8px;">در صورت تمایل به شلیک، هدف را انتخاب کنید (اسنایپر مجاز به انصراف است):</div>
+                    ${renderPlayerChips(livingPlayers, nightActions.sniper, 'setNightSniperTarget', step.playerIndex, true, '🚫 انصراف از شلیک')}
+                `;
+
+            } else if (step.stepKey === 'attar') {
+                const pName = pickedHistory[step.playerIndex].role.playerName || `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                if (instructionEl) instructionEl.innerText = `عطار (${pName}) بیدار می‌شود (قابلیت یک‌بار در بازی):`;
+                bodyHtml = `
+                    <div style="font-size:12px;color:#cbd5e1;margin-bottom:8px;">هدف و نوع معجون را انتخاب کنید:</div>
+                    ${renderPlayerChips(livingPlayers, nightActions.attarTarget, 'setNightAttarTarget', step.playerIndex, true, '🚫 عدم استفاده')}
+                    <div style="margin-top:10px;">
+                        <select class="house-rule-select" onchange="setNightAttarPotion(this.value)" style="width:100%;">
+                            <option value="">-- انتخاب معجون --</option>
+                            <option value="cure" ${nightActions.attarPotion === 'cure' ? 'selected' : ''}>داروی شفا (نجات)</option>
+                            <option value="poison" ${nightActions.attarPotion === 'poison' ? 'selected' : ''}>زهر کشنده</option>
+                        </select>
+                    </div>
+                `;
+
+            } else if (step.stepKey === 'bazpors') {
+                const pName = pickedHistory[step.playerIndex].role.playerName || `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                if (instructionEl) instructionEl.innerText = `بازپرس (${pName}) بیدار می‌شود (قابلیت یک‌بار در کل بازی):`;
+                
+                if (!nightActions.bazpors || typeof nightActions.bazpors !== 'object') {
+                    nightActions.bazpors = { usedTonight: false, target1: -1, target2: -1 };
+                }
+                const bState = nightActions.bazpors;
+                const bTarget1 = bState.target1;
+                const bTarget2 = bState.target2;
+
+                let bT1Label = 'انتخاب نشده';
+                if (bTarget1 !== -1 && pickedHistory[bTarget1] && pickedHistory[bTarget1].role) {
+                    const p = pickedHistory[bTarget1];
+                    const n = (p.role.playerName && p.role.playerName.trim()) ? p.role.playerName.trim() : `بازیکن ${p.pickOrder}`;
+                    bT1Label = `#${p.pickOrder} ${n}`;
+                }
+                let bT2Label = 'انتخاب نشده';
+                if (bTarget2 !== -1 && pickedHistory[bTarget2] && pickedHistory[bTarget2].role) {
+                    const p = pickedHistory[bTarget2];
+                    const n = (p.role.playerName && p.role.playerName.trim()) ? p.role.playerName.trim() : `بازیکن ${p.pickOrder}`;
+                    bT2Label = `#${p.pickOrder} ${n}`;
+                }
+
+                bodyHtml = `
+                    <div style="font-size:12px;color:#38bdf8;margin-bottom:8px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);border-radius:10px;padding:8px 12px;line-height:1.6;">
+                        ⚖️ <strong>قابلیت اختصاصی بازپرس: یک‌بار در کل بازی</strong><br>
+                        بازپرس می‌تواند در هر شبی که مایل باشد، <strong>دقیقاً ۲ نفر</strong> را برای دادگاه بازپرسی فردا احضار کند یا قابلیت خود را ذخیره نماید.
+                    </div>
+
+                    <div class="night-mode-tabs" style="margin-bottom:10px;">
+                        <button class="night-tab-btn ${!bState.usedTonight ? 'active-normal' : ''}" onclick="setNightBazporsUsedTonight(false)">
+                            ⏸️ ذخیره برای شب‌های بعد (عدم اقدام امشب)
+                        </button>
+                        <button class="night-tab-btn ${bState.usedTonight ? 'active-nato' : ''}" onclick="setNightBazporsUsedTonight(true)">
+                            ⚖️ اجرای بازپرسی در این شب (انتخاب ۲ متهم)
+                        </button>
+                    </div>
+
+                    ${!bState.usedTonight ? `
+                        <div style="background:rgba(255,255,255,0.04);border:1px dashed rgba(255,255,255,0.2);border-radius:10px;padding:12px;text-align:center;color:#94a3b8;font-size:12.5px;">
+                            قابلیت بازپرس برای شب‌های آینده ذخیره می‌ماند. امشب دادگاهی تشکیل نخواهد شد.
+                        </div>
+                    ` : `
+                        <div style="display:flex;gap:8px;margin-bottom:8px;">
+                            <div style="flex:1;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:6px 10px;font-size:11.5px;">
+                                <span style="color:#fbbf24;font-weight:700;">⚖️ متهم ۱:</span>
+                                <span style="color:#f8fafc;font-weight:600;margin-right:4px;">${bT1Label}</span>
+                            </div>
+                            <div style="flex:1;background:rgba(245,158,11,0.12);border:1px solid rgba(245,158,11,0.3);border-radius:8px;padding:6px 10px;font-size:11.5px;">
+                                <span style="color:#fbbf24;font-weight:700;">⚖️ متهم ۲:</span>
+                                <span style="color:#f8fafc;font-weight:600;margin-right:4px;">${bT2Label}</span>
+                            </div>
+                        </div>
+
+                        <div style="font-size:12px;font-weight:700;color:var(--accent-gold);margin-bottom:4px;">
+                            👥 انتخاب دقیقاً ۲ متهم برای احضار به دادگاه فردا:
+                        </div>
+                        ${renderBazporsMultiChips(livingPlayers, bTarget1, bTarget2, step.playerIndex)}
+                    `}
+                `;
+
+            } else if (step.stepKey === 'tofangdar') {
+                const pName = pickedHistory[step.playerIndex].role.playerName || `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
+                const warBulletsLeft = gameSettings.tofangdarWarBullets || 0;
+
+                if (warBulletsLeft <= 0) {
+                    if (instructionEl) instructionEl.innerText = `تفنگ‌دار (${pName}) بیدار می‌شود: تیرهای جنگی به پایان رسیده است`;
+                    bodyHtml = `
+                        <div style="background:rgba(239,68,68,0.12);border:1px solid rgba(239,68,68,0.35);border-radius:12px;padding:14px;line-height:1.8;text-align:right;">
+                            <div style="color:#f87171;font-weight:bold;font-size:13px;margin-bottom:8px;display:flex;align-items:center;gap:6px;">
+                                <span>🚫</span>
+                                <span>اتمام سهمیه تیر جنگی تفنگ‌دار</span>
+                            </div>
+                            <div style="color:#cbd5e1;font-size:12.5px;">
+                                سهمیه تیر جنگی تفنگ‌دار به اتمام رسیده است.<br>
+                                طبق قوانین بازی، از آنجا که برای همه مشخص خواهد بود که تیرهای باقی‌مانده تماماً مشقی هستند، تفنگ‌دار <strong>دیگر هیچ تفنگی در بازی اهدا نمی‌کند</strong>.<br><br>
+                                <strong style="color:#fbbf24;">دستور به گرداننده (گاد):</strong> به تفنگ‌دار علامت اتمام تیر را نشان داده و او را بخوابانید.
+                            </div>
+                        </div>
+                    `;
+                    nightActions.tofangdar = {
+                        gun1: { targetIdx: -1, type: 'blank' },
+                        gun2: { targetIdx: -1, type: 'blank' }
+                    };
+                    bodyEl.innerHTML = bodyHtml;
+                    return;
+                }
+
+                const tofangdarIdx = step.playerIndex;
+                const g1 = nightActions.tofangdar.gun1;
+                const g2 = nightActions.tofangdar.gun2;
+                if (instructionEl) instructionEl.innerText = `تفنگ‌دار (${pName}) بیدار می‌شود: اهدای تا ۲ تفنگ:`;
+
+                let p1Name = 'انتخاب نشده';
+                if (g1.targetIdx !== -1 && pickedHistory[g1.targetIdx] && pickedHistory[g1.targetIdx].role) {
+                    const p = pickedHistory[g1.targetIdx];
+                    const n = (p.role.playerName && p.role.playerName.trim()) ? p.role.playerName.trim() : `بازیکن ${p.pickOrder}`;
+                    p1Name = `#${p.pickOrder} ${n}${g1.targetIdx === tofangdarIdx ? ' (خودش)' : ''}`;
+                }
+                let p2Name = 'انتخاب نشده';
+                if (g2.targetIdx !== -1 && pickedHistory[g2.targetIdx] && pickedHistory[g2.targetIdx].role) {
+                    const p = pickedHistory[g2.targetIdx];
+                    const n = (p.role.playerName && p.role.playerName.trim()) ? p.role.playerName.trim() : `بازیکن ${p.pickOrder}`;
+                    p2Name = `#${p.pickOrder} ${n}${g2.targetIdx === tofangdarIdx ? ' (خودش)' : ''}`;
+                }
+
+                const canG1BeReal = (warBulletsLeft > 0 && g1.targetIdx !== tofangdarIdx && (warBulletsLeft >= 2 || g2.type !== 'real'));
+                const canG2BeReal = (warBulletsLeft > 0 && g2.targetIdx !== tofangdarIdx && (warBulletsLeft >= 2 || g1.type !== 'real'));
+
+                bodyHtml = `
+                    <div style="font-size:12px;color:#38bdf8;margin-bottom:8px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);border-radius:10px;padding:8px 12px;line-height:1.6;">
+                        🏹 <strong>سهمیه تفنگ‌دار: تا ۲ تفنگ</strong> | تیر جنگی باقی‌مانده: <strong style="color:#f59e0b;">${warBulletsLeft}</strong> | مشقی: نامحدود<br>
+                        <span style="color:#cbd5e1;font-size:11px;">* از کادر زیر بازیکنان را انتخاب کنید و نوع تیر (جنگی یا مشقی) را مشخص نمایید.</span>
+                    </div>
+
+                    <!-- اسلات‌های تفنگ اول و دوم -->
+                    <div style="display:flex;gap:8px;margin-bottom:8px;">
+                        <!-- Slot 1 -->
+                        <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid ${g1.targetIdx !== -1 ? '#f59e0b' : 'rgba(255,255,255,0.1)'};border-radius:8px;padding:6px 8px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                <span style="font-size:11.5px;font-weight:700;color:#fbbf24;">🎯 تفنگ اول:</span>
+                                <span style="font-size:11.5px;font-weight:600;color:#f8fafc;">${p1Name}</span>
+                                ${g1.targetIdx !== -1 ? '<button onclick="removeTofangdarGun(\'gun1\')" style="background:none;border:none;color:#ef4444;font-size:12px;cursor:pointer;padding:0 3px;">✕</button>' : ''}
+                            </div>
+                            ${g1.targetIdx !== -1 ? `
+                                <div class="bullet-type-tabs" style="margin:0;">
+                                    <button class="bullet-tab-btn ${g1.type === 'real' ? 'active-real' : ''}" 
+                                            onclick="setTofangdarGunType('gun1', 'real')" 
+                                            ${canG1BeReal ? '' : 'disabled style="opacity:0.4;cursor:not-allowed;"'}>
+                                        🔴 جنگی
+                                    </button>
+                                    <button class="bullet-tab-btn ${g1.type === 'blank' ? 'active-blank' : ''}" 
+                                            onclick="setTofangdarGunType('gun1', 'blank')">
+                                        ⚪ مشقی
+                                    </button>
+                                </div>
+                                ${g1.targetIdx === tofangdarIdx ? '<div style="font-size:10px;color:#f59e0b;margin-top:2px;">* اهدا به خود فقط مشقی است.</div>' : ''}
+                            ` : '<div style="font-size:11px;color:#64748b;text-align:center;padding:4px 0;">انتخاب نشده</div>'}
+                        </div>
+
+                        <!-- Slot 2 -->
+                        <div style="flex:1;background:rgba(255,255,255,0.03);border:1px solid ${g2.targetIdx !== -1 ? '#38bdf8' : 'rgba(255,255,255,0.1)'};border-radius:8px;padding:6px 8px;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                <span style="font-size:11.5px;font-weight:700;color:#38bdf8;">🎯 تفنگ دوم:</span>
+                                <span style="font-size:11.5px;font-weight:600;color:#f8fafc;">${p2Name}</span>
+                                ${g2.targetIdx !== -1 ? '<button onclick="removeTofangdarGun(\'gun2\')" style="background:none;border:none;color:#ef4444;font-size:12px;cursor:pointer;padding:0 3px;">✕</button>' : ''}
+                            </div>
+                            ${g2.targetIdx !== -1 ? `
+                                <div class="bullet-type-tabs" style="margin:0;">
+                                    <button class="bullet-tab-btn ${g2.type === 'real' ? 'active-real' : ''}" 
+                                            onclick="setTofangdarGunType('gun2', 'real')" 
+                                            ${canG2BeReal ? '' : 'disabled style="opacity:0.4;cursor:not-allowed;"'}>
+                                        🔴 جنگی
+                                    </button>
+                                    <button class="bullet-tab-btn ${g2.type === 'blank' ? 'active-blank' : ''}" 
+                                            onclick="setTofangdarGunType('gun2', 'blank')">
+                                        ⚪ مشقی
+                                    </button>
+                                </div>
+                                ${g2.targetIdx === tofangdarIdx ? '<div style="font-size:10px;color:#f59e0b;margin-top:2px;">* اهدا به خود فقط مشقی است.</div>' : ''}
+                            ` : '<div style="font-size:11px;color:#64748b;text-align:center;padding:4px 0;">انتخاب نشده</div>'}
+                        </div>
+                    </div>
+
+                    <div style="font-size:12px;font-weight:700;color:var(--accent-gold);margin-bottom:4px;">
+                        👥 انتخاب گیرندگان تفنگ (حداکثر ۲ تفنگ):
+                    </div>
+                    ${renderTofangdarMultiChips(livingPlayers, g1, g2, tofangdarIdx, warBulletsLeft)}
+                `;
+            }
+
+            bodyEl.innerHTML = bodyHtml;
+        }
+
+        // Helper to render modern rich player selection chips
+        function renderPlayerChips(livingPlayers, currentVal, selectFnName, excludeIdx = -1, allowNone = false, noneText = '🚫 عدم اقدام / هیچ‌کدام') {
+            let html = `<div class="player-chips-scroll-box"><div class="player-chips-grid">`;
+            
+            if (allowNone) {
+                const isSelected = (currentVal === -1 || currentVal === null || currentVal === undefined);
+                html += `
+                    <div class="rich-player-chip none-chip ${isSelected ? 'selected' : ''}" onclick="${selectFnName}(-1)">
+                        <span>${noneText}</span>
+                    </div>
+                `;
+            }
+
+            const excludedArray = Array.isArray(excludeIdx) ? excludeIdx : [excludeIdx];
+
+            livingPlayers.forEach(p => {
+                if (!p.role || !p.role.isAlive) return; // Strict filter: living only
+                if (excludedArray.includes(p.originalIndex)) return;
+                const isSelected = currentVal === p.originalIndex;
+                const rawName = (p.role && p.role.playerName) ? p.role.playerName.trim() : '';
+                const pName = rawName || `بازیکن ${p.pickOrder}`;
+                const teamClass = `team-${p.role.team || 'citizen'}`;
+                html += `
+                    <div class="rich-player-chip ${isSelected ? 'selected' : ''}" onclick="${selectFnName}(${p.originalIndex})">
+                        <div class="chip-num">#${p.pickOrder}</div>
+                        <div class="chip-content">
+                            <span class="chip-name" title="${pName}">${pName}</span>
+                            <span class="chip-role ${teamClass}">${p.role.name}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            html += `</div></div>`;
+            return html;
+        }
+
+        // Helper for Guard unified multi-selection chips
+        function renderGuardMultiChips(livingPlayers, target1, target2, guardQuota, guardIdx = -1) {
+            let html = `<div class="player-chips-scroll-box"><div class="player-chips-grid">`;
+
+            const isNone = (target1 === -1 && target2 === -1);
+            html += `
+                <div class="rich-player-chip none-chip ${isNone ? 'selected' : ''}" onclick="toggleNightNegahbanTarget(-1)">
+                    <span>🔄 پاک کردن انتخاب‌ها</span>
+                </div>
+            `;
+
+            livingPlayers.forEach(p => {
+                if (!p.role || !p.role.isAlive) return;
+                // Guard does NOT guard himself
+                if (p.originalIndex === guardIdx) return;
+
+                const isT1 = (target1 === p.originalIndex);
+                const isT2 = (guardQuota === 2 && target2 === p.originalIndex);
+                let selClass = '';
+                let badgeHtml = '';
+
+                if (isT1) {
+                    selClass = 'selected selected-target-1';
+                    badgeHtml = `<span class="target-quota-badge badge-1">هدف ۱</span>`;
+                } else if (isT2) {
+                    selClass = 'selected selected-target-2';
+                    badgeHtml = `<span class="target-quota-badge badge-2">هدف ۲</span>`;
+                }
+
+                const rawName = (p.role && p.role.playerName) ? p.role.playerName.trim() : '';
+                const pName = rawName || `بازیکن ${p.pickOrder}`;
+                const teamClass = `team-${p.role.team || 'citizen'}`;
+
+                html += `
+                    <div class="rich-player-chip ${selClass}" onclick="toggleNightNegahbanTarget(${p.originalIndex})">
+                        ${badgeHtml}
+                        <div class="chip-num">#${p.pickOrder}</div>
+                        <div class="chip-content">
+                            <span class="chip-name" title="${pName}">${pName}</span>
+                            <span class="chip-role ${teamClass}">${p.role.name}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            return html;
+        }
+
+        // Helper for Doctor unified multi-selection chips
+        function renderDoctorMultiChips(livingPlayers, target1, target2, docQuota, docIdx, selfSavesLeft) {
+            let html = `<div class="player-chips-scroll-box"><div class="player-chips-grid">`;
+
+            const isNone = (target1 === -1 && target2 === -1);
+            html += `
+                <div class="rich-player-chip none-chip ${isNone ? 'selected' : ''}" onclick="toggleNightDoctorTarget(-1)">
+                    <span>🔄 پاک کردن انتخاب‌ها</span>
+                </div>
+            `;
+
+            livingPlayers.forEach(p => {
+                if (!p.role || !p.role.isAlive) return;
+                const isDocHimself = (p.originalIndex === docIdx);
+                const cannotSelfSave = (isDocHimself && selfSavesLeft <= 0);
+
+                const isT1 = (target1 === p.originalIndex);
+                const isT2 = (docQuota === 2 && target2 === p.originalIndex);
+                let selClass = '';
+                let badgeHtml = '';
+
+                if (isT1) {
+                    selClass = 'selected selected-target-1';
+                    badgeHtml = `<span class="target-quota-badge badge-1">نجات ۱</span>`;
+                } else if (isT2) {
+                    selClass = 'selected selected-target-2';
+                    badgeHtml = `<span class="target-quota-badge badge-2">نجات ۲</span>`;
+                } else if (cannotSelfSave) {
+                    badgeHtml = `<span class="target-quota-badge" style="background:#ef4444;color:#fff;">اتمام سهمیه</span>`;
+                }
+
+                const rawName = (p.role && p.role.playerName) ? p.role.playerName.trim() : '';
+                const pName = rawName || `بازیکن ${p.pickOrder}`;
+                const teamClass = `team-${p.role.team || 'citizen'}`;
+
+                html += `
+                    <div class="rich-player-chip ${selClass}" 
+                         onclick="toggleNightDoctorTarget(${p.originalIndex})"
+                         ${cannotSelfSave ? 'style="opacity:0.45;"' : ''}>
+                        ${badgeHtml}
+                        <div class="chip-num">#${p.pickOrder}</div>
+                        <div class="chip-content">
+                            <span class="chip-name" title="${pName}">${pName}</span>
+                            <span class="chip-role ${teamClass}">${p.role.name}${isDocHimself ? ' (خودتان)' : ''}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            return html;
+        }
+
+        // Helper for Bazpors unified 2-target selection chips
+        function renderBazporsMultiChips(livingPlayers, target1, target2, bazporsIdx) {
+            let html = `<div class="player-chips-scroll-box"><div class="player-chips-grid">`;
+
+            const isNone = (target1 === -1 && target2 === -1);
+            html += `
+                <div class="rich-player-chip none-chip ${isNone ? 'selected' : ''}" onclick="toggleNightBazporsTarget(-1)">
+                    <span>🔄 پاک کردن متهمان</span>
+                </div>
+            `;
+
+            livingPlayers.forEach(p => {
+                if (!p.role || !p.role.isAlive) return;
+                if (p.originalIndex === bazporsIdx) return; // Bazpors does not interrogate himself
+
+                const isT1 = (target1 === p.originalIndex);
+                const isT2 = (target2 === p.originalIndex);
+                let selClass = '';
+                let badgeHtml = '';
+
+                if (isT1) {
+                    selClass = 'selected selected-target-1';
+                    badgeHtml = `<span class="target-quota-badge badge-1">متهم ۱</span>`;
+                } else if (isT2) {
+                    selClass = 'selected selected-target-2';
+                    badgeHtml = `<span class="target-quota-badge badge-2">متهم ۲</span>`;
+                }
+
+                const rawName = (p.role && p.role.playerName) ? p.role.playerName.trim() : '';
+                const pName = rawName || `بازیکن ${p.pickOrder}`;
+                const teamClass = `team-${p.role.team || 'citizen'}`;
+
+                html += `
+                    <div class="rich-player-chip ${selClass}" onclick="toggleNightBazporsTarget(${p.originalIndex})">
+                        ${badgeHtml}
+                        <div class="chip-num">#${p.pickOrder}</div>
+                        <div class="chip-content">
+                            <span class="chip-name" title="${pName}">${pName}</span>
+                            <span class="chip-role ${teamClass}">${p.role.name}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            return html;
+        }
+
+        // Helper for Tofangdar unified multi-selection chips
+        function renderTofangdarMultiChips(livingPlayers, g1, g2, tofangdarIdx, warBulletsLeft) {
+            let html = `<div class="player-chips-scroll-box"><div class="player-chips-grid">`;
+
+            const isNone = (g1.targetIdx === -1 && g2.targetIdx === -1);
+            html += `
+                <div class="rich-player-chip none-chip ${isNone ? 'selected' : ''}" onclick="toggleNightTofangdarTarget(-1)">
+                    <span>🚫 لغو انتخاب‌ها / عدم اهدای تفنگ</span>
+                </div>
+            `;
+
+            livingPlayers.forEach(p => {
+                if (!p.role || !p.role.isAlive) return;
+                const isG1 = (g1.targetIdx === p.originalIndex);
+                const isG2 = (g2.targetIdx === p.originalIndex);
+                let selClass = '';
+                let badgeHtml = '';
+
+                if (isG1) {
+                    selClass = 'selected selected-target-1';
+                    const bType = g1.type === 'real' ? '🔴 جنگی' : '⚪ مشقی';
+                    badgeHtml = `<span class="target-quota-badge badge-1">تفنگ ۱ (${bType})</span>`;
+                } else if (isG2) {
+                    selClass = 'selected selected-target-2';
+                    const bType = g2.type === 'real' ? '🔴 جنگی' : '⚪ مشقی';
+                    badgeHtml = `<span class="target-quota-badge badge-2">تفنگ ۲ (${bType})</span>`;
+                }
+
+                const rawName = (p.role && p.role.playerName) ? p.role.playerName.trim() : '';
+                const pName = rawName || `بازیکن ${p.pickOrder}`;
+                const teamClass = `team-${p.role.team || 'citizen'}`;
+
+                html += `
+                    <div class="rich-player-chip ${selClass}" onclick="toggleNightTofangdarTarget(${p.originalIndex})">
+                        ${badgeHtml}
+                        <div class="chip-num">#${p.pickOrder}</div>
+                        <div class="chip-content">
+                            <span class="chip-name" title="${pName}">${pName}</span>
+                            <span class="chip-role ${teamClass}">${p.role.name}${p.originalIndex === tofangdarIdx ? ' (خودتان)' : ''}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            html += `</div></div>`;
+            return html;
+        }
+
+        // Action setters
+        function toggleNightNegahbanTarget(targetIdx) {
+            if (!nightActions.negahban) {
+                nightActions.negahban = { target1: -1, target2: -1 };
+            }
+            if (targetIdx === -1) {
+                nightActions.negahban.target1 = -1;
+                nightActions.negahban.target2 = -1;
+                renderCurrentNightStep();
+                return;
+            }
+
+            const livingCount = pickedHistory.filter(p => p.role && p.role.isAlive).length;
+            const maxQuota = livingCount > 8 ? 2 : 1;
+            let t1 = nightActions.negahban.target1;
+            let t2 = (maxQuota === 2) ? nightActions.negahban.target2 : -1;
+
+            if (t1 === targetIdx) {
+                nightActions.negahban.target1 = (maxQuota === 2 && t2 !== -1) ? t2 : -1;
+                nightActions.negahban.target2 = -1;
+            } else if (maxQuota === 2 && t2 === targetIdx) {
+                nightActions.negahban.target2 = -1;
+            } else {
+                if (t1 === -1) {
+                    nightActions.negahban.target1 = targetIdx;
+                } else if (maxQuota === 2 && t2 === -1) {
+                    nightActions.negahban.target2 = targetIdx;
+                } else if (maxQuota === 2) {
+                    nightActions.negahban.target2 = targetIdx;
+                } else {
+                    nightActions.negahban.target1 = targetIdx;
+                }
+            }
+            renderCurrentNightStep();
+        }
+
+        function setNightNegahbanTarget1(idx) {
+            nightActions.negahban.target1 = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightNegahbanTarget2(idx) {
+            nightActions.negahban.target2 = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightBlockerTarget(idx) {
+            nightActions.blocker = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightMafiaMode(mode) {
+            nightActions.mafiaMode = mode;
+            renderCurrentNightStep();
+        }
+
+        function setNightMafiaTarget(idx) {
+            nightActions.mafiaShot = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightNatoTarget(idx) {
+            nightActions.natoTarget = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightNatoRole(roleId) {
+            nightActions.natoRole = roleId;
+        }
+
+        function setNightYakuzaSacrifice(idx) {
+            const livingMafia = pickedHistory.filter(p => p.role && p.role.team === 'mafia' && p.role.isAlive);
+            const targetP = pickedHistory[idx];
+            if (livingMafia.length > 1 && targetP && targetP.role && targetP.role.id === 'm_godfather') {
+                showToast('⚠️ رئیس مافیا فقط زمانی می‌تواند خود را فدا کند که تنها مانده باشد.');
+                return;
+            }
+            nightActions.yakuzaSacrifice = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightYakuzaTarget(idx) {
+            nightActions.yakuzaTarget = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightShayadTarget(idx) {
+            nightActions.shayad = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightDetectiveTarget(idx) {
+            nightActions.karagah = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightTakavarTarget(idx) {
+            nightActions.takavar = idx;
+            renderCurrentNightStep();
+        }
+
+        function toggleNightDoctorTarget(targetIdx) {
+            if (!nightActions.doctor || typeof nightActions.doctor !== 'object') {
+                nightActions.doctor = { target1: -1, target2: -1 };
+            }
+
+            if (targetIdx === -1) {
+                nightActions.doctor.target1 = -1;
+                nightActions.doctor.target2 = -1;
+                renderCurrentNightStep();
+                return;
+            }
+
+            const docIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_doctor' && p.role.isAlive);
+            const selfSavesLeft = gameSettings.doctorSelfSaves || 0;
+            if (targetIdx === docIdx && selfSavesLeft <= 0) {
+                showToast('❌ سهمیه نجات شخصی پزشک به اتمام رسیده است و نمی‌تواند خود را نجات دهد.');
+                return;
+            }
+
+            const livingCount = pickedHistory.filter(p => p.role && p.role.isAlive).length;
+            const maxQuota = livingCount > 8 ? 2 : 1;
+            let t1 = nightActions.doctor.target1;
+            let t2 = (maxQuota === 2) ? nightActions.doctor.target2 : -1;
+
+            if (t1 === targetIdx) {
+                nightActions.doctor.target1 = (maxQuota === 2 && t2 !== -1) ? t2 : -1;
+                nightActions.doctor.target2 = -1;
+            } else if (maxQuota === 2 && t2 === targetIdx) {
+                nightActions.doctor.target2 = -1;
+            } else {
+                if (t1 === -1) {
+                    nightActions.doctor.target1 = targetIdx;
+                } else if (maxQuota === 2 && t2 === -1) {
+                    nightActions.doctor.target2 = targetIdx;
+                } else if (maxQuota === 2) {
+                    nightActions.doctor.target2 = targetIdx;
+                } else {
+                    nightActions.doctor.target1 = targetIdx;
+                }
+            }
+            renderCurrentNightStep();
+        }
+
+        function setNightDoctorTarget(idx) {
+            if (!nightActions.doctor || typeof nightActions.doctor !== 'object') {
+                nightActions.doctor = { target1: idx, target2: -1 };
+            } else {
+                nightActions.doctor.target1 = idx;
+            }
+            renderCurrentNightStep();
+        }
+
+        function setNightMohagheghTarget(idx) {
+            nightActions.mohaghegh = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightSniperTarget(idx) {
+            nightActions.sniper = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightAttarTarget(idx) {
+            nightActions.attarTarget = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightAttarPotion(potion) {
+            nightActions.attarPotion = potion;
+        }
+
+        function setNightBazporsUsedTonight(used) {
+            if (!nightActions.bazpors || typeof nightActions.bazpors !== 'object') {
+                nightActions.bazpors = { usedTonight: false, target1: -1, target2: -1 };
+            }
+            nightActions.bazpors.usedTonight = used;
+            renderCurrentNightStep();
+        }
+
+        function toggleNightBazporsTarget(targetIdx) {
+            if (!nightActions.bazpors || typeof nightActions.bazpors !== 'object') {
+                nightActions.bazpors = { usedTonight: true, target1: -1, target2: -1 };
+            }
+            nightActions.bazpors.usedTonight = true;
+
+            if (targetIdx === -1) {
+                nightActions.bazpors.target1 = -1;
+                nightActions.bazpors.target2 = -1;
+                renderCurrentNightStep();
+                return;
+            }
+
+            let t1 = nightActions.bazpors.target1;
+            let t2 = nightActions.bazpors.target2;
+
+            if (t1 === targetIdx) {
+                nightActions.bazpors.target1 = (t2 !== -1) ? t2 : -1;
+                nightActions.bazpors.target2 = -1;
+            } else if (t2 === targetIdx) {
+                nightActions.bazpors.target2 = -1;
+            } else {
+                if (t1 === -1) {
+                    nightActions.bazpors.target1 = targetIdx;
+                } else if (t2 === -1) {
+                    nightActions.bazpors.target2 = targetIdx;
+                } else {
+                    nightActions.bazpors.target2 = targetIdx;
+                }
+            }
+            renderCurrentNightStep();
+        }
+
+        function toggleNightTofangdarTarget(targetIdx) {
+            if (!nightActions.tofangdar) {
+                nightActions.tofangdar = {
+                    gun1: { targetIdx: -1, type: 'blank' },
+                    gun2: { targetIdx: -1, type: 'blank' }
+                };
+            }
+
+            if (targetIdx === -1) {
+                nightActions.tofangdar.gun1 = { targetIdx: -1, type: 'blank' };
+                nightActions.tofangdar.gun2 = { targetIdx: -1, type: 'blank' };
+                renderCurrentNightStep();
+                return;
+            }
+
+            const tofangdarIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_tofangdar' && p.role.isAlive);
+            const warBulletsTotal = gameSettings.tofangdarWarBullets || 0;
+            let g1 = nightActions.tofangdar.gun1;
+            let g2 = nightActions.tofangdar.gun2;
+
+            if (g1.targetIdx === targetIdx) {
+                if (g2.targetIdx !== -1) {
+                    nightActions.tofangdar.gun1 = { ...g2 };
+                    nightActions.tofangdar.gun2 = { targetIdx: -1, type: 'blank' };
+                } else {
+                    nightActions.tofangdar.gun1 = { targetIdx: -1, type: 'blank' };
+                }
+            } else if (g2.targetIdx === targetIdx) {
+                nightActions.tofangdar.gun2 = { targetIdx: -1, type: 'blank' };
+            } else {
+                const defaultType = (targetIdx === tofangdarIdx) ? 'blank' : (warBulletsTotal > 0 && g1.type !== 'real' ? 'real' : 'blank');
+
+                if (g1.targetIdx === -1) {
+                    nightActions.tofangdar.gun1 = { targetIdx: targetIdx, type: defaultType };
+                } else if (g2.targetIdx === -1) {
+                    const g2Default = (targetIdx === tofangdarIdx) ? 'blank' : (warBulletsTotal >= 2 && g1.type === 'real' ? 'real' : (warBulletsTotal >= 1 && g1.type !== 'real' ? 'real' : 'blank'));
+                    nightActions.tofangdar.gun2 = { targetIdx: targetIdx, type: g2Default };
+                } else {
+                    const g2Default = (targetIdx === tofangdarIdx) ? 'blank' : (warBulletsTotal >= 2 && g1.type === 'real' ? 'real' : (warBulletsTotal >= 1 && g1.type !== 'real' ? 'real' : 'blank'));
+                    nightActions.tofangdar.gun2 = { targetIdx: targetIdx, type: g2Default };
+                }
+            }
+            renderCurrentNightStep();
+        }
+
+        function setTofangdarGunType(gunKey, bulletType) {
+            if (!nightActions.tofangdar) return;
+            const tofangdarIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_tofangdar' && p.role.isAlive);
+            if (nightActions.tofangdar[gunKey].targetIdx === tofangdarIdx) {
+                nightActions.tofangdar[gunKey].type = 'blank';
+                renderCurrentNightStep();
+                return;
+            }
+
+            const warBulletsTotal = gameSettings.tofangdarWarBullets || 0;
+            const otherKey = (gunKey === 'gun1') ? 'gun2' : 'gun1';
+
+            if (bulletType === 'real') {
+                if (warBulletsTotal <= 0) return;
+                if (warBulletsTotal === 1 && nightActions.tofangdar[otherKey].type === 'real') {
+                    nightActions.tofangdar[otherKey].type = 'blank';
+                }
+            }
+
+            nightActions.tofangdar[gunKey].type = bulletType;
+            renderCurrentNightStep();
+        }
+
+        function removeTofangdarGun(gunKey) {
+            if (!nightActions.tofangdar) return;
+            if (gunKey === 'gun1') {
+                if (nightActions.tofangdar.gun2.targetIdx !== -1) {
+                    nightActions.tofangdar.gun1 = { ...nightActions.tofangdar.gun2 };
+                    nightActions.tofangdar.gun2 = { targetIdx: -1, type: 'blank' };
+                } else {
+                    nightActions.tofangdar.gun1 = { targetIdx: -1, type: 'blank' };
+                }
+            } else {
+                nightActions.tofangdar.gun2 = { targetIdx: -1, type: 'blank' };
+            }
+            renderCurrentNightStep();
+        }
+
+        function setNightTofangdarTarget(gunKey, targetIdx) {
+            toggleNightTofangdarTarget(targetIdx);
+        }
+
+        function setNightTofangdarBulletType(gunKey, bulletType) {
+            setTofangdarGunType(gunKey, bulletType);
+        }
+
+        // Validate that mandatory role actions are filled before proceeding
+        function validateNightStepAction(step) {
+            if (!step || step.isDead || step.isExhausted) return { valid: true };
+
+            // Check if player is hostaged / blocked tonight -> Action is completely disabled, allow proceeding!
+            let isHostaged = false;
+            if (typeof nightActions.blocker === 'number' && nightActions.blocker >= 0 && typeof step.playerIndex === 'number' && step.playerIndex >= 0 && nightActions.blocker === step.playerIndex) {
+                const guardIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_negahban' && p.role.isAlive);
+                const livingCount = pickedHistory.filter(p => p.role && p.role.isAlive).length;
+                const isSavedByGuard = (nightActions.negahban && (nightActions.negahban.target1 === nightActions.blocker ||
+                    (livingCount > 8 && nightActions.negahban.target2 === nightActions.blocker)));
+                const isGuardHimself = (guardIdx !== -1 && nightActions.blocker === guardIdx);
+
+                if (!isSavedByGuard && !isGuardHimself) {
+                    isHostaged = true;
+                }
+            }
+            if (isHostaged) return { valid: true };
+
+            const livingCount = pickedHistory.filter(p => p.role && p.role.isAlive).length;
+
+            if (step.stepKey === 'negahban') {
+                const guardQuota = livingCount > 8 ? 2 : 1;
+                const g1 = nightActions.negahban ? nightActions.negahban.target1 : -1;
+                const g2 = nightActions.negahban ? nightActions.negahban.target2 : -1;
+                if (guardQuota === 1) {
+                    if (g1 === -1 && g2 === -1) return { valid: false, message: 'لطفاً هدف نگهبان را مشخص کنید.' };
+                } else {
+                    if (g1 === -1 || g2 === -1) return { valid: false, message: 'سهمیه نگهبان ۲ نفر است؛ لطفاً هر دو هدف را انتخاب کنید.' };
+                }
+            }
+
+            if (step.stepKey === 'blocker') {
+                if (nightActions.blocker === -1) {
+                    return { valid: false, message: 'لطفاً بازیکنی که باید قفل/مسدود شود را انتخاب کنید.' };
+                }
+            }
+
+            if (step.stepKey === 'mafia_shot') {
+                if (nightActions.mafiaMode === 'normal') {
+                    if (nightActions.mafiaShot === -1) {
+                        return { valid: false, message: 'تیم مافیا حق عدم شلیک ندارد؛ لطفاً هدف شلیک را مشخص کنید.' };
+                    }
+                } else if (nightActions.mafiaMode === 'nato') {
+                    if (nightActions.natoTarget === -1 || !nightActions.natoRole) {
+                        return { valid: false, message: 'لطفاً هدف اقدام ناتو و حدس نقش را مشخص فرمایید.' };
+                    }
+                } else if (nightActions.mafiaMode === 'yakuza') {
+                    if (nightActions.yakuzaSacrifice === -1) {
+                        return { valid: false, message: 'لطفاً مافیای فداشونده را انتخاب فرمایید.' };
+                    }
+                    if (nightActions.yakuzaTarget === -1) {
+                        return { valid: false, message: 'لطفاً شهروند مورد نظر برای مذاکره را انتخاب نمایید.' };
+                    }
+                }
+            }
+
+            if (step.stepKey === 'karagah') {
+                if (nightActions.karagah === -1) {
+                    return { valid: false, message: 'لطفاً بازیکن مورد نظر کارآگاه جهت استعلام را انتخاب کنید.' };
+                }
+            }
+
+            if (step.stepKey === 'doctor') {
+                const docQuota = livingCount > 8 ? 2 : 1;
+                const d1 = nightActions.doctor ? nightActions.doctor.target1 : -1;
+                const d2 = nightActions.doctor ? nightActions.doctor.target2 : -1;
+                if (docQuota === 1) {
+                    if (d1 === -1 && d2 === -1) return { valid: false, message: 'لطفاً هدف نجات پزشک را مشخص کنید.' };
+                } else {
+                    if (d1 === -1 || d2 === -1) return { valid: false, message: 'سهمیه نجات پزشک ۲ نفر است؛ لطفاً هر دو هدف را مشخص فرمایید.' };
+                }
+            }
+
+            if (step.stepKey === 'shayad') {
+                if (nightActions.shayad === -1) {
+                    return { valid: false, message: 'لطفاً بازیکنی که شیاد قصد فریب او را دارد انتخاب کنید.' };
+                }
+            }
+
+            if (step.stepKey === 'mohaghegh') {
+                if (nightActions.mohaghegh === -1) {
+                    return { valid: false, message: 'لطفاً بازیکنی که محقق به او گره می‌خورد را انتخاب کنید.' };
+                }
+            }
+
+            if (step.stepKey === 'bazpors') {
+                if (nightActions.bazpors && nightActions.bazpors.usedTonight) {
+                    const t1 = nightActions.bazpors.target1;
+                    const t2 = nightActions.bazpors.target2;
+                    if (t1 === -1 || t2 === -1 || t1 === t2) {
+                        return { valid: false, message: 'برای دادگاه بازپرسی باید دقیقاً ۲ متهم متفاوت انتخاب شوند.' };
+                    }
+                }
+            }
+
+            if (step.stepKey === 'tofangdar') {
+                const warBulletsLeft = gameSettings.tofangdarWarBullets || 0;
+                if (warBulletsLeft > 0) {
+                    const g1 = nightActions.tofangdar ? nightActions.tofangdar.gun1 : null;
+                    if (!g1 || g1.targetIdx === -1) {
+                        return { valid: false, message: 'لطفاً حداقل گیرنده تفنگ اول را مشخص کنید.' };
+                    }
+                }
+            }
+
+            // Sniper and Takavar are explicitly allowed to have non-action ("عدم اقدام").
+            return { valid: true };
+        }
+
+        function advanceNightStep() {
+            if (currentNightStepIndex < nightSteps.length) {
+                const step = nightSteps[currentNightStepIndex];
+                const validation = validateNightStepAction(step);
+                if (!validation.valid) {
+                    showToast('⚠️ ' + validation.message);
+                    return;
+                }
+            }
+            currentNightStepIndex++;
+            renderCurrentNightStep();
+        }
+
+        function previousNightStep() {
+            if (currentNightStepIndex > 0) {
+                currentNightStepIndex--;
+                renderCurrentNightStep();
+            }
+        }
+
+        function finishNightEngine() {
+            currentNightNumber = (currentNightNumber || 0) + 1;
+            const results = resolveNight(nightActions, currentNightNumber);
+            nightHistory.push(results);
+            activeNightResult = results;
+            nightState = {
+                lastNightReport: results
+            };
+
+            closeNightWizardModal();
+            renderDayDrawer();
+            const drawerContainer = document.getElementById('day-drawer-container');
+            if (drawerContainer) {
+                drawerContainer.classList.add('open');
+            }
+            saveState();
+            showToast(`نتایج شب ${currentNightNumber} با موفقیت در کشوی روز ثبت شد.`);
+        }
+
+        // Complete Night Resolution Engine with Full Actor & Target Entity Logging
+        function resolveNight(actions, nightNum = currentNightNumber) {
+            const privateLog = [];
+            const deadPlayerIndices = [];
+
+            // Helper to format an actor: [Role - Player #X (Name)]
+            const formatActor = (roleId, fallbackTitle = 'نقش ناشناس') => {
+                const idx = pickedHistory.findIndex(p => p.role && p.role.id === roleId);
+                if (idx === -1) return fallbackTitle;
+                const p = pickedHistory[idx];
+                const pName = p.role.playerName || `بازیکن ${p.pickOrder}`;
+                return `${p.role.name} [بازیکن #${p.pickOrder} - ${pName}]`;
+            };
+
+            // Helper to format a target: [Player #X (Name) with Role]
+            const formatTarget = (idx) => {
+                if (idx === -1 || !pickedHistory[idx]) return 'هیچ‌کس';
+                const p = pickedHistory[idx];
+                const pName = p.role.playerName || `بازیکن ${p.pickOrder}`;
+                const roleName = (p.role && p.role.name) ? p.role.name : 'نقش نامشخص';
+                return `بازیکن #${p.pickOrder} (${pName}) با نقش [${roleName}]`;
+            };
+
+            const getNameOnly = (idx) => {
+                if (idx === -1 || !pickedHistory[idx]) return 'هیچ‌کس';
+                return pickedHistory[idx].role.playerName || `بازیکن ${pickedHistory[idx].pickOrder}`;
+            };
+
+            // 1. Guard & Blocker Resolution
+            const guardActor = formatActor('c_negahban', 'نگهبان');
+            const guardIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_negahban' && p.role.isAlive);
+            const blockerActor = formatActor('m_gorogangir', 'گروگان‌گیر');
+            const blockerIdx = actions.blocker;
+
+            const livingCount = pickedHistory.filter(p => p.role && p.role.isAlive).length;
+            const guardQuota = livingCount > 8 ? 2 : 1;
+            const g1 = actions.negahban ? actions.negahban.target1 : -1;
+            const g2 = (guardQuota === 2 && actions.negahban) ? actions.negahban.target2 : -1;
+            const guardedTargets = [g1, g2].filter(t => t !== -1 && t !== undefined);
+
+            guardedTargets.forEach(tIdx => {
+                privateLog.push(`🛡️ ${guardActor} از ${formatTarget(tIdx)} محافظت نمود.`);
+            });
+
+            let effectiveBlockedIdx = blockerIdx;
+
+            if (blockerIdx !== -1) {
+                // Rule 1: Hostage-Taker targeting Guard is completely ineffective!
+                if (guardIdx !== -1 && blockerIdx === guardIdx) {
+                    effectiveBlockedIdx = -1;
+                    privateLog.push(`🛡️ ${blockerActor} قصد گروگان‌گیری ${formatTarget(guardIdx)} (نگهبان) را داشت، اما زره و توانایی نگهبان مانع شد و گروگان‌گیری کاملاً بی‌اثر ماند.`);
+                }
+                // Rule 2: Hostage-Taker targeting someone guarded by Guard
+                else if (guardedTargets.includes(blockerIdx)) {
+                    effectiveBlockedIdx = -1;
+                    privateLog.push(`🛡️ نگهبان از ${formatTarget(blockerIdx)} محافظت کرده بود؛ اقدام ${blockerActor} با موفقیت خنثی شد.`);
+                }
+                else {
+                    privateLog.push(`🔒 ${blockerActor} موفق شد توانایی شبانه ${formatTarget(blockerIdx)} را قفل کند.`);
+                }
+            }
+
+            // 2. Mafia Shot, Nato Guess, or Yakuza Action
+            let mafiaTargetIdx = actions.mafiaShot;
+            const mafiaActorBlocked = (effectiveBlockedIdx !== -1 && pickedHistory[effectiveBlockedIdx] && pickedHistory[effectiveBlockedIdx].role && pickedHistory[effectiveBlockedIdx].role.team === 'mafia');
+            const casualtyReasons = [];
+
+            if (actions.mafiaMode === 'nato') {
+                const natoActor = formatActor('m_nato', 'ناتو');
+                if (mafiaActorBlocked) {
+                    privateLog.push(`🎭 ${natoActor} قصد حدس نقش داشت، اما بازیکن مافیا گروگان بود و اقدام لغو شد.`);
+                } else if (actions.natoTarget !== -1 && actions.natoRole) {
+                    const nTarget = pickedHistory[actions.natoTarget];
+                    gameSettings.natoUsed = true;
+                    if (nTarget.role && nTarget.role.id === actions.natoRole) {
+                        deadPlayerIndices.push(actions.natoTarget);
+                        casualtyReasons.push(`🎯 ${formatTarget(actions.natoTarget)} با حدس دقیق نقش توسط ناتو ترور شد.`);
+                        privateLog.push(`💥 حدس ناتو (${natoActor}) کاملاً درست بود! ${formatTarget(actions.natoTarget)} با حدس نقش [${actions.natoRole}] بدون امکان نجات توسط پزشک ترور و از بازی خارج شد.`);
+                    } else {
+                        privateLog.push(`❌ حدس ناتو (${natoActor}) نادرست بود (${formatTarget(actions.natoTarget)} نقش مورد نظر را نداشت) و تیر ناتو سوخت.`);
+                    }
+                }
+            } else if (actions.mafiaMode === 'yakuza') {
+                const isGodfatherAlive = pickedHistory.some(p => p.role && p.role.id === 'm_godfather' && p.role.isAlive);
+                if (mafiaActorBlocked) {
+                    privateLog.push(`🗡️ تیم مافیا قصد اقدام سوداگری داشت، اما مافیا گروگان بود و اقدام لغو شد.`);
+                } else if (!isGodfatherAlive) {
+                    privateLog.push(`🗡️ اقدام سوداگری لغو شد؛ رئیس مافیا زنده نیست.`);
+                } else if (actions.yakuzaSacrifice !== -1 && actions.yakuzaTarget !== -1) {
+                    gameSettings.yakuzaUsed = true;
+                    const sacIdx = actions.yakuzaSacrifice;
+                    const tgtIdx = actions.yakuzaTarget;
+
+                    // Sacrificed mafia dies tonight!
+                    if (!deadPlayerIndices.includes(sacIdx)) {
+                        deadPlayerIndices.push(sacIdx);
+                    }
+                    casualtyReasons.push(`🗡️ اقدام یاکوزایی (سوداگری): مافیا (${formatTarget(sacIdx)}) خود را برای مذاکره و جذب یار جدید فدا کرد.`);
+                    privateLog.push(`🗡️ اقدام سوداگری (یاکوزایی): ${formatTarget(sacIdx)} خود را فدا کرد.`);
+
+                    // Evaluate target
+                    const tgtPlayer = pickedHistory[tgtIdx];
+                    const totalPlayers = pickedHistory.length;
+                    const isRoointanAllowed = (totalPlayers < 13);
+                    const tRoleId = tgtPlayer && tgtPlayer.role ? tgtPlayer.role.id : '';
+
+                    const isSuccess = (tRoleId === 'c_simple' || tRoleId === 'c_shahrvand' || (isRoointanAllowed && tRoleId === 'c_roointan'));
+
+                    if (isSuccess) {
+                        tgtPlayer.role.team = 'mafia';
+                        tgtPlayer.role.teamLabel = 'گروه مافیا';
+                        privateLog.push(`🤝 مذاکره سوداگری موفقیت‌آمیز بود! ${formatTarget(tgtIdx)} تغییر ساید داد و به تیم مافیا ملحق شد. گاد باید همان شب او را بیدار کرده و با تیم آشنا کند.`);
+                        casualtyReasons.push(`🤝 مذاکره سوداگری موفق بود و ${formatTarget(tgtIdx)} به تیم مافیا پیوست.`);
+                    } else {
+                        privateLog.push(`❌ مذاکره سوداگری ناموفق بود! نقش ${formatTarget(tgtIdx)} قابل جذب نبود؛ مافیای فداشده از بازی خارج شد اما عضوی جذب نگردید.`);
+                        casualtyReasons.push(`❌ مذاکره سوداگری شکست خورد (نقش هدف قابل جذب نبود)؛ مافیای فداشده (${formatTarget(sacIdx)}) جان باخت و عضوی به مافیا اضافه نشد.`);
+                    }
+                }
+            } else {
+                // Normal Mafia Shot
+                if (mafiaTargetIdx !== -1) {
+                    privateLog.push(`🔫 تیم مافیا به سمت ${formatTarget(mafiaTargetIdx)} شلیک مستقیم کردند.`);
+                    
+                    const docIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_doctor' && p.role.isAlive);
+                    const docActor = formatActor('c_doctor', 'پزشک');
+                    let isDoctorSaved = false;
+
+                    const docQuota = livingCount > 8 ? 2 : 1;
+                    let d1 = -1, d2 = -1;
+                    if (actions.doctor) {
+                        if (typeof actions.doctor === 'object') {
+                            d1 = actions.doctor.target1 !== undefined ? actions.doctor.target1 : -1;
+                            d2 = (docQuota === 2 && actions.doctor.target2 !== undefined) ? actions.doctor.target2 : -1;
+                        } else if (typeof actions.doctor === 'number') {
+                            d1 = actions.doctor;
+                        }
+                    }
+
+                    const doctorTargets = [d1, d2].filter(t => t !== -1 && t !== undefined);
+
+                    if (docIdx !== -1 && effectiveBlockedIdx !== docIdx && doctorTargets.length > 0) {
+                        doctorTargets.forEach(tIdx => {
+                            privateLog.push(`💉 ${docActor} از ${formatTarget(tIdx)} مراقبت نمود.`);
+                        });
+
+                        let selfSaveEffective = true;
+                        if (doctorTargets.includes(docIdx)) {
+                            if ((gameSettings.doctorSelfSaves || 0) > 0) {
+                                gameSettings.doctorSelfSaves--;
+                                privateLog.push(`💉 ${docActor} از سهمیه نجات شخصی خود استفاده کرد (باقی‌مانده: ${gameSettings.doctorSelfSaves}).`);
+                                selfSaveEffective = true;
+                            } else {
+                                privateLog.push(`❌ سهمیه نجات شخصی ${docActor} به اتمام رسیده بود؛ نجات جان خود اثر نکرد.`);
+                                selfSaveEffective = false;
+                            }
+                        }
+
+                        if (doctorTargets.includes(mafiaTargetIdx)) {
+                            if (mafiaTargetIdx === docIdx && !selfSaveEffective) {
+                                // self save failed
+                            } else {
+                                isDoctorSaved = true;
+                                casualtyReasons.push(`💉 نجات موفق پزشک: دکتر شلیک مافیا به ${formatTarget(mafiaTargetIdx)} را با موفقیت نجات داد.`);
+                                privateLog.push(`✨ ${docActor} با موفقیت ${formatTarget(mafiaTargetIdx)} را از شلیک مافیا نجات داد!`);
+                            }
+                        }
+                    }
+
+                    // If not saved and not Takavar (Takavar will resolve his own fate below)
+                    const takavarRoleIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_takavar' && p.role.isAlive);
+                    if (!isDoctorSaved) {
+                        if (mafiaTargetIdx !== takavarRoleIdx) {
+                            deadPlayerIndices.push(mafiaTargetIdx);
+                            casualtyReasons.push(`🔫 شلیک مافیا: ${formatTarget(mafiaTargetIdx)} با شلیک مافیا و عدم نجات پزشک جان باخت.`);
+                        }
+                    }
+                }
+            }
+
+            // 3. Commando (تکاور)
+            const takavarIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_takavar' && p.role.isAlive);
+            const takavarActor = formatActor('c_takavar', 'تکاور');
+            const wasTakavarShotByMafia = (takavarIdx !== -1 && actions.mafiaMode === 'normal' && mafiaTargetIdx === takavarIdx);
+
+            if (wasTakavarShotByMafia) {
+                // Check if doctor protected takavar
+                const docIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_doctor' && p.role.isAlive);
+                const docQuota = livingCount > 8 ? 2 : 1;
+                let d1 = -1, d2 = -1;
+                if (actions.doctor) {
+                    if (typeof actions.doctor === 'object') {
+                        d1 = actions.doctor.target1 !== undefined ? actions.doctor.target1 : -1;
+                        d2 = (docQuota === 2 && actions.doctor.target2 !== undefined) ? actions.doctor.target2 : -1;
+                    } else if (typeof actions.doctor === 'number') {
+                        d1 = actions.doctor;
+                    }
+                }
+                const doctorTargets = [d1, d2].filter(t => t !== -1 && t !== undefined);
+                const takavarSavedByDoctor = (docIdx !== -1 && effectiveBlockedIdx !== docIdx && doctorTargets.includes(takavarIdx));
+
+                if (effectiveBlockedIdx === takavarIdx) {
+                    privateLog.push(`🎖️ ${takavarActor} تیر خورد اما چون در وضعیت گروگان بود، حق شلیک انتقام را از دست داد.`);
+                    if (!takavarSavedByDoctor) {
+                        deadPlayerIndices.push(takavarIdx);
+                        casualtyReasons.push(`🎖️ تکاور تیر خورد و چون گروگان بود حق شلیک نداشت و نجات نیافت؛ شهید شد.`);
+                    }
+                } else if (actions.takavar === -1) {
+                    // Takavar chose NOT to shoot
+                    if (takavarSavedByDoctor) {
+                        // Saved by doctor, did not shoot -> Stays in game!
+                        privateLog.push(`🎖️ ${takavarActor} مورد شلیک مافیا قرار گرفت اما با نجات پزشک در بازی ماند و شلیک متقابل هم انجام نداد.`);
+                    } else {
+                        // Not saved by doctor, did not shoot -> Dies from mafia shot!
+                        deadPlayerIndices.push(takavarIdx);
+                        casualtyReasons.push(`🎖️ تکاور با شلیک مافیا مورد اصابت قرار گرفت، نجات نیافت و شلیک نکرد؛ تکاور شهید شد.`);
+                        privateLog.push(`🎖️ ${takavarActor} مورد شلیک مافیا قرار گرفت، نجات نیافت و شلیک انتقام نزد؛ بنابراین از بازی خارج شد.`);
+                    }
+                } else {
+                    // Takavar DID shoot
+                    const cTarget = pickedHistory[actions.takavar];
+                    privateLog.push(`🎖️ ${takavarActor} در پاسخ به شلیک شبانه مافیا، تیر متقابل خود را به سمت ${formatTarget(actions.takavar)} شلیک کرد.`);
+
+                    if (cTarget.role && cTarget.role.id === 'm_godfather') {
+                        // Godfather vest absorbs
+                        casualtyReasons.push(`🛡️ شلیک متقابل تکاور به جلیقه گادفادر اصابت کرد؛ جلیقه ضربه را دفع نمود، تکاور در بازی ماند و هیچ‌کس خارج نشد.`);
+                        privateLog.push(`🛡️ تیر متقابل تکاور به گادفادر اصابت کرد؛ جلیقه گادفادر شلیک را دفع کرد و خود تکاور نیز در بازی ماند (هیچ‌کس از بازی خارج نشد).`);
+                    } else if (cTarget.role && cTarget.role.team === 'mafia') {
+                        // Mafia dies, Takavar stays in game
+                        if (!deadPlayerIndices.includes(actions.takavar)) {
+                            deadPlayerIndices.push(actions.takavar);
+                        }
+                        casualtyReasons.push(`💥 شلیک انتقام تکاور بر مافیا (${formatTarget(actions.takavar)}) نشست و مافیا کشته شد؛ تکاور نیز در بازی باقی ماند.`);
+                        privateLog.push(`💥 تیر متقابل ${takavarActor} به مافیا (${formatTarget(actions.takavar)}) اصابت کرد و مافیا کشته شد؛ تکاور نیز از خطر نجات یافت و در بازی ماند.`);
+                    } else {
+                        // Shot Citizen: Takavar dies even if saved by doctor!
+                        if (!deadPlayerIndices.includes(takavarIdx)) {
+                            deadPlayerIndices.push(takavarIdx);
+                        }
+                        if (takavarSavedByDoctor) {
+                            casualtyReasons.push(`⚠️ تکاور به اشتباه به یک شهروند بی‌گناه (${formatTarget(actions.takavar)}) شلیک کرد و علی‌رغم نجات پزشک، به عنوان مجازات شلیک اشتباه از بازی خارج شد.`);
+                            privateLog.push(`⚠️ ${takavarActor} اگرچه توسط پزشک نجات یافته بود، اما به اشتباه به یک شهروند بی‌گناه شلیک کرد؛ تکاور مجازات شده و از بازی خارج شد!`);
+                        } else {
+                            casualtyReasons.push(`⚠️ تکاور به اشتباه به یک شهروند بی‌گناه (${formatTarget(actions.takavar)}) شلیک کرد و در اثر شلیک شب از بازی حذف شد.`);
+                            privateLog.push(`⚠️ ${takavarActor} به اشتباه به یک شهروند بی‌گناه شلیک کرد و در اثر شلیک مافیا به شهادت رسید.`);
+                        }
+                    }
+                }
+            }
+
+            // Shayad (شیاد)
+            const shayadIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'm_shaiad' && p.role.isAlive);
+            const shayadActor = formatActor('m_shaiad', 'شیاد');
+            let isKaragahDisruptedByShayad = false;
+
+            if (shayadIdx !== -1 && actions.shayad !== -1 && effectiveBlockedIdx !== shayadIdx) {
+                privateLog.push(`🎭 ${shayadActor} بازیکن ${formatTarget(actions.shayad)} را هدف فریب قرار داد.`);
+                const kIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_karagah' && p.role.isAlive);
+                if (kIdx !== -1 && actions.shayad === kIdx) {
+                    isKaragahDisruptedByShayad = true;
+                    privateLog.push(`🎭 شیاد موفق شد کارآگاه (${formatTarget(kIdx)}) را فریب دهد؛ لذا استعلام امشب کارآگاه منفی خواهد شد!`);
+                }
+            }
+
+            // Karagah (کارآگاه)
+            const karagahIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_karagah' && p.role.isAlive);
+            const karagahActor = formatActor('c_karagah', 'کارآگاه');
+            if (karagahIdx !== -1 && actions.karagah !== -1 && effectiveBlockedIdx !== karagahIdx) {
+                const kTarget = pickedHistory[actions.karagah];
+                let isMafiaPositive = false;
+
+                if (isKaragahDisruptedByShayad) {
+                    isMafiaPositive = false;
+                    privateLog.push(`🔍 ${karagahActor} هویت ${formatTarget(actions.karagah)} را استعلام کرد، اما به دلیل فریب شیاد، نتیجه منفی (👎) شد.`);
+                } else {
+                    if (kTarget && kTarget.role && kTarget.role.team === 'mafia' && kTarget.role.id !== 'm_godfather') {
+                        isMafiaPositive = true;
+                    }
+                    privateLog.push(`🔍 ${karagahActor} هویت ${formatTarget(actions.karagah)} را استعلام کرد؛ نتیجه: ${isMafiaPositive ? 'مثبت (مافیا) 👍' : 'منفی (شهروند/گادفادر) 👎'}.`);
+                }
+            }
+
+            // 4. Sniper (اسنایپر)
+            const sniperIdx = pickedHistory.findIndex(p => p.role && (p.role.id === 'c_sniper' || p.role.id === 'c_herfehei') && p.role.isAlive);
+            const sniperActor = formatActor('c_sniper', 'اسنایپر');
+
+            if (sniperIdx !== -1 && actions.sniper !== -1 && effectiveBlockedIdx !== sniperIdx) {
+                if ((gameSettings.sniperBullets || 0) > 0) {
+                    gameSettings.sniperBullets--;
+                    const sTarget = pickedHistory[actions.sniper];
+                    privateLog.push(`🎯 ${sniperActor} به سمت ${formatTarget(actions.sniper)} شلیک نمود (تیرهای باقی‌مانده: ${gameSettings.sniperBullets}).`);
+                    
+                    if (sTarget.role && sTarget.role.team === 'mafia') {
+                        if (sTarget.role.id === 'm_godfather' && !sTarget.role.vestRemoved) {
+                            sTarget.role.vestRemoved = true;
+                            privateLog.push(`🛡️ تیر اسنایپر به جلیقه گادفادر اصابت کرد؛ جلیقه از بین رفت اما گادفادر زنده ماند.`);
+                            casualtyReasons.push(`🛡️ تیر اسنایپر به جلیقه گادفادر اصابت کرد؛ جلیقه از بین رفت اما کشته‌ای نداشت.`);
+                        } else {
+                            deadPlayerIndices.push(actions.sniper);
+                            casualtyReasons.push(`🎯 تیر اسنایپر: ${formatTarget(actions.sniper)} (مافیا) با شلیک اسنایپر کشته شد.`);
+                            privateLog.push(`💥 تیر ${sniperActor} بر مافیا (${formatTarget(actions.sniper)}) نشست و او کشته شد.`);
+                        }
+                    } else {
+                        if (gameSettings.sniperWrongFireback) {
+                            deadPlayerIndices.push(sniperIdx);
+                            casualtyReasons.push(`⚠️ اسنایپر به اشتباه به شهروند شلیک کرد و بر اثر شلیک معکوس جان باخت.`);
+                            privateLog.push(`⚠️ ${sniperActor} به شهروند شلیک کرد و به دلیل شلیک معکوس جان باخت.`);
+                        }
+                    }
+                }
+            }
+
+            // 5. Attar (عطار)
+            const attarActor = formatActor('c_attar', 'عطار');
+            if (actions.attarTarget !== -1 && actions.attarPotion && !gameSettings.attarUsed) {
+                gameSettings.attarUsed = true;
+                if (actions.attarPotion === 'poison') {
+                    deadPlayerIndices.push(actions.attarTarget);
+                    casualtyReasons.push(`🧪 زهر عطار: ${formatTarget(actions.attarTarget)} با زهر کشنده مسموم و جان باخت.`);
+                    privateLog.push(`🧪 ${attarActor} به ${formatTarget(actions.attarTarget)} زهر خوراند و او مسموم و کشته شد.`);
+                } else if (actions.attarPotion === 'cure') {
+                    const healedIdx = deadPlayerIndices.indexOf(actions.attarTarget);
+                    if (healedIdx !== -1) {
+                        deadPlayerIndices.splice(healedIdx, 1);
+                        casualtyReasons.push(`🧪 داروی شفابخش عطار جان ${formatTarget(actions.attarTarget)} را نجات داد.`);
+                        privateLog.push(`🧪 داروی شفابخش ${attarActor} جان ${formatTarget(actions.attarTarget)} را نجات داد.`);
+                    }
+                }
+            }
+
+            // 6. Mohaghegh (محقق)
+            const mohagheghIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_mohaghegh' && p.role.isAlive);
+            const mohagheghActor = formatActor('c_mohaghegh', 'محقق');
+            if (mohagheghIdx !== -1 && actions.mohaghegh !== -1 && effectiveBlockedIdx !== mohagheghIdx) {
+                const mLink = actions.mohaghegh;
+                privateLog.push(`🔗 ${mohagheghActor} سرنوشت خود را به ${formatTarget(mLink)} گره زد.`);
+
+                if (deadPlayerIndices.includes(mohagheghIdx)) {
+                    const mLinkPlayer = pickedHistory[mLink];
+                    if (mLinkPlayer && mLinkPlayer.role && mLinkPlayer.role.team === 'mafia' && mLinkPlayer.role.id !== 'm_godfather') {
+                        if (!deadPlayerIndices.includes(mLink)) {
+                            deadPlayerIndices.push(mLink);
+                        }
+                        casualtyReasons.push(`🔗 گره محقق: محقق کشته شد و چون به مافیا (${formatTarget(mLink)}) گره خورده بود، این مافیا نیز همراه او حذف گردید.`);
+                        privateLog.push(`💥 ${mohagheghActor} کشته شد و مافیا (${formatTarget(mLink)}) را نیز همراه خود از بازی بیرون کشید!`);
+                    } else if (mLinkPlayer && mLinkPlayer.role && mLinkPlayer.role.id === 'm_godfather') {
+                        // Rule 4: محقق اگر رئیس مافیا رو انتخاب کرده باشد بیرون نمی رود!
+                        const mDeadIdx = deadPlayerIndices.indexOf(mohagheghIdx);
+                        if (mDeadIdx !== -1) {
+                            deadPlayerIndices.splice(mDeadIdx, 1);
+                        }
+                        casualtyReasons.push(`🛡️ گره سرنوشت محقق: محقق مورد شلیک قرار گرفت اما چون به رئیس مافیا (${formatTarget(mLink)}) گره خورده بود، طبق قانون سناریو از بازی بیرون نمی‌رود و در بازی باقی ماند!`);
+                        privateLog.push(`🛡️ ${mohagheghActor} مورد شلیک قرار گرفت، اما چون به رئیس مافیا (${formatTarget(mLink)}) گره خورده بود، از بازی بیرون نرفت و نجات یافت!`);
+                    } else {
+                        casualtyReasons.push(`🔗 گره محقق: محقق کشته شد؛ شهروند گره‌خورده آسیبی ندید و محقق به تنهایی از بازی خارج شد.`);
+                        privateLog.push(`ℹ️ ${mohagheghActor} کشته شد؛ شهروند گره‌خورده (${formatTarget(mLink)}) آسیبی ندید.`);
+                    }
+                }
+            }
+
+            // 7. Bazpors (بازپرس)
+            const bazporsActor = formatActor('c_bazpors', 'بازپرس');
+            const bazporsIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_bazpors');
+            let bazporsCourtHtml = '';
+            if (actions.bazpors && actions.bazpors.usedTonight && !gameSettings.bazporsUsed) {
+                const t1 = actions.bazpors.target1;
+                const t2 = actions.bazpors.target2;
+                if (t1 !== -1 && t2 !== -1 && t1 !== t2) {
+                    const isT1Dead = deadPlayerIndices.includes(t1);
+                    const isT2Dead = deadPlayerIndices.includes(t2);
+
+                    // Rule 3: اگر از دو نفری که به بازپرسی آمده اند یکی شات شود قابلیت به بازپرس بر می گردد
+                    if (isT1Dead || isT2Dead) {
+                        gameSettings.bazporsUsed = false;
+                        const deadSuspect = isT1Dead ? t1 : t2;
+                        casualtyReasons.push(`⚖️ یکی از متهمان دادگاه بازپرسی (${formatTarget(deadSuspect)}) در طول شب کشته شد؛ لذا بازپرسی لغو گردید و قابلیت به بازپرس بازگشت.`);
+                        privateLog.push(`⚖️ بازپرس متهمان ${formatTarget(t1)} و ${formatTarget(t2)} را احضار کرده بود، اما چون ${formatTarget(deadSuspect)} در این شب کشته شد، بازپرسی فردا لغو شد و قابلیت به بازپرس بازگشت.`);
+                    } else {
+                        gameSettings.bazporsUsed = true;
+                        bazporsCourtHtml = `⚖️ متهمان دادگاه بازپرسی فردا: <strong>#${pickedHistory[t1].pickOrder} ${getNameOnly(t1)}</strong> و <strong>#${pickedHistory[t2].pickOrder} ${getNameOnly(t2)}</strong>`;
+                        
+                        // Rule 1: اگر بازپرس در شب کشته شود قطعا بازپرسی انجام می شود
+                        const isBazporsDead = (bazporsIdx !== -1 && deadPlayerIndices.includes(bazporsIdx));
+                        if (isBazporsDead) {
+                            casualtyReasons.push(`⚖️ بازپرس در طول شب به شهادت رسید، اما طبق قانون، دادگاه بازپرسی برای متهمان فردا قطعاً برگزار خواهد شد.`);
+                            privateLog.push(`⚖️ بازپرس کشته شد، اما طبق قانون سناریو، چون متهمان (${formatTarget(t1)} و ${formatTarget(t2)}) را پیش از مرگ احضار کرده بود، دادگاه بازپرسی فردا قطعاً برگزار می‌شود.`);
+                        } else {
+                            privateLog.push(`⚖️ ${bazporsActor} از قابلیت خود استفاده کرد و بازیکنان ${formatTarget(t1)} و ${formatTarget(t2)} را برای دادگاه بازپرسی فردا احضار نمود.`);
+                        }
+                    }
+                }
+            }
+
+            // 8. Gunsmith (تفنگ‌دار)
+            const tofangdarIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_tofangdar' && p.role.isAlive);
+            const tofangdarActor = formatActor('c_tofangdar', 'تفنگ‌دار');
+            dayGuns = [];
+            if (tofangdarIdx !== -1 && effectiveBlockedIdx !== tofangdarIdx) {
+                const g1Gun = actions.tofangdar.gun1;
+                const g2Gun = actions.tofangdar.gun2;
+                
+                let realGiven = 0;
+
+                const processGun = (gun, gunLabel) => {
+                    if (!gun || gun.targetIdx === -1) return;
+                    const targetIdx = gun.targetIdx;
+                    const isTargetDeadTonight = deadPlayerIndices.includes(targetIdx);
+
+                    if (isTargetDeadTonight) {
+                        if (gun.type === 'real') {
+                            privateLog.push(`🔄 ${gunLabel} تفنگ‌دار (${formatTarget(targetIdx)}) با تیر جنگی بود، اما چون این بازیکن در همین شب کشته شد، تیر جنگی به تفنگ‌دار بازگشت.`);
+                        } else {
+                            privateLog.push(`⚰️ گیرنده ${gunLabel} تفنگ‌دار (${formatTarget(targetIdx)}) در همین شب کشته شد و تفنگ مشقی از بازی حذف شد.`);
+                        }
+                    } else {
+                        if (gun.type === 'real') realGiven++;
+                        dayGuns.push({ ownerIdx: targetIdx, type: gun.type, nightNum: nightNum });
+                        privateLog.push(`🏹 ${tofangdarActor} ${gunLabel} را به ${formatTarget(targetIdx)} اهدا کرد (${gun.type === 'real' ? 'تیر جنگی 🔴' : 'تیر مشقی ⚪'}).`);
+                    }
+                };
+
+                processGun(g1Gun, 'تفنگ اول');
+                processGun(g2Gun, 'تفنگ دوم');
+
+                gameSettings.tofangdarWarBullets = Math.max(0, (gameSettings.tofangdarWarBullets || 0) - realGiven);
+            }
+
+            const uniqueDead = [...new Set(deadPlayerIndices)];
+            
+            // Generate official casualties speech
+            let basicSpeech = '';
+            if (uniqueDead.length === 0) {
+                basicSpeech = `صبح همگی بخیر. شب گذشته با هوشیاری کامل و بدون هیچ کشته‌ای به پایان رسید. خورشید دوباره بر شهر تابید!`;
+            } else if (uniqueDead.length === 1) {
+                const dName = getNameOnly(uniqueDead[0]);
+                basicSpeech = `شب تلخی را پشت سر گذاشتیم. با نهایت تأسف، در طول شب گذشته بازیکن «${dName}» جان خود را از دست داد و از بازی خارج شد.`;
+            } else {
+                const names = uniqueDead.map(d => `«${getNameOnly(d)}»`).join(' و ');
+                basicSpeech = `شب پرحادثه و خونینی بود! متأسفانه بازیکنان ${names} در طول شب گذشته از جمع ما خارج شدند.`;
+            }
+
+            if (bazporsCourtHtml) {
+                basicSpeech += `<br><br>⚖️ <strong>اعلامیه دادگاه بازپرسی:</strong> بنا بر دستور رسمی بازپرس شهر، فردا متهمان احضارشده در جایگاه بازپرسی و محاکمه حاضر خواهند شد.`;
+            }
+
+            // Generate crisp casualty summary HTML
+            let casualtySummaryHtml = '';
+            if (uniqueDead.length === 0) {
+                casualtySummaryHtml = `
+                    <div style="color:#4ade80;font-weight:700;margin-bottom:4px;">✨ شب آرام شهر (بدون کشته)</div>
+                    ${casualtyReasons.length > 0 
+                        ? casualtyReasons.map(r => `<div style="margin-top:3px;">• ${r}</div>`).join('') 
+                        : '<div>• هیچ شلیک یا اقدام مرگباری در این شب موفقیت‌آمیز نبود و تلفاتی ثبت نشد.</div>'}
+                `;
+            } else {
+                casualtySummaryHtml = `
+                    <div style="color:#f87171;font-weight:700;margin-bottom:4px;">💀 تلفات شب (${uniqueDead.length} کشته):</div>
+                    ${casualtyReasons.map(r => `<div style="margin-top:3px;">• ${r}</div>`).join('')}
+                `;
+            }
+
+            return {
+                nightNumber: nightNum,
+                deadIndices: uniqueDead,
+                publicSpeech: basicSpeech,
+                privateLog: privateLog,
+                casualtyReasons: casualtyReasons,
+                casualtySummaryHtml: casualtySummaryHtml,
+                bazporsHtml: bazporsCourtHtml
+            };
+        }
+
+        // ------------------ DAY DRAWER (COLLAPSIBLE) ------------------
+        function toggleDayDrawer() {
+            const container = document.getElementById('day-drawer-container');
+            if (container) {
+                container.classList.toggle('open');
+            }
+        }
+
+        function switchDayDrawerNight(historyIndex) {
+            const idx = parseInt(historyIndex, 10);
+            if (!isNaN(idx) && nightHistory[idx]) {
+                activeNightResult = nightHistory[idx];
+                renderDayDrawer();
+            }
+        }
+
+        function renderDayDrawer() {
+            const drawerContainer = document.getElementById('day-drawer-container');
+            if (!drawerContainer) return;
+
+            if (!activeNightResult) {
+                drawerContainer.style.display = 'none';
+                return;
+            }
+
+            drawerContainer.style.display = 'block';
+
+            const deadListHtml = activeNightResult.deadIndices.length > 0 
+                ? activeNightResult.deadIndices.map(idx => {
+                    const p = pickedHistory[idx];
+                    const pName = p ? (p.role.playerName || `بازیکن ${p.pickOrder}`) : 'نامشخص';
+                    const rName = (p && p.role) ? p.role.name : '';
+                    return `<span style="background:rgba(239,68,68,0.2);color:#f87171;border:1px solid rgba(239,68,68,0.4);padding:4px 10px;border-radius:12px;font-size:12px;display:inline-flex;align-items:center;gap:4px;margin:3px;">💀 <strong>${pName}</strong> (${rName})</span>`;
+                }).join('')
+                : '<span style="color:#22c55e;font-size:12px;">بدون کشته (شب آرام شهر) ✨</span>';
+
+            const logsHtml = activeNightResult.privateLog.map(l => `<li style="margin-bottom:7px;line-height:1.6;">${l}</li>`).join('');
+
+            let gunSummaryHtml = '';
+            if (dayGuns && dayGuns.length > 0) {
+                const gunItems = dayGuns.map(g => {
+                    const p = pickedHistory[g.ownerIdx];
+                    const pName = p ? (p.role.playerName || `بازیکن ${p.pickOrder}`) : 'نامشخص';
+                    const isReal = g.type === 'real';
+                    return `
+                        <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,0.05);padding:6px 12px;border-radius:8px;font-size:12px;">
+                            <span>🔫 <strong>${pName}</strong></span>
+                            <span style="color:${isReal ? '#ef4444' : '#94a3b8'};font-weight:bold;">${isReal ? '🔴 تیر جنگی' : '⚪ تیر مشقی'}</span>
+                        </div>
+                    `;
+                }).join('');
+
+                gunSummaryHtml = `
+                    <div class="drawer-card" style="margin-top:10px;">
+                        <div class="drawer-card-title" style="color:var(--accent-gold);">🏹 تفنگ‌های توزیع‌شده در شب:</div>
+                        <div style="display:flex;flex-direction:column;gap:5px;">
+                            ${gunItems}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Dropdown options for night history
+            let nightSelectOptions = '';
+            nightHistory.forEach((nh, idx) => {
+                const isSelected = nh.nightNumber === activeNightResult.nightNumber;
+                nightSelectOptions += `<option value="${idx}" ${isSelected ? 'selected' : ''}>🌙 گزارش شب ${nh.nightNumber} (${nh.deadIndices.length} کشته)</option>`;
+            });
+
+            drawerContainer.innerHTML = `
+                <!-- Drawer Header -->
+                <div class="day-drawer-header">
+                    <div class="day-drawer-title" onclick="toggleDayDrawer()">
+                        <span>🌙</span>
+                        <span>گزارش شب ${activeNightResult.nightNumber}</span>
+                    </div>
+                    <div class="day-drawer-badges">
+                        ${nightHistory.length > 1 ? `
+                            <select class="night-history-select" onclick="event.stopPropagation()" onchange="switchDayDrawerNight(this.value)">
+                                ${nightSelectOptions}
+                            </select>
+                        ` : ''}
+                        <span class="day-badge dead" onclick="toggleDayDrawer()">💀 ${activeNightResult.deadIndices.length} کشته</span>
+                        <span class="day-drawer-toggle-icon" onclick="toggleDayDrawer()">▼</span>
+                    </div>
+                </div>
+
+                <!-- Collapsible Content -->
+                <div class="day-drawer-content">
+                    <!-- Public Speech Card -->
+                    <div class="drawer-card" style="border-color:#38bdf850;">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                            <div class="drawer-card-title" style="color:#38bdf8;margin:0;">📢 متن اعلامیه صبح به شهروندان:</div>
+                            <button class="action-btn" onclick="copyDaySpeech()" style="padding:4px 10px;font-size:11px;background:#38bdf8;color:#0b0f19;font-weight:700;">کپی متن 📋</button>
+                        </div>
+                        <div id="day-speech-text" style="font-size:13px;color:#e2e8f0;line-height:1.7;direction:rtl;text-align:right;">
+                            ${activeNightResult.publicSpeech}
+                        </div>
+                    </div>
+
+                    <!-- Night Casualties Card -->
+                    <div class="drawer-card">
+                        <div class="drawer-card-title" style="color:#f87171;">💀 کشته‌های این شب:</div>
+                        <div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:10px;">
+                            ${deadListHtml}
+                        </div>
+                        ${activeNightResult.deadIndices.length > 0 ? `
+                            <button class="btn-apply-casualties" onclick="applyNightCasualtiesToGod()">
+                                <span style="font-size:16px;">💀</span>
+                                <span>اعمال رسمی خروج و مرگ این بازیکنان در جدول وضعیت بازی</span>
+                            </button>
+                        ` : ''}
+                    </div>
+
+                    <!-- Short Section: Why there were / were not casualties -->
+                    <div class="drawer-card" style="border-right: 4px solid ${activeNightResult.deadIndices.length === 0 ? '#22c55e' : '#f87171'}; background: ${activeNightResult.deadIndices.length === 0 ? 'rgba(34, 197, 94, 0.08)' : 'rgba(239, 68, 68, 0.08)'};">
+                        <div class="drawer-card-title" style="color:${activeNightResult.deadIndices.length === 0 ? '#4ade80' : '#f87171'};">
+                            ${activeNightResult.deadIndices.length === 0 ? '✨ چرا امشب کشته نداشتیم؟' : `💀 علت و خلاصه وقایع کشته‌ها (${activeNightResult.deadIndices.length} نفر):`}
+                        </div>
+                        <div style="font-size:12px;color:#cbd5e1;line-height:1.7;">
+                            ${activeNightResult.casualtySummaryHtml || 'اطلاعاتی ثبت نشده است.'}
+                        </div>
+                    </div>
+
+                    <!-- Bazpors Interrogation Card (If Bazpors acted tonight) -->
+                    ${activeNightResult.bazporsHtml ? `
+                        <div class="drawer-card" style="border-right: 4px solid #38bdf8; background: rgba(56, 189, 248, 0.08);">
+                            <div class="drawer-card-title" style="color:#38bdf8;">⚖️ افراد موجود در بازپرسی فردا:</div>
+                            <div style="font-size:12.5px;color:#e2e8f0;line-height:1.7;font-weight:600;">
+                                ${activeNightResult.bazporsHtml}
+                            </div>
+                        </div>
+                    ` : ''}
+
+                    ${gunSummaryHtml}
+
+                    <!-- Confidential God Log Card -->
+                    <div class="drawer-card" style="background:#0f172a;">
+                        <div class="drawer-card-title" style="color:#fbbf24;">🔒 وقایع محرمانه شب (ویژه گاد):</div>
+                        <ul style="font-size:12px;color:#cbd5e1;padding-right:18px;margin:0;">
+                            ${logsHtml}
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+
+        function copyDaySpeech() {
+            const speech = activeNightResult ? activeNightResult.publicSpeech : '';
+            if (!speech) return;
+            navigator.clipboard.writeText(speech.replace(/<br\s*[\/]?>/gi, '\n').replace(/<[^>]+>/g, '')).then(() => {
+                showToast('متن اعلامیه صبح با موفقیت کپی شد! 📋');
+            }).catch(() => {
+                showToast('خطا در کپی متن');
+            });
+        }
+
+        function applyNightCasualtiesToGod() {
+            if (!activeNightResult || !activeNightResult.deadIndices) return;
+
+            let count = 0;
+            activeNightResult.deadIndices.forEach(idx => {
+                if (pickedHistory[idx] && pickedHistory[idx].role && pickedHistory[idx].role.isAlive) {
+                    pickedHistory[idx].role.isAlive = false;
+                    count++;
+                }
+            });
+
+            renderGodList();
+            saveState();
+            showCustomModal('اعمال کشته‌های شب', `وضعیت ${count} بازیکن به «مرده» تغییر یافت و جدول بازی به‌روزرسانی شد.`, 'alert');
+        }
+
+
+
+
+        // ================================================================
         // 17. TIMER
         // ================================================================
         function updateTimerDisplay() {
@@ -3198,24 +6357,82 @@
         }
 
         // ================================================================
-        // 19. REPORT (همان)
+        // 19. REPORT
         // ================================================================
+        function onToggleReportCityEvents(isChecked) {
+            gameSettings.includeReportCityEvents = isChecked;
+            const area = document.getElementById('report-text-area');
+            if (area) {
+                area.value = generateRawReport();
+            }
+            saveState();
+        }
+
         function generateRawReport() {
             let r = `====================================\n`;
             r += `       🎩 گزارش نهایی بازی مافیا 🎩      \n`;
             r += `       ✒️ طراح و توسعه: رضا پاکدل        \n`;
             r += `====================================\n\n`;
 
+            r += `📋 جدول وضعیت و نقش‌های بازیکنان:\n`;
+            r += `------------------------------------\n`;
             pickedHistory.forEach(item => {
                 const pName = item.role.playerName ? `${item.role.playerName}` : `بازیکن نوبت ${item.pickOrder}`;
                 let teamEmoji = item.role.team === 'citizen' ? '🟩' : (item.role.team === 'mafia' ? '🟥' : '🟧');
                 const score = item.role.score || 0;
                 const warnings = item.role.warnings || 0;
+                const status = (item.role && item.role.isAlive) ? 'زنده 🟢' : 'کشته‌شده / خارج‌شده 💀';
                 r += `#️⃣ نوبت ${item.pickOrder} | 👤 ${pName} | 🏷️ نقش: ${item.role.name}\n`;
-                r += `🎭 گروه: ${item.role.teamLabel} ${teamEmoji} | 🃏 کارت: شماره ${item.cardNumber}\n`;
+                r += `🎭 گروه: ${item.role.teamLabel} ${teamEmoji} | 🃏 کارت: شماره ${item.cardNumber} | 🩺 وضعیت: ${status}\n`;
                 r += `⭐ امتیاز: ${score} | ⚠️ اخطار: ${warnings}\n`;
                 r += `------------------------------------\n`;
             });
+
+            // Check if "وقایع شهر" (City Events / Night Events) checkbox is active
+            const toggleEl = document.getElementById('toggle-report-city-events');
+            const includeNightEvents = (toggleEl && typeof toggleEl.checked === 'boolean')
+                ? toggleEl.checked
+                : (gameSettings.includeReportCityEvents !== false);
+
+            if (includeNightEvents && nightHistory && nightHistory.length > 0) {
+                r += `\n====================================\n`;
+                r += `       🌙 وقایع شهر (رویدادهای شب‌های بازی)       \n`;
+                r += `====================================\n\n`;
+
+                nightHistory.forEach(nh => {
+                    r += `🔹 وقایع شب ${nh.nightNumber}:\n`;
+                    if (nh.deadIndices && nh.deadIndices.length > 0) {
+                        const deadNames = nh.deadIndices.map(idx => {
+                            const p = pickedHistory[idx];
+                            return p ? `${p.role.playerName || 'بازیکن ' + p.pickOrder} (${p.role.name})` : '';
+                        }).filter(Boolean).join('، ');
+                        r += `   💀 کشته‌های شب: ${deadNames}\n`;
+                    } else {
+                        r += `   ✨ کشته‌های شب: بدون کشته (شب آرام شهر)\n`;
+                    }
+
+                    if (nh.casualtyReasons && nh.casualtyReasons.length > 0) {
+                        r += `   🔍 علت و خلاصه وقایع تلفات:\n`;
+                        nh.casualtyReasons.forEach(cr => {
+                            r += `      • ${cr}\n`;
+                        });
+                    }
+
+                    if (nh.bazporsHtml) {
+                        const cleanBazpors = nh.bazporsHtml.replace(/<[^>]+>/g, '');
+                        r += `   ⚖️ افراد موجود در بازپرسی: ${cleanBazpors}\n`;
+                    }
+
+                    if (nh.privateLog && nh.privateLog.length > 0) {
+                        r += `   🔒 اقدامات و وقایع ثبت‌شده:\n`;
+                        nh.privateLog.forEach(log => {
+                            r += `      • ${log}\n`;
+                        });
+                    }
+                    r += `------------------------------------\n`;
+                });
+            }
+
             r += `\n🏁 پایان گزارش | 👑 دستیار تخصصی مافیا - رضا پاکدل`;
             return r;
         }
@@ -3228,6 +6445,7 @@
                 let teamEmoji = item.role.team === 'citizen' ? '🟩' : (item.role.team === 'mafia' ? '🟥' : '🟧');
                 const score = item.role.score || 0;
                 const warnings = item.role.warnings || 0;
+                const status = (item.role && item.role.isAlive) ? '<span style="color:#4ade80;">زنده 🟢</span>' : '<span style="color:#f87171;">خارج‌شده 💀</span>';
                 rows += `
                     <div style="background:#1e293b;border:1px solid #334155;border-radius:14px;padding:10px 12px;margin-bottom:8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);">
                         <div style="font-size:13px;font-weight:700;color:#f8fafc;display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;flex-wrap:wrap;gap:4px;">
@@ -3236,20 +6454,76 @@
                         </div>
                         <div style="font-size:11px;color:#cbd5e1;display:flex;justify-content:space-between;align-items:center;border-top:1px dashed #334155;padding-top:6px;flex-wrap:wrap;gap:4px;">
                             <span>🎭 گروه: <strong style="color:${teamColor};">${item.role.teamLabel}</strong> ${teamEmoji}</span>
-                            <span>🃏 کارت: شماره <strong>${item.cardNumber}</strong></span>
+                            <span>🃏 کارت: <strong>${item.cardNumber}</strong></span>
+                            <span>🩺 وضعیت: <strong>${status}</strong></span>
                             <span>⭐ امتیاز: <strong>${score}</strong></span>
                             <span>⚠️ اخطار: <strong>${warnings}</strong></span>
                         </div>
                     </div>`;
             });
+
+            // Night events HTML
+            let nightEventsHtml = '';
+            const toggleEl = document.getElementById('toggle-report-city-events');
+            const includeNightEvents = (toggleEl && typeof toggleEl.checked === 'boolean')
+                ? toggleEl.checked
+                : (gameSettings.includeReportCityEvents !== false);
+
+            if (includeNightEvents && nightHistory && nightHistory.length > 0) {
+                let nightCards = '';
+                nightHistory.forEach(nh => {
+                    const deadNames = (nh.deadIndices && nh.deadIndices.length > 0)
+                        ? nh.deadIndices.map(idx => {
+                            const p = pickedHistory[idx];
+                            return p ? `<span style="background:rgba(239,68,68,0.2);color:#f87171;padding:2px 8px;border-radius:8px;font-size:11px;">💀 ${p.role.playerName || 'بازیکن ' + p.pickOrder} (${p.role.name})</span>` : '';
+                        }).filter(Boolean).join(' ')
+                        : '<span style="color:#4ade80;font-size:11px;">✨ بدون کشته</span>';
+
+                    const logItems = (nh.privateLog && nh.privateLog.length > 0)
+                        ? nh.privateLog.map(l => `<li style="margin-bottom:5px;line-height:1.5;">${l}</li>`).join('')
+                        : '<li>اقدام خاصی ثبت نشده است.</li>';
+
+                    nightCards += `
+                        <div style="background:#1e293b;border:1px solid #38bdf850;border-radius:14px;padding:12px;margin-bottom:10px;box-shadow:0 4px 12px rgba(0,0,0,0.2);">
+                            <div style="font-size:13px;font-weight:bold;color:#38bdf8;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+                                <span>🌙 وقایع شب ${nh.nightNumber}</span>
+                                <div>${deadNames}</div>
+                            </div>
+                            <ul style="font-size:11.5px;color:#cbd5e1;padding-right:16px;margin:0;">
+                                ${logItems}
+                            </ul>
+                        </div>
+                    `;
+                });
+
+                nightEventsHtml = `
+                    <div class="header-box" style="margin-top:16px;">
+                        <h2>🌙 وقایع شهر (رویدادهای شب‌های بازی)</h2>
+                        <p class="sub">گزارش تفصیلی اقدامات و نتایج تمامی شب‌ها</p>
+                    </div>
+                    <div>${nightCards}</div>
+                `;
+            }
+
             return `<!DOCTYPE html>
 <html lang="fa" dir="rtl">
-<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>گزارش نهایی نقش‌ها - رضا پاکدل</title>
-<style>*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,'Vazirmatn',sans-serif}body{background:#0b0f19;color:#f1f5f9;padding:14px;max-width:480px;margin:0 auto}.header-box{background:linear-gradient(145deg,#1e293b,#0f172a);border:1px solid #2d3a4f;border-radius:18px;padding:12px;text-align:center;margin-bottom:14px;box-shadow:0 6px 20px rgba(0,0,0,0.4)}h2{color:#f87171;font-size:17px;margin-bottom:2px;font-weight:800}p.sub{color:#94a3b8;font-size:11px}</style></head>
-<body><div class="header-box"><h2>🏆 گزارش نهایی نقش‌های بازی</h2><p class="sub">طراحی و توسعه تخصصی: رضا پاکدل</p></div><div>${rows}</div></body></html>`;
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>گزارش نهایی بازی - رضا پاکدل</title>
+<style>*{box-sizing:border-box;margin:0;padding:0;font-family:system-ui,-apple-system,'Vazirmatn',sans-serif}body{background:#0b0f19;color:#f1f5f9;padding:14px;max-width:500px;margin:0 auto}.header-box{background:linear-gradient(145deg,#1e293b,#0f172a);border:1px solid #2d3a4f;border-radius:18px;padding:12px;text-align:center;margin-bottom:14px;box-shadow:0 6px 20px rgba(0,0,0,0.4)}h2{color:#f87171;font-size:17px;margin-bottom:2px;font-weight:800}p.sub{color:#94a3b8;font-size:11px}</style></head>
+<body>
+<div class="header-box">
+    <h2>🏆 گزارش نهایی بازی مافیا</h2>
+    <p class="sub">طراحی و توسعه تخصصی: رضا پاکدل</p>
+</div>
+<div>${rows}</div>
+${nightEventsHtml}
+</body></html>`;
         }
 
         function openReportModal() {
+            const toggleEl = document.getElementById('toggle-report-city-events');
+            if (toggleEl && gameSettings.includeReportCityEvents !== undefined) {
+                toggleEl.checked = gameSettings.includeReportCityEvents;
+            }
             document.getElementById('report-text-area').value = generateRawReport();
             document.getElementById('report-modal').classList.add('show');
             document.body.classList.add('modal-open');
@@ -3718,6 +6992,30 @@
             }
             document.getElementById('god-btn').style.display = 'none';
             document.getElementById('god-bottom-bar').style.display = 'none';
+            const godNightBtn = document.getElementById('god-night-btn');
+            if (godNightBtn) godNightBtn.style.display = 'none';
+            const dayDrawer = document.getElementById('day-drawer-container');
+            if (dayDrawer) {
+                dayDrawer.style.display = 'none';
+                dayDrawer.innerHTML = '';
+                dayDrawer.classList.remove('open');
+            }
+            nightState = {
+                nightNumber: 0,
+                history: [],
+                doctorSelfSavesUsed: 0,
+                sniperBulletsUsed: 0,
+                gunsmithRealBulletsUsed: 0,
+                natoUsed: false,
+                usedAttar: false,
+                usedBazpors: false,
+                capoPoisonedPlayers: [],
+                gunHolders: [],
+                armorHolders: [],
+                lastInquiryResult: null,
+                lastNightReport: null,
+                heirTransferred: false
+            };
             document.querySelectorAll('[id^="count-"]').forEach(el => el.innerText = '0');
             document.getElementById('god-inquiry-display').innerText = '0';
             releaseWakeLock();
