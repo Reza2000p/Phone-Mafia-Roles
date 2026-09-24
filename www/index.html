@@ -5810,12 +5810,19 @@
                         casualtyReasons.push(`🛡️ شلیک متقابل تکاور به جلیقه گادفادر اصابت کرد؛ جلیقه ضربه را دفع نمود، تکاور در بازی ماند و هیچ‌کس خارج نشد.`);
                         privateLog.push(`🛡️ تیر متقابل تکاور به گادفادر اصابت کرد؛ جلیقه گادفادر شلیک را دفع کرد و خود تکاور نیز در بازی ماند (هیچ‌کس از بازی خارج نشد).`);
                     } else if (cTarget.role && cTarget.role.team === 'mafia') {
-                        // Mafia dies, Takavar stays in game
-                        if (!deadPlayerIndices.includes(actions.takavar)) {
-                            deadPlayerIndices.push(actions.takavar);
+                        // Check if Doctor saved this mafia player!
+                        const mafiaTargetSavedByDoctor = (docIdx !== -1 && effectiveBlockedIdx !== docIdx && doctorTargets.includes(actions.takavar));
+                        if (mafiaTargetSavedByDoctor) {
+                            casualtyReasons.push(`🛡️ تیر انتقام تکاور به مافیا (${formatTarget(actions.takavar)}) اصابت کرد، اما چون پزشک او را نجات داده بود، زنده ماند و تکاور نیز در بازی باقی ماند.`);
+                            privateLog.push(`🛡️ تیر متقابل ${takavarActor} به مافیا (${formatTarget(actions.takavar)}) اصابت کرد، اما با نجات پزشک مهار شد و مافیا زنده ماند (تکاور نیز در بازی ماند).`);
+                        } else {
+                            // Mafia dies, Takavar stays in game
+                            if (!deadPlayerIndices.includes(actions.takavar)) {
+                                deadPlayerIndices.push(actions.takavar);
+                            }
+                            casualtyReasons.push(`💥 شلیک انتقام تکاور بر مافیا (${formatTarget(actions.takavar)}) نشست و مافیا کشته شد؛ تکاور نیز در بازی باقی ماند.`);
+                            privateLog.push(`💥 تیر متقابل ${takavarActor} به مافیا (${formatTarget(actions.takavar)}) اصابت کرد و مافیا کشته شد؛ تکاور نیز از خطر نجات یافت و در بازی ماند.`);
                         }
-                        casualtyReasons.push(`💥 شلیک انتقام تکاور بر مافیا (${formatTarget(actions.takavar)}) نشست و مافیا کشته شد؛ تکاور نیز در بازی باقی ماند.`);
-                        privateLog.push(`💥 تیر متقابل ${takavarActor} به مافیا (${formatTarget(actions.takavar)}) اصابت کرد و مافیا کشته شد؛ تکاور نیز از خطر نجات یافت و در بازی ماند.`);
                     } else {
                         // Shot Citizen: Takavar dies even if saved by doctor!
                         if (!deadPlayerIndices.includes(takavarIdx)) {
@@ -5880,9 +5887,27 @@
                             privateLog.push(`🛡️ تیر اسنایپر به جلیقه گادفادر اصابت کرد؛ جلیقه از بین رفت اما گادفادر زنده ماند.`);
                             casualtyReasons.push(`🛡️ تیر اسنایپر به جلیقه گادفادر اصابت کرد؛ جلیقه از بین رفت اما کشته‌ای نداشت.`);
                         } else {
-                            deadPlayerIndices.push(actions.sniper);
-                            casualtyReasons.push(`🎯 تیر اسنایپر: ${formatTarget(actions.sniper)} (مافیا) با شلیک اسنایپر کشته شد.`);
-                            privateLog.push(`💥 تیر ${sniperActor} بر مافیا (${formatTarget(actions.sniper)}) نشست و او کشته شد.`);
+                            const docIdxForSnip = pickedHistory.findIndex(p => p.role && p.role.id === 'c_doctor' && p.role.isAlive);
+                            const docQuotaForSnip = livingCount > 8 ? 2 : 1;
+                            let sd1 = -1, sd2 = -1;
+                            if (actions.doctor) {
+                                if (typeof actions.doctor === 'object') {
+                                    sd1 = actions.doctor.target1 !== undefined ? actions.doctor.target1 : -1;
+                                    sd2 = (docQuotaForSnip === 2 && actions.doctor.target2 !== undefined) ? actions.doctor.target2 : -1;
+                                } else if (typeof actions.doctor === 'number') {
+                                    sd1 = actions.doctor;
+                                }
+                            }
+                            const docTargetsForSnip = [sd1, sd2].filter(t => t !== -1 && t !== undefined);
+                            const sniperTargetSavedByDoctor = (docIdxForSnip !== -1 && effectiveBlockedIdx !== docIdxForSnip && docTargetsForSnip.includes(actions.sniper));
+
+                            if (sniperTargetSavedByDoctor) {
+                                casualtyReasons.push(`🛡️ تیر اسنایپر به مافیا (${formatTarget(actions.sniper)}) اصابت کرد، اما با نجات پزشک مهار شد و کشته‌ای نداشت.`);
+                                privateLog.push(`🛡️ تیر ${sniperActor} به مافیا (${formatTarget(actions.sniper)}) اصابت کرد، اما با نجات پزشک مهار شد و مافیا زنده ماند.`);
+                            } else {
+                                deadPlayerIndices.push(actions.sniper);
+                                casualtyReasons.push(`🎯 تیر اسنایپر: ${formatTarget(actions.sniper)} (مافیا) با شلیک اسنایپر کشته شد.`);
+                            }
                         }
                     } else {
                         if (gameSettings.sniperWrongFireback) {
