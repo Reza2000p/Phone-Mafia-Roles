@@ -51,7 +51,8 @@
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
         ::-webkit-scrollbar-button { display: none; }
 
-        body.draw-active .bottom-nav {
+        body.draw-active .bottom-nav,
+        body.draw-active .god-bottom-bar {
             display: none !important;
         }
 
@@ -1136,7 +1137,8 @@
         .modal-overlay.show {
             display:flex;
         }
-        body.modal-open .bottom-nav { display: none !important; }
+        body.modal-open .bottom-nav,
+        body.modal-open .god-bottom-bar { display: none !important; }
 
         @keyframes fadeIn { 0%{opacity:0;transform:scale(.96)} 100%{opacity:1;transform:scale(1)} }
         .modal-card {
@@ -1528,7 +1530,7 @@
         }
 
         /* ===== RESPONSIVE ===== */
-        .god-screen-padding { padding-bottom: 80px; }
+        .god-screen-padding { padding-bottom: 190px; }
 
         @media(max-width:480px){
             body{padding:10px;padding-bottom:75px}
@@ -1554,7 +1556,7 @@
             .god-bottom-bar{padding:8px 10px;gap:6px;bottom:65px}
             .inquiry-display{font-size:18px;min-width:26px}
             .inquiry-label{font-size:14px}
-            .god-screen-padding{padding-bottom:75px}
+            .god-screen-padding{padding-bottom:175px}
             .lb-table{font-size:11px}
             .lb-table th,.lb-table td{padding:6px 8px}
             .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:8px}
@@ -1589,7 +1591,7 @@
             .music-name{max-width:70px;font-size:9px}
             .god-bottom-row .btn-sm{padding:4px 8px;font-size:10px;min-height:28px;min-width:28px}
             .timer-display{font-size:17px;min-width:50px}
-            .god-screen-padding{padding-bottom:70px}
+            .god-screen-padding{padding-bottom:165px}
             .gallery-grid{grid-template-columns:repeat(auto-fill,minmax(80px,1fr))}
             .gallery-item .gallery-img{height:60px}
             .modal-role-title{font-size:18px}
@@ -2778,6 +2780,15 @@
                 if (wakeLockInterval) {
                     clearInterval(wakeLockInterval);
                     wakeLockInterval = null;
+                }
+            }
+
+            const godBottomBar = document.getElementById('god-bottom-bar');
+            if (godBottomBar) {
+                if (pageId === 'page-god' && isGameActive()) {
+                    godBottomBar.style.display = 'flex';
+                } else {
+                    godBottomBar.style.display = 'none';
                 }
             }
 
