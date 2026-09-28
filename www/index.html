@@ -1952,6 +1952,7 @@
                 <select id="setting-scenario" class="house-rule-select" onchange="onScenarioSettingChange()">
                     <option value="nato" selected>سناریوی ناتو</option>
                     <option value="bazpors">سناریوی بازپرس</option>
+                    <option value="mozakere">سناریوی مذاکره (شبکه سلامت)</option>
                     <option value="capo">سناریوی کاپو</option>
                 </select>
                 <div class="house-rule-desc">قوانین و رفتارهای پایه بر اساس سناریو تنظیم می‌شوند.</div>
@@ -3880,8 +3881,10 @@
             if (scenarioEl) {
                 if (currentScenario === 'nato') {
                     scenarioEl.value = 'nato';
-                } else if (currentScenario === 'bazpors') {
+                } else if (currentScenario === 'bazpors' || currentScenario === 'bazpors12' || currentScenario === 'bazpors13') {
                     scenarioEl.value = 'bazpors';
+                } else if (currentScenario === 'mozakere') {
+                    scenarioEl.value = 'mozakere';
                 } else if (currentScenario && currentScenario.startsWith('capo')) {
                     scenarioEl.value = 'capo';
                 } else {
@@ -3932,6 +3935,7 @@
         function updateScenarioSettingFields(scenario) {
             const docSaveEl = document.getElementById('setting-doctor-save');
             const snipBulletsEl = document.getElementById('setting-sniper-bullets');
+            const snipFbEl = document.getElementById('setting-sniper-fireback');
             const gunBulletsEl = document.getElementById('setting-gunsmith-bullets');
             const total = parseInt(document.getElementById('player-count').value) || 0;
 
@@ -3942,6 +3946,10 @@
                 if (docSaveEl) docSaveEl.value = (total >= 10) ? '2' : '1';
                 if (snipBulletsEl) snipBulletsEl.value = '2';
                 if (gunBulletsEl) gunBulletsEl.value = '1';
+            } else if (scenario === 'mozakere') {
+                if (docSaveEl) docSaveEl.value = '2';
+                if (snipBulletsEl) snipBulletsEl.value = '1';
+                if (snipFbEl) snipFbEl.value = 'yes';
             } else if (scenario === 'capo') {
                 if (docSaveEl) docSaveEl.value = (total >= 10) ? '2' : '1';
                 if (snipBulletsEl) snipBulletsEl.value = '2';
@@ -3979,7 +3987,12 @@
                     tofangdarWarBulletsTotal: tofangdarWarBullets,
                     natoUsed: false,
                     attarUsed: false,
-                    bazporsUsed: false
+                    bazporsUsed: false,
+                    yakuzaUsed: false,
+                    mozakereUsed: false,
+                    mozakereSuccessful: false,
+                    negotiatedPlayerIdx: -1,
+                    khabarnegarUsed: false
                 };
             }
 
@@ -4036,12 +4049,14 @@
             nightActions = {
                 negahban: { target1: -1, target2: -1 },
                 blocker: -1,
-                mafiaMode: 'normal', // 'normal', 'nato', or 'yakuza'
+                mafiaMode: 'normal', // 'normal', 'nato', 'yakuza', or 'mozakere'
                 mafiaShot: -1,
                 natoTarget: -1,
                 natoRole: '',
                 yakuzaSacrifice: -1,
                 yakuzaTarget: -1,
+                mozakereTarget: -1,
+                khabarnegar: -1,
                 shayad: -1,
                 karagah: -1,
                 takavar: -1,
@@ -4099,9 +4114,53 @@
 
             const hasRoleInGame = (roleId) => pickedHistory.some(p => p.role && p.role.id === roleId);
 
-            // SPECIAL PROTOCOL: Bazpors Scenario Official Wake-Up Order:
-            // 1. محقق | 2. کل تیم مافیا | 3. شیاد | 4. کارآگاه | 5. پزشک | 6. بازپرس
-            if (scenario === 'bazpors' || scenario === 'bazpors12' || scenario === 'bazpors13') {
+            // SPECIAL PROTOCOL: Mozakere Scenario Official Wake-Up Order (شبکه سلامت):
+            // 1. کل تیم مافیا | 2. کارآگاه | 3. تک‌تیرانداز | 4. پزشک | 5. خبرنگار
+            if (scenario === 'mozakere') {
+                // 1. کل تیم مافیا (Mafia Team)
+                const totalMafia = pickedHistory.filter(p => p.role && p.role.team === 'mafia');
+                if (totalMafia.length > 0) {
+                    const aliveMafia = pickedHistory.filter(p => p.role && p.role.team === 'mafia' && p.role.isAlive);
+                    steps.push({
+                        stepKey: 'mafia_shot',
+                        title: 'تیم مافیا (شلیک شب / مذاکره)',
+                        icon: '🔫',
+                        playerIndex: -1,
+                        isDead: aliveMafia.length === 0,
+                        isExhausted: false
+                    });
+                }
+
+                // 2. کارآگاه (Detective)
+                if (hasRoleInGame('c_karagah')) {
+                    addStep('c_karagah', 'karagah', 'کارآگاه', '🔍');
+                }
+
+                // 3. تک‌تیرانداز (Sniper)
+                const sniperRole = pickedHistory.find(p => p.role && ['c_sniper', 'c_herfehei'].includes(p.role.id));
+                if (sniperRole) {
+                    const bulletsLeft = gameSettings.sniperBullets || 0;
+                    addStep(sniperRole.role.id, 'sniper', 'تک‌تیرانداز', '🎯', bulletsLeft <= 0, 'سهمیه تیر تک‌تیرانداز (۱ تیر) به اتمام رسیده است.');
+                }
+
+                // 4. پزشک (Doctor)
+                if (hasRoleInGame('c_doctor')) {
+                    addStep('c_doctor', 'doctor', 'پزشک', '💉');
+                }
+
+                // 5. خبرنگار (Khabarnegar)
+                if (hasRoleInGame('c_khabarnegar')) {
+                    const mozakereDone = !!gameSettings.mozakereUsed;
+                    const khabarnegarDone = !!gameSettings.khabarnegarUsed;
+                    if (!mozakereDone) {
+                        addStep('c_khabarnegar', 'khabarnegar', 'خبرنگار', '📰', true, 'خبرنگار تنها پس از وقوع مذاکره توسط مافیا بیدار می‌شود (هنوز مذاکره‌ای انجام نشده است).');
+                    } else if (khabarnegarDone) {
+                        addStep('c_khabarnegar', 'khabarnegar', 'خبرنگار', '📰', true, 'استعلام خبرنگار یک‌بار در بازی است و قبلاً استفاده شده است.');
+                    } else {
+                        addStep('c_khabarnegar', 'khabarnegar', 'خبرنگار', '📰', false);
+                    }
+                }
+            } else if (scenario === 'bazpors' || scenario === 'bazpors12' || scenario === 'bazpors13') {
                 // 1. محقق (Mohaghegh)
                 if (hasRoleInGame('c_mohaghegh')) {
                     addStep('c_mohaghegh', 'mohaghegh', 'محقق', '🔗');
@@ -4213,6 +4272,11 @@
                 if (hasRoleInGame('c_tofangdar')) {
                     const tofangdarWarLeft = gameSettings.tofangdarWarBullets || 0;
                     addStep('c_tofangdar', 'tofangdar', 'تفنگ‌دار', '🏹', tofangdarWarLeft <= 0, 'تیرهای جنگی تفنگ‌دار به اتمام رسیده است.');
+                }
+
+                // 13. خبرنگار (Khabarnegar)
+                if (hasRoleInGame('c_khabarnegar')) {
+                    addStep('c_khabarnegar', 'khabarnegar', 'خبرنگار', '📰', !!gameSettings.khabarnegarUsed, 'استعلام خبرنگار یک‌بار در بازی است و قبلاً استفاده شده است.');
                 }
             }
 
@@ -4424,8 +4488,15 @@
             } else if (step.stepKey === 'mafia_shot') {
                 const hasNato = pickedHistory.some(p => p.role && p.role.id === 'm_nato' && p.role.isAlive) && !gameSettings.natoUsed;
                 const hasYakuza = (gameSettings.scenario === 'bazpors' || pickedHistory.some(p => p.role && p.role.id === 'm_yakuza' && p.role.isAlive)) && !gameSettings.yakuzaUsed;
+
+                const totalMafiaCount = pickedHistory.filter(p => p.role && p.role.team === 'mafia').length;
+                const aliveMafiaCount = pickedHistory.filter(p => p.role && p.role.team === 'mafia' && p.role.isAlive).length;
+                const deadMafiaCount = totalMafiaCount - aliveMafiaCount;
+                const mozakereActorAlive = pickedHistory.some(p => p.role && p.role.id === 'm_mozakere' && p.role.isAlive);
+                const canNegotiate = (gameSettings.scenario === 'mozakere' || mozakereActorAlive) && mozakereActorAlive && deadMafiaCount >= 1 && !gameSettings.mozakereUsed;
+
                 const currentMode = nightActions.mafiaMode || 'normal';
-                if (instructionEl) instructionEl.innerText = 'تیم مافیا بیدار می‌شوند: شلیک شبانه، اقدام ناتو یا یاکوزایی:';
+                if (instructionEl) instructionEl.innerText = 'تیم مافیا بیدار می‌شوند: شلیک شبانه، اقدام ناتو، یاکوزا یا مذاکره:';
 
                 bodyHtml = `
                     <div class="night-mode-tabs">
@@ -4440,6 +4511,11 @@
                         ${hasYakuza ? `
                             <button class="night-tab-btn ${currentMode === 'yakuza' ? 'active-nato' : ''}" onclick="setNightMafiaMode('yakuza')">
                                 🗡️ اقدام یاکوزایی (سوداگری)
+                            </button>
+                        ` : ''}
+                        ${canNegotiate ? `
+                            <button class="night-tab-btn ${currentMode === 'mozakere' ? 'active-nato' : ''}" onclick="setNightMafiaMode('mozakere')">
+                                🤝 اقدام مذاکره
                             </button>
                         ` : ''}
                     </div>
@@ -4475,7 +4551,7 @@
                                 </select>
                             </div>
                         </div>
-                    ` : `
+                    ` : currentMode === 'yakuza' ? `
                         <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:12px;margin-bottom:12px;">
                             <div style="font-size:13px;font-weight:bold;color:#fbbf24;margin-bottom:6px;">🗡️ توانایی سوداگری (یاکوزایی) تیم مافیا</div>
                             <div style="font-size:12px;color:#cbd5e1;line-height:1.6;margin-bottom:10px;">
@@ -4503,6 +4579,24 @@
                                 ${(() => {
                                     const livingCitizens = livingPlayers.filter(p => p.role && p.role.team !== 'mafia');
                                     return renderPlayerChips(livingCitizens, nightActions.yakuzaTarget, 'setNightYakuzaTarget', -1, false);
+                                })()}
+                            </div>
+                        </div>
+                    ` : `
+                        <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.3);border-radius:10px;padding:12px;margin-bottom:12px;">
+                            <div style="font-size:13px;font-weight:bold;color:#38bdf8;margin-bottom:6px;">🤝 عملیات مذاکره تیم مافیا (شبکه سلامت)</div>
+                            <div style="font-size:12px;color:#cbd5e1;line-height:1.6;margin-bottom:10px;">
+                                تیم مافیا چون حداقل یک یار از دست داده‌اند و مذاکره‌کننده زنده است، می‌توانند به جای شلیک شبانه با یک شهروند مذاکره نمایند.<br>
+                                <span style="color:#fde047;font-weight:600;">• مذاکره فقط با «شهروند ساده» یا «زره‌پوشی که در شب زره‌اش افتاده باشد» موفق خواهد شد.</span><br>
+                                <span style="color:#94a3b8;">• در صورت موفقیت، بازیکن به تیم مافیا پیوسته و شب بعد با مافیا چشم باز می‌کند (امشب شلیکی از سوی مافیا انجام نمی‌شود).</span>
+                            </div>
+                            <div>
+                                <label style="display:block;font-size:12px;color:#38bdf8;font-weight:bold;margin-bottom:4px;">
+                                    انتخاب شهروند جهت مذاکره:
+                                </label>
+                                ${(() => {
+                                    const livingCitizens = livingPlayers.filter(p => p.role && p.role.team !== 'mafia');
+                                    return renderPlayerChips(livingCitizens, nightActions.mozakereTarget, 'setNightMozakereTarget', -1, false);
                                 })()}
                             </div>
                         </div>
@@ -4625,7 +4719,7 @@
                 const rawPName = pickedHistory[step.playerIndex].role.playerName || '';
                 const pName = rawPName.trim() ? rawPName.trim() : `بازیکن ${pickedHistory[step.playerIndex].pickOrder}`;
                 const livingCount = livingPlayers.length;
-                const docQuota = livingCount > 8 ? 2 : 1;
+                const docQuota = livingCount >= 8 ? 2 : 1;
                 const selfSaves = gameSettings.doctorSelfSaves || 0;
                 const docIdx = step.playerIndex;
 
@@ -4653,7 +4747,7 @@
 
                 bodyHtml = `
                     <div style="font-size:12px;color:#38bdf8;margin-bottom:8px;background:rgba(56,189,248,0.1);border:1px solid rgba(56,189,248,0.25);border-radius:10px;padding:8px 12px;line-height:1.6;">
-                        🩺 <strong>سهمیه نجات پزشک: ${docQuota} نفر</strong> (تعداد افراد زنده: <strong>${livingCount} نفر</strong> ${livingCount > 8 ? '> ۸ نفر' : '≤ ۸ نفر'}).<br>
+                        🩺 <strong>سهمیه نجات پزشک: ${docQuota} نفر</strong> (تعداد افراد زنده: <strong>${livingCount} نفر</strong> ${livingCount >= 8 ? '≥ ۸ نفر' : '< ۸ نفر'}).<br>
                         <span style="color:#cbd5e1;font-size:11px;">* سهمیه نجات جان خود توسط پزشک: <strong style="color:${selfSaves > 0 ? '#4ade80' : '#f87171'}">${selfSaves} بار</strong> در کل بازی باقی مانده است.</span>
                     </div>
 
@@ -4902,6 +4996,65 @@
                     </div>
                     ${renderTofangdarMultiChips(livingPlayers, g1, g2, tofangdarIdx, warBulletsLeft)}
                 `;
+            } else if (step.stepKey === 'khabarnegar') {
+                const mozakereEverDone = gameSettings.mozakereUsed || nightActions.mafiaMode === 'mozakere';
+                const khabarnegarUsed = !!gameSettings.khabarnegarUsed;
+
+                if (instructionEl) instructionEl.innerText = 'استعلام خبرنگار (تأیید عضویت در مافیا پس از مذاکره):';
+
+                if (!mozakereEverDone) {
+                    bodyHtml = `
+                        <div style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.3);border-radius:10px;padding:12px;margin-bottom:12px;line-height:1.7;">
+                            <div style="font-size:13px;font-weight:bold;color:#fbbf24;margin-bottom:6px;">⚠️ مذاکره هنوز انجام نشده است</div>
+                            <div style="font-size:12px;color:#cbd5e1;">
+                                طبق قوانین مسابقه، خبرنگار تنها <strong>پس از وقوع مذاکره توسط مافیا</strong> حق بیدار شدن و استعلام دارد.<br>
+                                از آنجا که مافیا هنوز مذاکره‌ای انجام نداده است، این مرحله رد می‌شود و نیازی به اقدام نیست.
+                            </div>
+                        </div>
+                    `;
+                } else if (khabarnegarUsed) {
+                    bodyHtml = `
+                        <div style="background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.3);border-radius:10px;padding:12px;margin-bottom:12px;line-height:1.7;">
+                            <div style="font-size:13px;font-weight:bold;color:#f87171;margin-bottom:6px;">❌ استعلام قبلاً مصرف شده است</div>
+                            <div style="font-size:12px;color:#cbd5e1;">
+                                خبرنگار تنها یک‌بار در طول بازی می‌تواند استعلام بگیرد و این قابلیت قبلاً استفاده شده است.
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const selectedIdx = nightActions.khabarnegar;
+                    let resultHtml = '';
+                    if (selectedIdx !== -1) {
+                        const isNegotiatedTarget = (selectedIdx === gameSettings.negotiatedPlayerIdx || (nightActions.mafiaMode === 'mozakere' && selectedIdx === nightActions.mozakereTarget));
+                        if (isNegotiatedTarget) {
+                            resultHtml = `
+                                <div style="margin-top:12px;background:rgba(16,185,129,0.15);border:1px solid #10b981;border-radius:8px;padding:10px;text-align:center;">
+                                    <div style="font-size:14px;font-weight:bold;color:#34d399;">👍 نتیجه استعلام: مثبت (عضو مذاکره‌شده مافیا)</div>
+                                    <div style="font-size:12px;color:#cbd5e1;margin-top:4px;">راوی با سر به خبرنگار تأیید می‌دهد.</div>
+                                </div>
+                            `;
+                        } else {
+                            resultHtml = `
+                                <div style="margin-top:12px;background:rgba(239,68,68,0.15);border:1px solid #ef4444;border-radius:8px;padding:10px;text-align:center;">
+                                    <div style="font-size:14px;font-weight:bold;color:#f87171;">👎 نتیجه استعلام: منفی (مذاکره‌نشده)</div>
+                                    <div style="font-size:12px;color:#cbd5e1;margin-top:4px;">راوی استعلام این بازیکن را رد می‌کند.</div>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    bodyHtml = `
+                        <div style="background:rgba(56,189,248,0.08);border:1px solid rgba(56,189,248,0.25);border-radius:10px;padding:12px;margin-bottom:12px;line-height:1.6;">
+                            <div style="font-size:13px;font-weight:bold;color:#38bdf8;margin-bottom:4px;">📰 استعلام هویت فرد مذاکره‌شده</div>
+                            <div style="font-size:12px;color:#cbd5e1;">
+                                خبرنگار می‌تواند از راوی استعلام کند که آیا بازیکن مورد نظر او به تیم مافیا پیوسته است یا خیر (قابلیت یک‌بار مصرف):
+                            </div>
+                        </div>
+                        <div style="font-size:12px;color:#94a3b8;margin-bottom:6px;">انتخاب بازیکن مورد استعلام (یا عدم استعلام در این شب):</div>
+                        ${renderPlayerChips(livingPlayers, nightActions.khabarnegar, 'setNightKhabarnegarTarget', step.playerIndex, true, '🚫 عدم استعلام در این شب')}
+                        ${resultHtml}
+                    `;
+                }
             }
 
             bodyEl.innerHTML = bodyHtml;
@@ -5227,6 +5380,16 @@
             renderCurrentNightStep();
         }
 
+        function setNightMozakereTarget(idx) {
+            nightActions.mozakereTarget = idx;
+            renderCurrentNightStep();
+        }
+
+        function setNightKhabarnegarTarget(idx) {
+            nightActions.khabarnegar = idx;
+            renderCurrentNightStep();
+        }
+
         function setNightShayadTarget(idx) {
             nightActions.shayad = idx;
             renderCurrentNightStep();
@@ -5262,7 +5425,7 @@
             }
 
             const livingCount = pickedHistory.filter(p => p.role && p.role.isAlive).length;
-            const maxQuota = livingCount > 8 ? 2 : 1;
+            const maxQuota = livingCount >= 8 ? 2 : 1;
             let t1 = nightActions.doctor.target1;
             let t2 = (maxQuota === 2) ? nightActions.doctor.target2 : -1;
 
@@ -5499,6 +5662,10 @@
                     if (nightActions.yakuzaTarget === -1) {
                         return { valid: false, message: 'لطفاً شهروند مورد نظر برای مذاکره را انتخاب نمایید.' };
                     }
+                } else if (nightActions.mafiaMode === 'mozakere') {
+                    if (nightActions.mozakereTarget === -1) {
+                        return { valid: false, message: 'لطفاً شهروند مورد نظر برای مذاکره را انتخاب نمایید.' };
+                    }
                 }
             }
 
@@ -5509,7 +5676,7 @@
             }
 
             if (step.stepKey === 'doctor') {
-                const docQuota = livingCount > 8 ? 2 : 1;
+                const docQuota = livingCount >= 8 ? 2 : 1;
                 const d1 = nightActions.doctor ? nightActions.doctor.target1 : -1;
                 const d2 = nightActions.doctor ? nightActions.doctor.target2 : -1;
                 if (docQuota === 1) {
@@ -5712,6 +5879,43 @@
                         casualtyReasons.push(`❌ مذاکره سوداگری شکست خورد (نقش هدف قابل جذب نبود)؛ مافیای فداشده (${formatTarget(sacIdx)}) جان باخت و عضوی به مافیا اضافه نشد.`);
                     }
                 }
+            } else if (actions.mafiaMode === 'mozakere') {
+                const mozakereActorBlocked = (effectiveBlockedIdx !== -1 && pickedHistory[effectiveBlockedIdx] && pickedHistory[effectiveBlockedIdx].role && pickedHistory[effectiveBlockedIdx].role.id === 'm_mozakere');
+                const isMozakereAlive = pickedHistory.some(p => p.role && p.role.id === 'm_mozakere' && p.role.isAlive);
+                const totalMafiaCount = pickedHistory.filter(p => p.role && p.role.team === 'mafia').length;
+                const aliveMafiaCount = pickedHistory.filter(p => p.role && p.role.team === 'mafia' && p.role.isAlive).length;
+                const deadMafiaCount = totalMafiaCount - aliveMafiaCount;
+
+                if (mafiaActorBlocked || mozakereActorBlocked) {
+                    privateLog.push(`🤝 تیم مافیا قصد مذاکره داشت، اما مذاکره‌کننده مافیا در وضعیت بلاک/گروگان بود و اقدام لغو شد.`);
+                } else if (!isMozakereAlive) {
+                    privateLog.push(`🤝 اقدام مذاکره لغو شد؛ نقش مذاکره‌کننده در بازی زنده نیست.`);
+                } else if (deadMafiaCount < 1) {
+                    privateLog.push(`🤝 اقدام مذاکره لغو شد؛ تیم مافیا هنوز هیچ یاری از دست نداده است (شرط خروج حداقل یک مافیا رعایت نشده است).`);
+                } else if (actions.mozakereTarget !== -1) {
+                    gameSettings.mozakereUsed = true;
+                    const tgtIdx = actions.mozakereTarget;
+                    const tgtPlayer = pickedHistory[tgtIdx];
+                    const tRoleId = tgtPlayer && tgtPlayer.role ? tgtPlayer.role.id : '';
+
+                    // Rule 7: مذاکره فقط با شهروند ساده یا زره‌پوشی که در شب زره‌اش افتاده باشد
+                    const isSimpleCitizen = (tRoleId === 'c_simple' || tRoleId === 'c_shahrvand');
+                    const isRoointanWithArmorDropped = (tRoleId === 'c_roointan' && (tgtPlayer.role.vestRemoved || tgtPlayer.role.armorBroken));
+                    const isSuccess = isSimpleCitizen || isRoointanWithArmorDropped;
+
+                    if (isSuccess) {
+                        tgtPlayer.role.team = 'mafia';
+                        tgtPlayer.role.teamLabel = 'گروه مافیا';
+                        gameSettings.negotiatedPlayerIdx = tgtIdx;
+                        gameSettings.mozakereSuccessful = true;
+                        casualtyReasons.push(`🤝 مذاکره موفق: تیم مافیا به جای شلیک اقدام به مذاکره کرد؛ مذاکره با ${formatTarget(tgtIdx)} با موفقیت انجام شد و او به مافیا پیوست (کشته‌ای در شلیک مافیا ثبت نشد).`);
+                        privateLog.push(`🤝 مذاکره موفقیت‌آمیز: تیم مافیا با ${formatTarget(tgtIdx)} با موفقیت مذاکره کردند. این بازیکن به تیم مافیا پیوست و شب بعد همراه مافیا چشم باز خواهد کرد.`);
+                    } else {
+                        gameSettings.mozakereSuccessful = false;
+                        casualtyReasons.push(`❌ مذاکره ناموفق: تیم مافیا به جای شلیک اقدام به مذاکره با ${formatTarget(tgtIdx)} کرد اما نقش او قابل جذب نبود و مذاکره سوخت (بدون کشته).`);
+                        privateLog.push(`❌ مذاکره ناموفق: تیم مافیا اقدام به مذاکره با ${formatTarget(tgtIdx)} نمود اما به دلیل داشتن نقش غیرقابل جذب، مذاکره سوخت و عضوی به مافیا اضافه نشد.`);
+                    }
+                }
             } else {
                 // Normal Mafia Shot
                 if (mafiaTargetIdx !== -1) {
@@ -5721,7 +5925,7 @@
                     const docActor = formatActor('c_doctor', 'پزشک');
                     let isDoctorSaved = false;
 
-                    const docQuota = livingCount > 8 ? 2 : 1;
+                    const docQuota = livingCount >= 8 ? 2 : 1;
                     let d1 = -1, d2 = -1;
                     if (actions.doctor) {
                         if (typeof actions.doctor === 'object') {
@@ -5765,7 +5969,12 @@
                     // If not saved and not Takavar (Takavar will resolve his own fate below)
                     const takavarRoleIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_takavar' && p.role.isAlive);
                     if (!isDoctorSaved) {
-                        if (mafiaTargetIdx !== takavarRoleIdx) {
+                        const mTarget = pickedHistory[mafiaTargetIdx];
+                        if (mTarget && mTarget.role && mTarget.role.id === 'c_roointan' && !mTarget.role.vestRemoved) {
+                            mTarget.role.vestRemoved = true;
+                            casualtyReasons.push(`🛡️ شلیک مافیا به زره‌پوش (${formatTarget(mafiaTargetIdx)}) اصابت کرد؛ زره او مانع از مرگ وی شد اما زره‌اش افتاد و از بین رفت.`);
+                            privateLog.push(`🛡️ شلیک شبانه مافیا بر زره‌پوش (${formatTarget(mafiaTargetIdx)}) نشست، اما زره ضربه را دفع نمود (زره افتاد ولی بازیکن زنده ماند).`);
+                        } else if (mafiaTargetIdx !== takavarRoleIdx) {
                             deadPlayerIndices.push(mafiaTargetIdx);
                             casualtyReasons.push(`🔫 شلیک مافیا: ${formatTarget(mafiaTargetIdx)} با شلیک مافیا و عدم نجات پزشک جان باخت.`);
                         }
@@ -5781,7 +5990,7 @@
             if (wasTakavarShotByMafia) {
                 // Check if doctor protected takavar
                 const docIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_doctor' && p.role.isAlive);
-                const docQuota = livingCount > 8 ? 2 : 1;
+                const docQuota = livingCount >= 8 ? 2 : 1;
                 let d1 = -1, d2 = -1;
                 if (actions.doctor) {
                     if (typeof actions.doctor === 'object') {
@@ -5899,7 +6108,7 @@
                             casualtyReasons.push(`🛡️ تیر اسنایپر به جلیقه گادفادر اصابت کرد؛ جلیقه از بین رفت اما کشته‌ای نداشت.`);
                         } else {
                             const docIdxForSnip = pickedHistory.findIndex(p => p.role && p.role.id === 'c_doctor' && p.role.isAlive);
-                            const docQuotaForSnip = livingCount > 8 ? 2 : 1;
+                            const docQuotaForSnip = livingCount >= 8 ? 2 : 1;
                             let sd1 = -1, sd2 = -1;
                             if (actions.doctor) {
                                 if (typeof actions.doctor === 'object') {
@@ -5928,6 +6137,15 @@
                         }
                     }
                 }
+            }
+
+            // Khabarnegar (خبرنگار)
+            const khabarnegarIdx = pickedHistory.findIndex(p => p.role && p.role.id === 'c_khabarnegar' && p.role.isAlive);
+            const khabarnegarActor = formatActor('c_khabarnegar', 'خبرنگار');
+            if (khabarnegarIdx !== -1 && actions.khabarnegar !== -1 && effectiveBlockedIdx !== khabarnegarIdx && !gameSettings.khabarnegarUsed) {
+                gameSettings.khabarnegarUsed = true;
+                const isNegotiatedTarget = (actions.khabarnegar === gameSettings.negotiatedPlayerIdx);
+                privateLog.push(`📰 ${khabarnegarActor} استعلام هویت بازیکن ${formatTarget(actions.khabarnegar)} را از راوی درخواست نمود؛ نتیجه استعلام: ${isNegotiatedTarget ? 'مثبت (این بازیکن با مذاکره به مافیا پیوسته است) 👍' : 'منفی (این بازیکن عضو مذاکره‌شده مافیا نیست) 👎'}.`);
             }
 
             // 5. Attar (عطار)
@@ -6059,6 +6277,10 @@
                 basicSpeech = `شب پرحادثه و خونینی بود! متأسفانه بازیکنان ${names} در طول شب گذشته از جمع ما خارج شدند.`;
             }
 
+            if (actions.mafiaMode === 'mozakere') {
+                basicSpeech += `<br><br>🤝 <strong>اعلامیه رسمی راوی:</strong> در طول شب گذشته تیم مافیا شلیک مستقیم شبانه نداشت و اقدام به مذاکره جهت جذب یک شهروند به مافیا نمود.`;
+            }
+
             if (bazporsCourtHtml) {
                 basicSpeech += `<br><br>⚖️ <strong>اعلامیه دادگاه بازپرسی:</strong> بنا بر دستور رسمی بازپرس شهر، فردا متهمان احضارشده در جایگاه بازپرسی و محاکمه حاضر خواهند شد.`;
             }
@@ -6152,6 +6374,35 @@
                 `;
             }
 
+            let mozakereDayGuideHtml = '';
+            if (gameSettings && gameSettings.scenario === 'mozakere') {
+                const livingNow = pickedHistory.filter(p => p.role && p.role.isAlive).length;
+                let neededVotes = 2;
+                let quotaRuleText = '۴ و ۵ نفر: ۲ رأی';
+                if (livingNow >= 8) {
+                    neededVotes = 4;
+                    quotaRuleText = '۸ تا ۱۰ نفر: ۴ رأی';
+                } else if (livingNow >= 6) {
+                    neededVotes = 3;
+                    quotaRuleText = '۶ و ۷ نفر: ۳ رأی';
+                }
+
+                mozakereDayGuideHtml = `
+                    <div class="drawer-card" style="border-right: 4px solid #a855f7; background: rgba(168, 85, 247, 0.08);">
+                        <div class="drawer-card-title" style="color:#c084fc;">⚖️ قوانین دفاع و حد نصاب آراء (سناریو مذاکره):</div>
+                        <div style="font-size:12.5px;color:#e2e8f0;line-height:1.7;">
+                            <div style="margin-bottom:4px;">👥 بازیکنان زنده حال حاضر: <strong>${livingNow} نفر</strong></div>
+                            <div>🗳️ <strong>حد نصاب آرا جهت ورود به دفاع و خروج:</strong> <span style="background:rgba(168,85,247,0.25);color:#f3e8ff;padding:2px 8px;border-radius:6px;font-weight:bold;">${neededVotes} رأی</span> <span style="color:#cbd5e1;font-size:11.5px;">(${quotaRuleText})</span></div>
+                            <div style="margin-top:6px;font-size:11.5px;color:#cbd5e1;border-top:1px dashed rgba(255,255,255,0.1);padding-top:6px;">
+                                • <strong>بیش از ۲ نفر در دفاع:</strong> خود افراد حاضر در دفاع نیز امکان رأی دادن به یکدیگر را دارند.<br>
+                                • <strong>۲ نفر در دفاع:</strong> هر نفر می‌تواند ۱ نفر را مشخص کند تا راجع به او صحبت کند.<br>
+                                • <strong>۱ نفر در دفاع:</strong> می‌تواند ۱ نفر را به عنوان اتهام‌زننده و ۱ نفر را به عنوان مدافع خود انتخاب کند.
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
             // Dropdown options for night history
             let nightSelectOptions = '';
             nightHistory.forEach((nh, idx) => {
@@ -6223,6 +6474,8 @@
                             </div>
                         </div>
                     ` : ''}
+
+                    ${mozakereDayGuideHtml}
 
                     ${gunSummaryHtml}
 
@@ -7045,12 +7298,33 @@ ${nightEventsHtml}
                 natoUsed: false,
                 usedAttar: false,
                 usedBazpors: false,
+                mozakereUsed: false,
+                mozakereSuccessful: false,
+                negotiatedPlayerIdx: -1,
+                khabarnegarUsed: false,
                 capoPoisonedPlayers: [],
                 gunHolders: [],
                 armorHolders: [],
                 lastInquiryResult: null,
                 lastNightReport: null,
                 heirTransferred: false
+            };
+            gameSettings = {
+                scenario: 'custom',
+                doctorSelfSaves: 2,
+                doctorSelfSavesTotal: 2,
+                sniperBullets: 2,
+                sniperWrongFireback: true,
+                tofangdarWarBullets: 1,
+                tofangdarWarBulletsTotal: 1,
+                natoUsed: false,
+                attarUsed: false,
+                bazporsUsed: false,
+                yakuzaUsed: false,
+                mozakereUsed: false,
+                mozakereSuccessful: false,
+                negotiatedPlayerIdx: -1,
+                khabarnegarUsed: false
             };
             document.querySelectorAll('[id^="count-"]').forEach(el => el.innerText = '0');
             document.getElementById('god-inquiry-display').innerText = '0';
