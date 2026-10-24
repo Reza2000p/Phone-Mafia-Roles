@@ -1,0 +1,9 @@
+Halloween timer sounds - all CC0 1.0 (public domain), downloaded from OpenGameArt.org
+
+witch_cackle.ogg   "Witch cackle" by AntumDeluge          https://opengameart.org/content/witch-cackle
+evil_laugh_1.ogg   "Evil Laugh" by AntumDeluge            https://opengameart.org/content/evil-laugh
+evil_laugh_2.ogg   "Evil Laugh 2" by AntumDeluge          https://opengameart.org/content/evil-laugh-2
+ghost_scream.ogg   "Scary High-pitched Ghost" by Fupi     https://opengameart.org/content/scary-high-pitched-ghost
+
+License: https://creativecommons.org/publicdomain/zero/1.0/
+The wolf howl is synthesized in code (WebAudio) and has no external source.
