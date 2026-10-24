@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mafia-pwa-v14'; // ← تغییر نسخه (bugfix release)
+const CACHE_NAME = 'mafia-pwa-v16'; // ← تغییر نسخه (bugfix release)
 
 // لیست تمام نقش‌ها
 const ROLE_IDS = [
@@ -19,7 +19,10 @@ const ROLE_IDS = [
   'm_natasha', 'm_nato', 'm_samsaz', 'm_shaiad', 'm_shobadebaz',
   'm_silencer', 'm_simple', 'm_terorist', 'm_tohamatzan', 'm_vakeel',
   'm_yaghi',
-  'f_delroba', 'f_gorgnama', 'f_hezarchehre', 'f_joker', 'f_killer', 'f_sandika'
+  'f_delroba', 'f_gorgnama', 'f_hezarchehre', 'f_joker', 'f_killer', 'f_sandika',
+  // تم هالووین
+  'm_dracula', 'm_frankenstein', 'm_zombie',
+  'c_wizard', 'c_wednesday', 'c_vanhelsing', 'c_ghost', 'c_mummy', 'c_pumpkin'
 ];
 
 // فایل‌های اصلی + عکس‌ها + فایل توضیحات + مانیفست
@@ -29,6 +32,10 @@ const ASSETS = [
   './sw.js',
   './manifest.json',
   './roles-descriptions.json',
+  './sounds/witch_cackle.ogg',
+  './sounds/evil_laugh_1.ogg',
+  './sounds/evil_laugh_2.ogg',
+  './sounds/ghost_scream.ogg',
   ...ROLE_IDS.map(id => `./assets/images/${id}.png`)
 ];
 

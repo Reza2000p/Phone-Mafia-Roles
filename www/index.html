@@ -1635,6 +1635,263 @@
             .bottom-nav .nav-item .icon{font-size:32px}
             .bottom-nav .nav-item .label{font-size:16px}
         }
+
+        /* ===== CLUB PAGE (لیدربورد + بازیکنان) ===== */
+        .club-tabs {
+            display:flex; gap:6px; background:#0f172a; border:1px solid #2d3a4f;
+            border-radius:14px; padding:4px; margin-bottom:12px;
+        }
+        .club-tab {
+            flex:1; background:transparent; color:#94a3b8; border:none;
+            padding:9px 6px; border-radius:11px; font-size:clamp(13px,2.8vw,15px);
+            font-weight:700; cursor:pointer; transition:all .15s;
+        }
+        .club-tab.active { background:#1e293b; color:#f87171; box-shadow:0 2px 8px rgba(0,0,0,0.35); }
+
+        /* ===== SETTINGS PAGE ===== */
+        .settings-card {
+            background:#1e293b; border:1px solid #2d3a4f; border-radius:16px;
+            padding:14px; margin-bottom:12px; box-shadow:0 4px 12px rgba(0,0,0,0.3);
+        }
+        .settings-card-title { font-weight:700; font-size:clamp(14px,3vw,16px); color:#e2e8f0; margin-bottom:10px; }
+        .settings-note { font-size:12px; color:#94a3b8; line-height:1.7; margin-top:10px; }
+        .theme-options { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+        .theme-option {
+            background:#0f172a; border:2px solid #2d3a4f; border-radius:14px;
+            padding:14px 8px; display:flex; flex-direction:column; align-items:center; gap:6px;
+            color:#cbd5e1; cursor:pointer; transition:all .15s;
+        }
+        .theme-option .theme-emoji { font-size:34px; }
+        .theme-option .theme-name { font-size:14px; font-weight:700; }
+        .theme-option.active { border-color:#38bdf8; background:#16243b; color:#f1f5f9; box-shadow:0 0 18px rgba(56,189,248,.18); }
+        #theme-opt-halloween.active { border-color:#ff7a1a; background:#2a1710; box-shadow:0 0 22px rgba(255,122,26,.3); }
+        .sound-row {
+            display:flex; align-items:center; justify-content:space-between; gap:8px;
+            background:#0f172a; border:1px solid #2d3a4f; border-radius:12px;
+            padding:6px 8px; margin-bottom:6px;
+        }
+        .sound-row.active { border-color:#ff7a1a; }
+        .sound-pick {
+            flex:1; background:transparent; border:none; color:#e2e8f0; text-align:right;
+            font-size:14px; font-weight:600; display:flex; align-items:center; gap:8px;
+            cursor:pointer; padding:6px 4px;
+        }
+        .sound-radio { color:#ff7a1a; font-size:16px; }
+        .sound-play {
+            background:#ff7a1a; color:#1a0f2b; border:none; border-radius:30px;
+            padding:6px 14px; font-size:12px; font-weight:800; cursor:pointer;
+        }
+
+        /* ============================================================ */
+        /* ===== THEME: HALLOWEEN ===== */
+        /* ============================================================ */
+        html:has(body.theme-halloween) { background:#120a1c; }
+        body.theme-halloween {
+            background:#120a1c;
+            background-image:
+                radial-gradient(circle at 15% 12%, rgba(255,122,26,.16) 0%, transparent 45%),
+                radial-gradient(circle at 85% 88%, rgba(139,92,246,.22) 0%, transparent 50%),
+                radial-gradient(circle at 20% 30%, #2a1240 0%, #120a1c 70%);
+            color:#f3e8ff;
+        }
+        @keyframes hwBats { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
+        @keyframes hwFlicker { 0%,100%{ box-shadow:0 0 14px rgba(255,122,26,.25); } 45%{ box-shadow:0 0 24px rgba(255,122,26,.45); } 55%{ box-shadow:0 0 10px rgba(255,122,26,.2); } }
+        @keyframes hwFloat { 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-4px); } }
+
+        body.theme-halloween ::-webkit-scrollbar-track { background:#1a0f2b; }
+        body.theme-halloween ::-webkit-scrollbar-thumb { background:#6d28d9; }
+
+        body.theme-halloween .app-header {
+            background:linear-gradient(145deg,#2a1240,#150a22);
+            border:1px solid #ff7a1a66;
+            box-shadow:0 6px 28px rgba(255,122,26,.18);
+        }
+        body.theme-halloween .app-header h1 { color:#ff9a3c; text-shadow:0 0 14px rgba(255,122,26,.55); }
+        body.theme-halloween .app-header p { color:#c4b5fd; }
+
+        body.theme-halloween .setup-box,
+        body.theme-halloween .settings-card,
+        body.theme-halloween .god-header-bar {
+            background:#1d1030; border-color:#4c2a78; box-shadow:0 4px 14px rgba(0,0,0,.45);
+        }
+        body.theme-halloween .setup-box:focus-within { border-color:#ff7a1a; }
+        body.theme-halloween .player-input { background:#120a1c; border-color:#4c2a78; color:#ff9a3c; }
+        body.theme-halloween .select-custom,
+        body.theme-halloween .player-name-select,
+        body.theme-halloween .player-name-input { background:#120a1c; border-color:#4c2a78; color:#f3e8ff; }
+        body.theme-halloween .select-custom:focus,
+        body.theme-halloween .player-name-select:focus,
+        body.theme-halloween .player-name-input:focus { border-color:#ff7a1a; }
+
+        body.theme-halloween .role-card { background:#1d1030; border-color:#4c2a78; }
+        body.theme-halloween .role-card .group-badge { background:#120a1c; border-color:#4c2a78; color:#c4b5fd; }
+        body.theme-halloween .role-card.selected-citizen { background:linear-gradient(160deg,#1f4a24,#143017); border-color:#7cb518; box-shadow:inset 0 0 0 1px rgba(124,181,24,.28); }
+        body.theme-halloween .role-card.selected-mafia { background:linear-gradient(160deg,#4a1a73,#2d1049); border-color:#9d4edd; box-shadow:inset 0 0 0 1px rgba(157,78,221,.3); }
+        body.theme-halloween .counter-controls { background:#120a1c; border-color:#4c2a78; }
+        body.theme-halloween .counter-value { color:#ff9a3c; }
+
+        body.theme-halloween .btn-action {
+            background:linear-gradient(135deg,#f26a10,#b93a0b);
+            box-shadow:0 6px 18px rgba(242,106,16,.28); color:#fff;
+            text-shadow:0 1px 2px rgba(0,0,0,.35);
+        }
+        body.theme-halloween .btn-action:disabled { background:#2b1d40; color:#6b5a85; box-shadow:none; }
+        body.theme-halloween .draw-actions .btn-action.gold { background:linear-gradient(135deg,#e0a30b,#b97a06); color:#fff; box-shadow:none; }
+        body.theme-halloween .draw-actions .btn-action.gray { background:#4c2a78; color:#f3e8ff; }
+        body.theme-halloween .draw-actions .btn-action.green { background:linear-gradient(135deg,#6aa810,#43700b); color:#fff; }
+        body.theme-halloween .god-fixed-buttons .btn-action.primary { background:linear-gradient(135deg,#8b5cf6,#6d28d9); color:#fff; }
+        body.theme-halloween .god-fixed-buttons .btn-action.secondary { background:#3b2060; color:#f3e8ff; }
+
+        /* --- صفحه‌ی قرعه‌کشی و اعداد --- */
+        body.theme-halloween {
+            --hw-web: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 60 60'%3E%3Cg fill='none' stroke='%23d8c8ff' stroke-opacity='.5' stroke-width='1'%3E%3Cpath d='M0 0H60M0 0L52 22M0 0L38 38M0 0L22 52M0 0V60'/%3E%3Cpath d='M14 0Q10 10 0 14M28 0Q22 22 0 28M42 0Q34 34 0 42M56 0Q46 46 0 56'/%3E%3C/g%3E%3C/svg%3E");
+            --hw-pumpkin: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 9c-1.4-1.6-1.4-3.6-.4-5h2.2c-.2 1.8 0 3.2-1.8 5z' fill='%23578a2c'/%3E%3Cellipse cx='10.5' cy='19' rx='7.5' ry='9.5' fill='%23d95f0b'/%3E%3Cellipse cx='21.5' cy='19' rx='7.5' ry='9.5' fill='%23d95f0b'/%3E%3Cellipse cx='16' cy='19' rx='6' ry='10' fill='%23ff8a2a'/%3E%3Cpath d='M10 15l3 4H7zM22 15l3 4h-6z' fill='%231a0b2a'/%3E%3Cpath d='M10 23l2 2 2-2 2 2 2-2 2 2' stroke='%231a0b2a' stroke-width='1.4' fill='none' stroke-linejoin='round'/%3E%3C/svg%3E");
+            --hw-ghost: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M6 28V14a10 10 0 0 1 20 0v14l-3.3-3-3.3 3-3.4-3-3.4 3-3.3-3z' fill='%23efe8ff'/%3E%3Ccircle cx='12' cy='14' r='2' fill='%231a0b2a'/%3E%3Ccircle cx='20' cy='14' r='2' fill='%231a0b2a'/%3E%3Cellipse cx='16' cy='20' rx='2' ry='2.6' fill='%231a0b2a'/%3E%3C/svg%3E");
+            --hw-bat: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M16 11C14 6 8 5 2 8C4 11 4 14 3 17C6 15 9 15 11 18C12 16 14 16 16 19C18 16 20 16 21 18C23 15 26 15 29 17C28 14 28 11 30 8C24 5 18 6 16 11Z' fill='%239d6bff'/%3E%3Ccircle cx='14' cy='11' r='.9' fill='%231a0b2a'/%3E%3Ccircle cx='18' cy='11' r='.9' fill='%231a0b2a'/%3E%3C/svg%3E");
+            --hw-tomb: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M7 28V13a9 9 0 0 1 18 0v15z' fill='%23483a63'/%3E%3Cpath d='M16 11v10M12.5 14.5h7' stroke='%23927fb3' stroke-width='1.7' stroke-linecap='round'/%3E%3C/svg%3E");
+            --hw-ground: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 54' preserveAspectRatio='none'%3E%3Cpath d='M0 54V30Q60 14 130 28T270 26T400 20V54Z' fill='%230e0618'/%3E%3Cg fill='%231d1030'%3E%3Cpath d='M40 40V30a7 7 0 0 1 14 0v10zM330 38V28a8 8 0 0 1 16 0v10z'/%3E%3C/g%3E%3Cg transform='translate(200 38)'%3E%3Cellipse cx='-4' cy='0' rx='5' ry='6.5' fill='%23c4560a'/%3E%3Cellipse cx='4' cy='0' rx='5' ry='6.5' fill='%23c4560a'/%3E%3Cellipse cx='0' cy='0' rx='4.2' ry='6.8' fill='%23f07a1c'/%3E%3Cpath d='M-1.5-10c-1-1 0-3 1-4' stroke='%234d7a24' stroke-width='2' fill='none'/%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        /* صحنه‌ی بالای صفحه‌ی قرعه‌کشی */
+        .hw-scene { display:none; }
+        body.theme-halloween .hw-scene {
+            display:block; margin:0 0 12px; border-radius:20px; overflow:hidden;
+            border:1px solid #5b3392;
+            background:linear-gradient(180deg,#1b0b2e 0%,#35174f 58%,#6a2f55 100%);
+            box-shadow:0 8px 26px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,190,115,.12);
+        }
+        .hw-scene-svg { display:block; width:100%; height:auto; max-height:150px; }
+        .hw-bat-fly { animation:hwBatFly 6.5s ease-in-out infinite; }
+        .hw-bat-fly.f2 { animation-duration:8s; animation-delay:-2s; }
+        .hw-bat-fly.f3 { animation-duration:7.2s; animation-delay:-4s; }
+        @keyframes hwBatFly { 0%,100%{ transform:translate(0,0); } 50%{ transform:translate(-14px,-7px); } }
+
+        body.theme-halloween #page-draw h2 { color:#ffb066 !important; text-shadow:0 0 14px rgba(255,122,26,.45); }
+        body.theme-halloween #page-draw p { color:#cdbcff !important; }
+        body.theme-halloween #page-draw .setup-box { background:linear-gradient(180deg,#25123b,#1a0d2b); border-color:#5b3392; }
+        body.theme-halloween .draw-cards-grid { gap:16px; }
+        body.theme-halloween .draw-card {
+            position:relative; overflow:hidden;
+            background:
+                radial-gradient(circle at 50% 38%, rgba(255,122,26,.16) 0%, transparent 58%),
+                linear-gradient(180deg,#2c1448 0%,#1a0d2b 100%);
+            border:1.5px solid rgba(255,122,26,.78); color:#ffbf85;
+            text-shadow:0 0 16px rgba(255,122,26,.55), 0 2px 0 rgba(0,0,0,.45);
+            box-shadow:inset 0 0 0 1px rgba(255,170,90,.22), inset 0 -26px 30px -18px rgba(255,122,26,.16), 0 8px 18px rgba(0,0,0,.45);
+            animation:none;
+        }
+        body.theme-halloween .draw-card::before {
+            content:''; position:absolute; top:8px; right:8px; width:clamp(22px,5vw,30px); aspect-ratio:1;
+            background:var(--hw-pumpkin) center/contain no-repeat; filter:drop-shadow(0 2px 3px rgba(0,0,0,.5));
+        }
+        body.theme-halloween .draw-card::after {
+            content:''; position:absolute; top:0; left:0; width:clamp(40px,10vw,56px); aspect-ratio:1;
+            background:var(--hw-web) top left/contain no-repeat; opacity:.9; pointer-events:none;
+        }
+        body.theme-halloween .draw-card:nth-child(3n)::before { background-image:var(--hw-ghost); animation:hwFloat 3s ease-in-out infinite; }
+        body.theme-halloween .draw-card:nth-child(5n)::before { background-image:var(--hw-bat); }
+        body.theme-halloween .draw-card:active:not(.opened) { transform:scale(.95); box-shadow:inset 0 0 0 1px rgba(255,170,90,.3), 0 0 26px rgba(255,122,26,.4); }
+        body.theme-halloween .draw-card.opened {
+            background:linear-gradient(180deg,#171024,#0e0818);
+            border-color:#3a2a55; color:#54466f; text-shadow:none; opacity:.62;
+            box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+        }
+        body.theme-halloween .draw-card.opened::before { background-image:var(--hw-tomb); animation:none; filter:none; opacity:.85; }
+        body.theme-halloween .draw-card.opened::after { opacity:.35; }
+
+        /* مه‌ی پایین صفحه‌ی قرعه‌کشی */
+        body.theme-halloween.draw-active::after {
+            content:''; position:fixed; left:0; right:0; bottom:0; height:130px; pointer-events:none; z-index:0;
+            background:
+                radial-gradient(120px 50px at 18% 100%, rgba(190,160,255,.16), transparent 70%),
+                radial-gradient(160px 60px at 60% 100%, rgba(255,150,70,.14), transparent 70%),
+                radial-gradient(140px 55px at 92% 100%, rgba(190,160,255,.14), transparent 70%);
+            animation:hwFog 14s ease-in-out infinite alternate;
+        }
+        @keyframes hwFog { 0%{ transform:translateX(-16px); } 100%{ transform:translateX(16px); } }
+
+        /* --- مودال نمایش نقش --- */
+        .hw-modal-decor { display:none; }
+        body.theme-halloween #role-modal .hw-modal-decor { display:block; position:absolute; inset:0; pointer-events:none; }
+        body.theme-halloween .hw-web { position:absolute; top:0; width:78px; aspect-ratio:1; background:var(--hw-web) top left/contain no-repeat; opacity:.8; }
+        body.theme-halloween .hw-web-l { left:0; }
+        body.theme-halloween .hw-web-r { right:0; transform:scaleX(-1); }
+        body.theme-halloween .hw-modal-ground { position:absolute; left:0; right:0; bottom:0; height:56px; background:var(--hw-ground) bottom/100% 100% no-repeat; }
+        body.theme-halloween #role-modal .modal-card {
+            background:linear-gradient(180deg,#26123d 0%,#170c26 100%);
+            border:1.5px solid rgba(255,122,26,.55);
+            padding-bottom:78px;
+            box-shadow:0 25px 70px rgba(0,0,0,.85), inset 0 0 0 1px rgba(255,190,115,.1);
+        }
+        body.theme-halloween #role-modal .modal-card > *:not(.hw-modal-decor) { position:relative; z-index:1; }
+        body.theme-halloween #role-modal .modal-card::before { height:5px; opacity:.9; background:linear-gradient(90deg,#ff7a1a,#9d4edd,#ff7a1a); }
+        body.theme-halloween #role-modal .modal-card[data-team="citizen"] { border-color:rgba(124,181,24,.7); }
+        body.theme-halloween #role-modal .modal-card[data-team="mafia"] { border-color:rgba(157,78,221,.8); }
+        body.theme-halloween #role-modal .modal-role-image-wrapper { background:#120a1c; box-shadow:none; }
+        body.theme-halloween #role-modal .modal-role-image-wrapper.border-citizen { border-color:#7cb518; }
+        body.theme-halloween #role-modal .modal-role-image-wrapper.border-mafia { border-color:#9d4edd; }
+        body.theme-halloween #role-modal .modal-role-image-wrapper.border-free { border-color:#ff7a1a; }
+        body.theme-halloween #role-modal .modal-card[data-team="citizen"] #modal-role-name { background:rgba(124,181,24,.16) !important; color:#c9f27a !important; }
+        body.theme-halloween #role-modal .modal-card[data-team="mafia"] #modal-role-name { background:rgba(157,78,221,.22) !important; color:#e6d3ff !important; }
+        body.theme-halloween #role-modal .modal-team-name.team-citizen { color:#c9f27a; border-color:#7cb518; }
+        body.theme-halloween #role-modal .modal-team-name.team-mafia { color:#e6d3ff; border-color:#9d4edd; }
+        body.theme-halloween #role-modal .modal-player-num { color:#ffbf85; background:rgba(255,122,26,.12); border:1px solid rgba(255,122,26,.35); }
+        body.theme-halloween #role-modal .modal-role-description { color:#cdbcff; }
+        body.theme-halloween #role-modal .btn-action {
+            background:linear-gradient(135deg,#f26a10,#b93a0b) !important; color:#fff !important; box-shadow:0 4px 14px rgba(242,106,16,.3) !important;
+        }
+        body.theme-halloween #role-modal.show .modal-card { animation:hwReveal .55s cubic-bezier(.2,.9,.3,1.2); }
+        @keyframes hwReveal { 0%{ opacity:0; transform:scale(.82) translateY(24px); filter:brightness(1.8); } 100%{ opacity:1; transform:none; filter:none; } }
+
+        /* مودال‌های تأیید */
+        body.theme-halloween .modal-actions .btn-action.confirm { background:linear-gradient(135deg,#f26a10,#b93a0b); color:#fff; }
+        body.theme-halloween .modal-actions .btn-action.cancel,
+        body.theme-halloween .modal-actions .btn-action.secondary { background:#3b2060; color:#e9d5ff; }
+        body.theme-halloween .modal-title { color:#ffb066; }
+        body.theme-halloween .modal-message { color:#e9d5ff; }
+        body.theme-halloween .modal-input { background:#120a1c; border-color:#4c2a78; color:#f3e8ff; }
+
+        /* سایر اجزای صفحه‌ی نقش‌ها */
+        body.theme-halloween input[type="checkbox"] { accent-color:#ff7a1a; }
+        body.theme-halloween label[style*="#38bdf8"] { color:#cdbcff !important; }
+        body.theme-halloween .scenario-actions .save-btn { background:#6d28d9; border-color:#8b5cf6; color:#fff; }
+        body.theme-halloween .scenario-actions .save-btn:hover { background:#5b21b6; }
+
+        /* --- صفحه‌ی گاد --- */
+        body.theme-halloween .god-header-bar .title { color:#ff9a3c; text-shadow:0 0 10px rgba(255,122,26,.4); }
+        body.theme-halloween .toggle-btn { background:#3b2060; color:#f3e8ff; }
+        body.theme-halloween .toggle-btn:hover { background:#4c2a78; }
+        body.theme-halloween .god-player-row {
+            background:#1d1030; border-color:#4c2a78; border-right:3px solid #ff7a1a;
+        }
+        body.theme-halloween .god-player-row.dead { background:#0d0715; border-color:#2b1d40; border-right-color:#4c2a78; }
+        body.theme-halloween .god-player-row.dead .player-num::after { content:' 💀'; font-size:12px; }
+        body.theme-halloween .player-num { color:#ff9a3c; }
+        body.theme-halloween .player-role-text { color:#e9d5ff; }
+        body.theme-halloween .player-card-num { color:#8b7aa8; }
+        body.theme-halloween .badge-row { background:#120a1c; border-color:#4c2a78; }
+        body.theme-halloween .badge-row .btn-sm:hover { background:#3b2060; }
+        body.theme-halloween .alive-checkbox { accent-color:#84cc16; }
+        body.theme-halloween .god-stats-panel { background:#150a22; border-color:#4c2a78; }
+        body.theme-halloween .stats-row { border-bottom-color:#3b2060; }
+        body.theme-halloween .stat-box { background:#1d1030; border-color:#4c2a78; }
+        body.theme-halloween .god-bottom-bar { background:#150a22ee; border-top-color:#ff7a1a66; box-shadow:0 -6px 30px rgba(255,122,26,.12); }
+        body.theme-halloween .god-bottom-row .btn-sm { background:#3b2060; color:#f3e8ff; }
+        body.theme-halloween .timer-display { color:#ff9a3c; text-shadow:0 0 12px rgba(255,122,26,.6); }
+
+        /* --- ناوبری پایین، تب‌ها و مودال‌ها --- */
+        body.theme-halloween .bottom-nav { background:#150a22ee; border-top-color:#ff7a1a55; box-shadow:0 -6px 30px rgba(139,92,246,.18); }
+        body.theme-halloween .bottom-nav .nav-item.active .label { color:#ff9a3c; }
+        body.theme-halloween .club-tabs { background:#150a22; border-color:#4c2a78; }
+        body.theme-halloween .club-tab.active { background:#2a1240; color:#ff9a3c; }
+        body.theme-halloween .leaderboard-header-sticky,
+        body.theme-halloween .lb-table th { background:#150a22; border-color:#4c2a78; }
+        body.theme-halloween .lb-table td { border-bottom-color:#2b1d40; }
+        body.theme-halloween .lb-table tr:hover { background:#1d1030; }
+        body.theme-halloween .modal-card { background:#1d1030; border-color:#ff7a1a55; box-shadow:0 25px 70px rgba(0,0,0,.85), 0 0 40px rgba(255,122,26,.12); }
+        body.theme-halloween .gallery-item { background:#1d1030; }
+        body.theme-halloween .section-header.bg-citizen { background:linear-gradient(135deg,#14532d,#365314); color:#bef264; border-color:#84cc16; }
+        body.theme-halloween .section-header.bg-mafia { background:linear-gradient(135deg,#581c87,#3b0764); color:#e9d5ff; border-color:#a855f7; }
     </style>
 </head>
 <body>
@@ -1733,6 +1990,47 @@
     <!-- ===== PAGE 3: DRAW ===== -->
     <!-- ============================================================ -->
     <div id="page-draw" class="page">
+        <div class="hw-scene" aria-hidden="true">
+            <svg class="hw-scene-svg" viewBox="0 0 400 120" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="hwMoonG" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#fff0d2"/><stop offset="1" stop-color="#ffbe73"/></radialGradient>
+                    <radialGradient id="hwHalo" cx="50%" cy="50%" r="50%"><stop offset="0" stop-color="#ffb866" stop-opacity=".5"/><stop offset="1" stop-color="#ffb866" stop-opacity="0"/></radialGradient>
+                </defs>
+                <g fill="#fff3d6">
+                    <circle cx="40" cy="22" r="1.2" opacity=".8"/><circle cx="96" cy="40" r="1" opacity=".6"/>
+                    <circle cx="150" cy="16" r="1.4" opacity=".9"/><circle cx="214" cy="34" r="1" opacity=".6"/>
+                    <circle cx="256" cy="14" r="1.2" opacity=".7"/><circle cx="372" cy="70" r="1" opacity=".5"/>
+                </g>
+                <circle cx="312" cy="44" r="54" fill="url(#hwHalo)"/>
+                <circle cx="312" cy="44" r="25" fill="url(#hwMoonG)"/>
+                <circle cx="304" cy="37" r="4.5" fill="#efc48a" opacity=".55"/>
+                <circle cx="321" cy="52" r="3.2" fill="#efc48a" opacity=".55"/>
+                <circle cx="319" cy="34" r="2" fill="#efc48a" opacity=".5"/>
+                <g class="hw-bat-fly f1"><g transform="translate(286 30) scale(1.1)"><path class="hw-bat-wing" d="M0 0C-3-4-9-4-14-2C-11 0-10 3-8 5C-5 3-3 4 0 7C3 4 5 3 8 5C10 3 11 0 14-2C9-4 3-4 0 0Z" fill="#0e0618"/></g></g>
+                <g class="hw-bat-fly f2"><g transform="translate(340 22) scale(.8)"><path class="hw-bat-wing" d="M0 0C-3-4-9-4-14-2C-11 0-10 3-8 5C-5 3-3 4 0 7C3 4 5 3 8 5C10 3 11 0 14-2C9-4 3-4 0 0Z" fill="#0e0618"/></g></g>
+                <g class="hw-bat-fly f3"><g transform="translate(246 52) scale(.65)"><path class="hw-bat-wing" d="M0 0C-3-4-9-4-14-2C-11 0-10 3-8 5C-5 3-3 4 0 7C3 4 5 3 8 5C10 3 11 0 14-2C9-4 3-4 0 0Z" fill="#0e0618"/></g></g>
+                <path d="M0 120V96Q46 80 104 94T214 90T306 96T400 86V120Z" fill="#0e0618"/>
+                <g stroke="#0e0618" stroke-width="4.5" stroke-linecap="round" fill="none">
+                    <path d="M54 100V62M54 78L38 63M54 72L69 55M38 63L30 56M38 63L40 54M69 55L77 51M69 55L70 47"/>
+                </g>
+                <g fill="#1d1030" stroke="#0e0618" stroke-width="1">
+                    <path d="M128 104V86a9 9 0 0 1 18 0v18z"/>
+                    <path d="M158 106V92a7 7 0 0 1 14 0v14z"/>
+                    <path d="M196 104V84a10 10 0 0 1 20 0v20z"/>
+                </g>
+                <g stroke="#6b5a86" stroke-width="1.6" stroke-linecap="round" fill="none">
+                    <path d="M137 80v10M133 84h8"/><path d="M165 88v8M161.5 91h7"/><path d="M206 78v11M201.5 82.5h9"/>
+                </g>
+                <g transform="translate(236 90)">
+                    <path d="M0-12c-1-2 0-4 1-5" stroke="#4d7a24" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+                    <ellipse cx="-5" cy="-3" rx="6" ry="8" fill="#d95f0b"/><ellipse cx="5" cy="-3" rx="6" ry="8" fill="#d95f0b"/>
+                    <ellipse cx="0" cy="-3" rx="5" ry="8.4" fill="#ff8a2a"/>
+                    <path d="M-4-6l2.5 3h-5zM4-6l2.5 3h-5z" fill="#1a0b2a"/>
+                    <path d="M-4 1l2 2 2-2 2 2 2-2" stroke="#1a0b2a" stroke-width="1.3" fill="none" stroke-linejoin="round"/>
+                </g>
+                <path d="M0 120V108Q70 98 140 108T290 106T400 108V120Z" fill="#150a22"/>
+            </svg>
+        </div>
         <div class="setup-box" style="justify-content:center;">
             <h2 style="font-size:clamp(16px,3.5vw,22px);font-weight:700;color:#f1f5f9;">🎴 کارت شماره خود را انتخاب کنید</h2>
         </div>
@@ -1796,26 +2094,27 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- ===== PAGE 5: LEADERBOARD ===== -->
+    <!-- ===== PAGE 5: CLUB (LEADERBOARD + PLAYERS) ===== -->
     <!-- ============================================================ -->
-    <div id="page-leaderboard" class="page">
-        <div class="leaderboard-header-sticky" id="lb-header">
-            <div style="font-size:18px;font-weight:700;color:#f87171;margin-bottom:6px;">🏆 لیدربورد</div>
-            <div class="lb-actions" id="lb-actions-container">
-                <!-- دکمه‌ها توسط JS پر می‌شوند -->
+    <div id="page-club" class="page">
+        <div class="club-tabs">
+            <button class="club-tab active" id="club-tab-leaderboard" onclick="switchClubTab('leaderboard')">🏆 لیدربورد</button>
+            <button class="club-tab" id="club-tab-players" onclick="switchClubTab('players')">👥 بازیکنان</button>
+        </div>
+        <div id="club-pane-leaderboard">
+            <div class="leaderboard-header-sticky" id="lb-header">
+                <div class="lb-actions" id="lb-actions-container">
+                    <!-- دکمه‌ها توسط JS پر می‌شوند -->
+                </div>
+            </div>
+            <div id="lb-table-container">
+                <!-- جدول توسط JS پر می‌شود -->
             </div>
         </div>
-        <div id="lb-table-container">
-            <!-- جدول توسط JS پر می‌شود -->
-        </div>
-    </div>
-
-    <!-- ============================================================ -->
-    <!-- ===== PAGE 6: PLAYERS ===== -->
-    <!-- ============================================================ -->
-    <div id="page-players" class="page">
-        <div id="players-content">
-            <!-- مدیریت بازیکنان توسط JS پر می‌شود -->
+        <div id="club-pane-players" style="display:none;">
+            <div id="players-content">
+                <!-- مدیریت بازیکنان توسط JS پر می‌شود -->
+            </div>
         </div>
     </div>
 
@@ -1826,6 +2125,35 @@
         <div id="gallery-content">
             <!-- گالری توسط JS پر می‌شود -->
         </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- ===== PAGE 8: SETTINGS ===== -->
+    <!-- ============================================================ -->
+    <div id="page-settings" class="page">
+        <div style="margin-bottom:12px;font-size:18px;font-weight:700;color:#f87171;" class="settings-title">⚙️ تنظیمات</div>
+
+        <div class="settings-card">
+            <div class="settings-card-title">🎨 تم برنامه</div>
+            <div class="theme-options">
+                <button class="theme-option active" id="theme-opt-normal" onclick="setTheme('normal')">
+                    <span class="theme-emoji">🎩</span>
+                    <span class="theme-name">تم عادی</span>
+                </button>
+                <button class="theme-option" id="theme-opt-halloween" onclick="setTheme('halloween')">
+                    <span class="theme-emoji">🎃</span>
+                    <span class="theme-name">تم هالووین</span>
+                </button>
+            </div>
+            <div class="settings-note" id="theme-lock-note" style="display:none;">🔒 در طول بازی امکان تغییر تم وجود ندارد. ابتدا بازی را پایان دهید.</div>
+            <div class="settings-note">تم هالووین نقش‌های جدید و سناریوی «هالووین» را فعال می‌کند و ظاهر صفحه‌ها و صدای پایان تایمر را تغییر می‌دهد.</div>
+        </div>
+
+        <div class="settings-card" id="halloween-sound-card" style="display:none;">
+            <div class="settings-card-title">🔊 صدای پایان تایمر (هالووین)</div>
+            <div id="halloween-sound-list"></div>
+        </div>
+        <div style="height:20px;"></div>
     </div>
 
     <!-- ============================================================ -->
@@ -1865,17 +2193,17 @@
             <span class="label">گاد</span>
             <span class="badge" id="god-badge" style="display:none;"></span>
         </button>
-        <button class="nav-item" data-page="page-leaderboard" onclick="switchPage('page-leaderboard')">
+        <button class="nav-item" data-page="page-club" onclick="switchPage('page-club')">
             <span class="icon">🏆</span>
             <span class="label">لیدربورد</span>
-        </button>
-        <button class="nav-item" data-page="page-players" onclick="switchPage('page-players')">
-            <span class="icon">👥</span>
-            <span class="label">بازیکنان</span>
         </button>
         <button class="nav-item" data-page="page-gallery" onclick="switchPage('page-gallery')">
             <span class="icon">🖼️</span>
             <span class="label">گالری</span>
+        </button>
+        <button class="nav-item" data-page="page-settings" onclick="switchPage('page-settings')">
+            <span class="icon">⚙️</span>
+            <span class="label">تنظیمات</span>
         </button>
     </nav>
 
@@ -1885,7 +2213,8 @@
 
     <!-- ===== ROLE MODAL ===== -->
     <div class="modal-overlay" id="role-modal">
-        <div class="modal-card">
+        <div class="modal-card" id="role-modal-card">
+            <div class="hw-modal-decor" aria-hidden="true"><i class="hw-web hw-web-l"></i><i class="hw-web hw-web-r"></i><div class="hw-modal-ground"></div></div>
             <div class="modal-player-num" id="modal-player-num">کارت شماره ۱</div>
             <div class="modal-role-image-wrapper" id="modal-image-wrapper">
                 <img id="modal-role-image" class="modal-role-image" src="" alt="نقش">
@@ -2275,6 +2604,175 @@
         };
 
         // ================================================================
+        // 2.5 THEME SYSTEM (تم عادی / هالووین)
+        // ================================================================
+        const HALLOWEEN_ROLES = {
+            citizen: [
+                { id: 'c_wizard', name: 'ویزارد', teamLabel: 'گروه شهروندی', theme: 'halloween' },
+                { id: 'c_wednesday', name: 'ونزدی', teamLabel: 'گروه شهروندی', theme: 'halloween' },
+                { id: 'c_vanhelsing', name: 'ون هلسینگ', teamLabel: 'گروه شهروندی', theme: 'halloween' },
+                { id: 'c_ghost', name: 'گوست', teamLabel: 'گروه شهروندی', theme: 'halloween' },
+                { id: 'c_mummy', name: 'مومیایی', teamLabel: 'گروه شهروندی', theme: 'halloween' },
+                { id: 'c_pumpkin', name: 'پامپکین', teamLabel: 'گروه شهروندی', isMultiple: true, count: 0, theme: 'halloween' }
+            ],
+            mafia: [
+                { id: 'm_dracula', name: 'دراکولا', teamLabel: 'گروه مافیا', theme: 'halloween' },
+                { id: 'm_frankenstein', name: 'فرانکنشتاین', teamLabel: 'گروه مافیا', theme: 'halloween' },
+                { id: 'm_zombie', name: 'زامبی', teamLabel: 'گروه مافیا', theme: 'halloween' }
+            ]
+        };
+        const HALLOWEEN_SCENARIO_ROLES = {
+            'm_dracula': 1, 'm_frankenstein': 1, 'm_zombie': 1,
+            'c_wizard': 1, 'c_wednesday': 1, 'c_vanhelsing': 1, 'c_ghost': 1, 'c_mummy': 1, 'c_pumpkin': 2
+        };
+        const SETTINGS_KEY = 'mafia_app_settings_v1';
+        let appTheme = 'normal';
+        let hallowSound = 'howl';
+
+        // نقش‌های هالووین را فقط وقتی تم فعال است به لیست نقش‌ها اضافه می‌کند
+        function applyThemeRoles() {
+            ['citizen', 'mafia'].forEach(team => {
+                const list = ALL_ROLES[team];
+                for (let i = list.length - 1; i >= 0; i--) {
+                    if (list[i].theme === 'halloween') list.splice(i, 1);
+                }
+                if (appTheme === 'halloween') {
+                    list.unshift(...HALLOWEEN_ROLES[team].map(r => ({ ...r })));
+                }
+            });
+            const sel = document.getElementById('scenario-select');
+            if (sel) {
+                const old = sel.querySelector('option[value="halloween"]');
+                if (old) old.remove();
+                if (appTheme === 'halloween') {
+                    const grp = sel.querySelector('optgroup[label*="پیش‌فرض"]');
+                    if (grp) {
+                        const opt = document.createElement('option');
+                        opt.value = 'halloween';
+                        opt.textContent = '🎃 هالووین (۱۰ نفره)';
+                        grp.insertBefore(opt, grp.firstChild);
+                    }
+                }
+            }
+        }
+
+        function applyThemeVisuals() {
+            const isH = appTheme === 'halloween';
+            document.body.classList.toggle('theme-halloween', isH);
+            const meta = document.querySelector('meta[name="theme-color"]');
+            if (meta) meta.setAttribute('content', isH ? '#120a1c' : '#0b0f19');
+            const h1 = document.querySelector('.app-header h1');
+            if (h1) h1.textContent = isH ? '🎃 دستیار و تقسیم نقش هالووین' : '🎩 دستیار و تقسیم نقش مافیا';
+        }
+
+        async function saveAppSettings() {
+            try { await Storage.set(SETTINGS_KEY, JSON.stringify({ theme: appTheme, hallowSound })); } catch (e) {}
+        }
+
+        async function loadAppSettings() {
+            try {
+                const raw = await Storage.get(SETTINGS_KEY);
+                if (raw) {
+                    const st = JSON.parse(raw);
+                    if (st.theme === 'halloween' || st.theme === 'normal') appTheme = st.theme;
+                    if (st.hallowSound && HALLOWEEN_SOUND_LIST.some(o => o.key === st.hallowSound)) hallowSound = st.hallowSound;
+                }
+            } catch (e) {}
+            applyThemeRoles();
+            applyThemeVisuals();
+        }
+
+        async function setTheme(theme) {
+            if (theme === appTheme) return;
+            if (isGameActive()) {
+                showCustomModal('توجه', 'در طول بازی امکان تغییر تم وجود ندارد. ابتدا بازی را پایان دهید.', 'alert');
+                return;
+            }
+            appTheme = theme;
+            // نقش‌های تم قبلی را از انتخاب‌ها پاک کن
+            if (theme !== 'halloween') {
+                HALLOWEEN_ROLES.citizen.concat(HALLOWEEN_ROLES.mafia).forEach(r => { delete selectedRoles[r.id]; });
+            }
+            applyThemeRoles();
+            const sel = document.getElementById('scenario-select');
+            if (sel && sel.value === 'halloween' && theme !== 'halloween') sel.value = 'custom';
+            syncNightEngineToggle();
+            applyThemeVisuals();
+            renderRoles();
+            document.querySelectorAll('[id^="count-"]').forEach(el => {
+                const id = el.id.replace('count-', '');
+                el.innerText = selectedRoles[id] || 0;
+            });
+            updateUI();
+            renderGalleryContent();
+            renderSettingsPage();
+            await saveAppSettings();
+            saveState();
+        }
+
+        function renderSettingsPage() {
+            document.getElementById('theme-opt-normal').classList.toggle('active', appTheme === 'normal');
+            document.getElementById('theme-opt-halloween').classList.toggle('active', appTheme === 'halloween');
+            const lock = document.getElementById('theme-lock-note');
+            if (lock) lock.style.display = isGameActive() ? 'block' : 'none';
+            const card = document.getElementById('halloween-sound-card');
+            if (card) card.style.display = appTheme === 'halloween' ? 'block' : 'none';
+            const list = document.getElementById('halloween-sound-list');
+            if (list && appTheme === 'halloween') {
+                list.innerHTML = HALLOWEEN_SOUND_LIST.map(o => `
+                    <div class="sound-row ${hallowSound === o.key ? 'active' : ''}">
+                        <button class="sound-pick" onclick="chooseHalloweenSound('${o.key}')">
+                            <span class="sound-radio">${hallowSound === o.key ? '◉' : '○'}</span>
+                            <span>${o.icon} ${o.name}</span>
+                        </button>
+                        <button class="sound-play" onclick="playHalloweenAlarm('${o.key}')">▶ پخش</button>
+                    </div>`).join('');
+            }
+        }
+
+        function chooseHalloweenSound(key) {
+            hallowSound = key;
+            saveAppSettings();
+            renderSettingsPage();
+            playHalloweenAlarm(key);
+        }
+
+        // سناریوی هالووین فعلاً دستیار شب ندارد
+        function isHalloweenScenarioSelected() {
+            const sel = document.getElementById('scenario-select');
+            return !!sel && sel.value === 'halloween';
+        }
+
+        function resolveNightEngineEnabled() {
+            if (isHalloweenScenarioSelected()) {
+                gameSettings.scenario = 'halloween';
+                return false;
+            }
+            const cb = document.getElementById('enable-night-engine');
+            return cb ? cb.checked : true;
+        }
+
+        function syncNightEngineToggle() {
+            const cb = document.getElementById('enable-night-engine');
+            if (!cb) return;
+            if (isHalloweenScenarioSelected()) {
+                if (!cb.disabled) cb.dataset.prev = cb.checked ? '1' : '0';
+                cb.checked = false;
+                cb.disabled = true;
+            } else if (cb.disabled) {
+                cb.disabled = false;
+                cb.checked = cb.dataset.prev !== '0';
+            }
+        }
+
+        function switchClubTab(tab) {
+            document.getElementById('club-tab-leaderboard').classList.toggle('active', tab === 'leaderboard');
+            document.getElementById('club-tab-players').classList.toggle('active', tab === 'players');
+            document.getElementById('club-pane-leaderboard').style.display = tab === 'leaderboard' ? 'block' : 'none';
+            document.getElementById('club-pane-players').style.display = tab === 'players' ? 'block' : 'none';
+        }
+
+        // ================================================================
         // 2. PLAYER MANAGER (با Storage جدید)
         // ================================================================
         const PlayerManager = {
@@ -2534,8 +3032,91 @@
         // ================================================================
         // 3.1 صدای زنگ تایمر و کنترل بی‌صدا
         // ================================================================
+        // ---- صداهای هالووین ----
+        // زوزه‌ی گرگ با WebAudio ساخته می‌شود؛ بقیه فایل‌های CC0 داخل پوشه‌ی sounds هستند (جزئیات در sounds/CREDITS.txt)
+        const HALLOWEEN_SOUND_LIST = [
+            { key: 'howl', icon: '🐺', name: 'زوزه‌ی گرگ' },
+            { key: 'cackle', icon: '🧙', name: 'خنده‌ی جادوگر', file: 'sounds/witch_cackle.ogg' },
+            { key: 'laugh1', icon: '😈', name: 'خنده‌ی شیطانی ۱', file: 'sounds/evil_laugh_1.ogg' },
+            { key: 'laugh2', icon: '👹', name: 'خنده‌ی شیطانی ۲', file: 'sounds/evil_laugh_2.ogg' },
+            { key: 'ghost', icon: '👻', name: 'جیغ روح', file: 'sounds/ghost_scream.ogg', maxSec: 4 }
+        ];
+        let hallowAudio = null;
+
+        // زوزه‌ی گرگ: سیم‌دندانه با لغزش بسامد و ویبراتو
+        function synthWolfHowl(ctx, out, t0) {
+            const osc = ctx.createOscillator();
+            const osc2 = ctx.createOscillator();
+            const filt = ctx.createBiquadFilter();
+            const g = ctx.createGain();
+            const lfo = ctx.createOscillator();
+            const lfoGain = ctx.createGain();
+            osc.type = 'sawtooth'; osc2.type = 'triangle';
+            filt.type = 'lowpass'; filt.frequency.value = 1100; filt.Q.value = 3;
+            [osc, osc2].forEach((o, k) => {
+                const m = k === 0 ? 1 : 2;
+                o.frequency.setValueAtTime(240 * m, t0);
+                o.frequency.linearRampToValueAtTime(640 * m, t0 + 1.0);
+                o.frequency.linearRampToValueAtTime(560 * m, t0 + 1.8);
+                o.frequency.exponentialRampToValueAtTime(300 * m, t0 + 2.9);
+                lfoGain.connect(o.frequency);
+                o.connect(filt);
+            });
+            lfo.frequency.value = 6; lfoGain.gain.value = 14;
+            lfo.connect(lfoGain);
+            g.gain.setValueAtTime(0.0001, t0);
+            g.gain.linearRampToValueAtTime(0.38, t0 + 0.5);
+            g.gain.setValueAtTime(0.38, t0 + 1.9);
+            g.gain.linearRampToValueAtTime(0.0001, t0 + 3.0);
+            filt.connect(g); g.connect(out);
+            [osc, osc2, lfo].forEach(o => { o.start(t0); o.stop(t0 + 3.1); });
+            return 3.1;
+        }
+
+        function playSynthHowl() {
+            try {
+                const AudioCtx = window.AudioContext || window.webkitAudioContext;
+                if (!AudioCtx) return;
+                const ctx = new AudioCtx();
+                if (ctx.state === 'suspended') ctx.resume();
+                const master = ctx.createGain();
+                master.gain.value = 0.55;
+                master.connect(ctx.destination);
+                const dur = synthWolfHowl(ctx, master, ctx.currentTime + 0.05);
+                setTimeout(() => { try { ctx.close(); } catch (e) {} }, (dur + 0.6) * 1000);
+            } catch (e) {
+                console.warn('Halloween alarm error:', e);
+            }
+        }
+
+        function playHalloweenAlarm(key) {
+            const entry = HALLOWEEN_SOUND_LIST.find(o => o.key === key) || HALLOWEEN_SOUND_LIST[0];
+            if (hallowAudio) { try { hallowAudio.pause(); } catch (e) {} hallowAudio = null; }
+            if (!entry.file) { playSynthHowl(); return; }
+            try {
+                const audio = new Audio(entry.file);
+                audio.volume = 1;
+                hallowAudio = audio;
+                const pr = audio.play();
+                if (pr && pr.catch) pr.catch(() => playSynthHowl());
+                if (entry.maxSec) {
+                    // فایل بلند را بعد از چند ثانیه با محو شدن قطع می‌کنیم
+                    setTimeout(() => {
+                        if (hallowAudio !== audio) return;
+                        const fade = setInterval(() => {
+                            if (audio.volume > 0.1) { audio.volume = Math.max(0, audio.volume - 0.15); }
+                            else { clearInterval(fade); try { audio.pause(); } catch (e) {} }
+                        }, 60);
+                    }, entry.maxSec * 1000);
+                }
+            } catch (e) {
+                playSynthHowl();
+            }
+        }
+
         function playTimerAlarm() {
             if (timerMuted) return;
+            if (appTheme === 'halloween') { playHalloweenAlarm(hallowSound); return; }
             try {
                 const AudioCtx = window.AudioContext || window.webkitAudioContext;
                 if (!AudioCtx) return;
@@ -2661,6 +3242,7 @@
         // ================================================================
         window.onload = async () => {
             await loadDescriptions();
+            await loadAppSettings();
             await loadState();
             renderCustomScenariosOptions();
             renderRoles();
@@ -2795,8 +3377,8 @@
 
             updateGodBottomBar();
 
-            if (pageId === 'page-leaderboard') renderLeaderboardContent();
-            if (pageId === 'page-players') renderPlayersContent();
+            if (pageId === 'page-club') { renderLeaderboardContent(); renderPlayersContent(); }
+            if (pageId === 'page-settings') renderSettingsPage();
             if (pageId === 'page-gallery') renderGalleryContent();
 
             window.scrollTo(0, 0);
@@ -2928,11 +3510,12 @@
                 nightHistory = state.nightHistory || [];
                 dayGuns = state.dayGuns || [];
                 currentPage = state.currentPage || 'page-roles';
+                if (currentPage === 'page-leaderboard' || currentPage === 'page-players') currentPage = 'page-club';
 
                 const cb = document.getElementById('enable-player-select');
                 if (cb) cb.checked = enablePlayerSelect;
                 const engineCb = document.getElementById('enable-night-engine');
-                if (engineCb) engineCb.checked = enableNightEngine;
+                if (engineCb) engineCb.checked = (gameSettings.scenario === 'halloween') ? true : enableNightEngine;
 
                 const pageToShow = currentPage;
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -3170,6 +3753,7 @@
 
         function applyScenario() {
             const val = document.getElementById('scenario-select').value;
+            syncNightEngineToggle();
             selectedRoles = {};
             document.querySelectorAll('[id^="count-"]').forEach(el => el.innerText = '0');
             updateUI(); // پاک کردن فوری هایلایت کارت‌ها
@@ -3208,6 +3792,8 @@
                         'c_simple':2, 'c_doctor':1, 'c_roointan':1,
                         'c_khabarnegar':1, 'c_karagah':1, 'c_sniper':1
                     };
+                } else if(val === 'halloween') {
+                    selectedRoles = { ...HALLOWEEN_SCENARIO_ROLES };
                 } else if(val === 'namayande') {
                     selectedRoles = {
                         'm_godfather':1, 'm_yaghi':1, 'm_hacker':1,
@@ -3230,7 +3816,7 @@
         function startGame() {
             enablePlayerSelect = document.getElementById('enable-player-select').checked;
             usePlayerSelectForGame = enablePlayerSelect;
-            enableNightEngine = document.getElementById('enable-night-engine') ? document.getElementById('enable-night-engine').checked : true;
+            enableNightEngine = resolveNightEngineEnabled();
             const total = parseInt(document.getElementById('player-count').value) || 0;
             if(total === 0) { showCustomModal('توجه', 'لطفاً حداقل یک نقش انتخاب کنید.', 'alert'); return; }
 
@@ -3448,7 +4034,7 @@
             }
             selectedPlayerNames = names;
             saveState();
-            enableNightEngine = document.getElementById('enable-night-engine') ? document.getElementById('enable-night-engine').checked : true;
+            enableNightEngine = resolveNightEngineEnabled();
             if (enableNightEngine) {
                 openPreGameSettingsModal(names);
             } else {
@@ -3618,6 +4204,8 @@
                 descEl.style.display = 'none';
             }
 
+            const roleCardEl = document.getElementById('role-modal-card');
+            if (roleCardEl) roleCardEl.dataset.team = roleData.team;
             document.getElementById('role-modal').classList.add('show');
             document.body.classList.add('modal-open');
         }
