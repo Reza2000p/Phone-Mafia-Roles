@@ -18,7 +18,7 @@ const ROLE_IDS = [
   'm_marde_ravani', 'm_mardeghavi', 'm_mashooghe', 'm_mozakere',
   'm_natasha', 'm_nato', 'm_samsaz', 'm_shaiad', 'm_shobadebaz',
   'm_silencer', 'm_simple', 'm_terorist', 'm_tohamatzan', 'm_vakeel',
-  'm_yaghi',
+  'm_yaghi', 'm_yakuza',
   'f_delroba', 'f_gorgnama', 'f_hezarchehre', 'f_joker', 'f_killer', 'f_sandika',
   // تم هالووین
   'm_dracula', 'm_frankenstein', 'm_zombie',
