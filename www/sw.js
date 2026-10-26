@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mafia-pwa-v16'; // ← تغییر نسخه (bugfix release)
+const CACHE_NAME = 'mafia-pwa-v17'; // ← تغییر نسخه (bugfix release)
 
 // لیست تمام نقش‌ها
 const ROLE_IDS = [
@@ -22,7 +22,8 @@ const ROLE_IDS = [
   'f_delroba', 'f_gorgnama', 'f_hezarchehre', 'f_joker', 'f_killer', 'f_sandika',
   // تم هالووین
   'm_dracula', 'm_frankenstein', 'm_zombie',
-  'c_wizard', 'c_wednesday', 'c_vanhelsing', 'c_ghost', 'c_mummy', 'c_pumpkin'
+  'c_wizard', 'c_wednesday', 'c_vanhelsing', 'c_ghost', 'c_mummy', 'c_pumpkin',
+  'm_dementor', 'c_raven', 'f_werewolf'
 ];
 
 // فایل‌های اصلی + عکس‌ها + فایل توضیحات + مانیفست
