@@ -1,6 +1,6 @@
 {
   "name": "mafia-assistant",
-  "version": "1.3.0",
+  "version": "1.3.2",
   "description": "دستیار کامل بازی مافیا با تقسیم نقش، لیدربورد و گالری",
   "main": "index.html",
   "scripts": {

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mafia-pwa-v17'; // ← تغییر نسخه (bugfix release)
+const CACHE_NAME = 'mafia-pwa-v18'; // ← تغییر نسخه (bugfix release)
 
 // لیست تمام نقش‌ها
 const ROLE_IDS = [
